@@ -1,0 +1,22 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer circle with gradient -->
+  <circle cx="256" cy="256" r="240" fill="url(#gradient512)" opacity="0.95"/>
+  <circle cx="256" cy="256" r="240" fill="none" stroke="#176e3e" stroke-width="16"/>
+  
+  <!-- Inner highlight -->
+  <circle cx="256" cy="256" r="220" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="4"/>
+  
+  <!-- Letter M with subtle shadow -->
+  <text x="256" y="261" font-family="Arial, sans-serif" font-size="336" font-weight="600" text-anchor="middle" dominant-baseline="central" fill="rgba(0,0,0,0.2)" opacity="0.5">M</text>
+  <text x="256" y="256" font-family="Arial, sans-serif" font-size="336" font-weight="600" text-anchor="middle" dominant-baseline="central" fill="white" opacity="0.95">M</text>
+  
+  <!-- Gradient definition -->
+  <defs>
+    <linearGradient id="gradient512" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2ea358;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#1F8349;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#1F8349;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#176e3e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

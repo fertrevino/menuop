@@ -15,6 +15,20 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Menuop",
   description: "Beautiful digital menus",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-16x16.svg", sizes: "16x16", type: "image/svg+xml" },
+    ],
+    apple: [
+      { url: "/icon-192x192.svg", sizes: "192x192", type: "image/svg+xml" },
+    ],
+    other: [
+      { url: "/icon-512x512.svg", sizes: "512x512", type: "image/svg+xml" },
+    ],
+  },
+  manifest: "/manifest.json",
+  themeColor: "#1F8349",
 };
 
 export default function RootLayout({
