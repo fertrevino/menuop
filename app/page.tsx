@@ -1,4 +1,14 @@
+"use client";
+
+import { useState } from "react";
+import SignInModal from "./components/SignInModal";
+
 export default function Home() {
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+
+  const openSignInModal = () => setIsSignInModalOpen(true);
+  const closeSignInModal = () => setIsSignInModalOpen(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900">
       {/* Navigation */}
@@ -36,7 +46,10 @@ export default function Home() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <button className="text-gray-300 hover:text-white font-medium cursor-pointer transition-colors">
+              <button
+                onClick={openSignInModal}
+                className="text-gray-300 hover:text-white font-medium cursor-pointer transition-colors"
+              >
                 Sign In
               </button>
               <button className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl">
@@ -421,6 +434,9 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Sign In Modal */}
+      <SignInModal isOpen={isSignInModalOpen} onClose={closeSignInModal} />
     </div>
   );
 }

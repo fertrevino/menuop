@@ -3,6 +3,7 @@
 This file is informational and read-only for AI agents.
 You will work on one of the tasks in progress that is and be given it to you.
 Do not work in any other task besides the one that is assigned to you.
+Do not try to run commands in a shell. I will test the changes on my own and provide you feedback.
 
 ## Introduction
 
@@ -20,4 +21,5 @@ This repo creates Menuop, a Saas platform for food business owners to create and
 
 ## Tasks in Progress
 
-- [ ] Create landing page that presents the product features.
+[x] Create landing page that presents the product features.
+[ ] Add a sign in window that appears when a user clicks on sign in in the landing page.
