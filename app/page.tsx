@@ -337,7 +337,7 @@ export default function Home() {
             Join thousands of restaurants already using Menuop to create
             beautiful digital menus.
           </p>
-          <button className="bg-white text-[#1F8349] hover:bg-gray-50 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105">
+          <button className="bg-white text-[#1F8349] hover:bg-gray-50 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 cursor-pointer">
             Start Your Free Trial
           </button>
         </div>
