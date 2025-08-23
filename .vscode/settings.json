@@ -1,0 +1,106 @@
+{
+  // General performance
+  "workbench.startupEditor": "none",
+  "workbench.list.smoothScrolling": false,
+  "window.restoreWindows": "none",
+  "telemetry.telemetryLevel": "off",
+
+  // Editor UI (less chrome = snappier)
+  "editor.minimap.enabled": false,
+  "editor.renderControlCharacters": false,
+  "editor.renderWhitespace": "boundary",
+  "editor.codeLens": false,
+  "editor.semanticHighlighting.enabled": false,
+  "breadcrumbs.enabled": false,
+  "problems.decorations.enabled": false,
+  "editor.mouseWheelZoom": true,
+
+  // Typing/IntelliSense balance: fast but helpful
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": false
+  },
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "editor.suggest.localityBonus": true,
+  "editor.inlineSuggest.enabled": false,
+  "editor.parameterHints.enabled": false,
+  "editor.hover.delay": 300,
+
+  // Files & watchers (big wins for large repos/monorepos)
+  "files.exclude": {
+    "**/.git": false,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.next": true,
+    "**/.cache": true,
+    "**/coverage": true,
+    "**/.turbo": true,
+    "**/.pnpm-store": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/.next/**": true,
+    "**/.cache/**": true,
+    "**/coverage/**": true,
+    "**/.turbo/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.next": true,
+    "**/.cache": true,
+    "**/coverage": true,
+    "**/.turbo": true
+  },
+
+  // Terminal & performance quirks
+  "terminal.integrated.gpuAcceleration": "auto", // set "off" if you see lag
+  "terminal.integrated.enableImages": false,
+
+  // Git: keep it quick
+  "git.autofetch": false,
+  "git.decorations.enabled": false,
+  "git.openRepositoryInParentFolders": "never",
+
+  // Extensions behavior (avoid surprise churn)
+  "extensions.autoCheckUpdates": false,
+  "extensions.autoUpdate": false,
+
+  // Formatting pipeline (fast, deterministic)
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // Language-specific overrides (tweak per stack)
+  "[markdown]": { "editor.wordWrap": "on" },
+
+  // JS/TS defaults (if applicable)
+  "javascript.suggest.autoImports": true,
+  "typescript.suggest.autoImports": true,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "typescript.tsserver.maxTsServerMemory": 3072,
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "typescript.tsserver.useSeparateSyntaxServer": true,
+
+  // Python (if applicable)
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.diagnosticMode": "workspace",
+  "python.analysis.indexing": true,
+
+  // Go (if applicable)
+  "gopls": {
+    "ui.semanticTokens": false
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  }
+}
