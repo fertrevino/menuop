@@ -22,4 +22,4 @@ This repo creates Menuop, a Saas platform for food business owners to create and
 ## Tasks in Progress
 
 [x] Create landing page that presents the product features.
-[ ] Add a sign in window that appears when a user clicks on sign in in the landing page.
+[x] Add a sign in window that appears when a user clicks on sign in in the landing page.
