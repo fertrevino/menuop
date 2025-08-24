@@ -13,6 +13,19 @@ export default function Home() {
   const openSignInModal = () => setIsSignInModalOpen(true);
   const closeSignInModal = () => setIsSignInModalOpen(false);
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const navHeight = 64; // Height of the sticky navigation (h-16 = 64px)
+      const elementPosition = element.offsetTop - navHeight;
+
+      window.scrollTo({
+        top: elementPosition,
+        behavior: "smooth",
+      });
+    }
+  };
+
   const handleSignOut = async () => {
     await signOut();
   };
@@ -41,24 +54,24 @@ export default function Home() {
             </div>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
-                <a
-                  href="#features"
-                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                <button
+                  onClick={() => scrollToSection("features")}
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
                 >
                   Features
-                </a>
-                <a
-                  href="#about"
-                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                </button>
+                <button
+                  onClick={() => scrollToSection("about")}
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
                 >
                   About
-                </a>
-                <a
-                  href="#pricing"
-                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+                </button>
+                <button
+                  onClick={() => scrollToSection("pricing")}
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
                 >
                   Pricing
-                </a>
+                </button>
               </div>
             </div>
             <div className="flex items-center space-x-4">
