@@ -154,7 +154,7 @@ export default function CreateMenu() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.push("/dashboard")}
-                className="text-gray-300 hover:text-white transition-colors"
+                className="text-gray-300 hover:text-white transition-colors cursor-pointer"
               >
                 <svg
                   className="w-6 h-6"
@@ -176,7 +176,7 @@ export default function CreateMenu() {
               <button
                 onClick={handleSaveMenu}
                 disabled={isCreating}
-                className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50"
+                className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50 cursor-pointer"
               >
                 {isCreating ? "Saving..." : "Save Menu"}
               </button>
@@ -303,7 +303,7 @@ export default function CreateMenu() {
                   />
                   <button
                     onClick={addMenuItem}
-                    className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300"
+                    className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 cursor-pointer"
                   >
                     Add Item
                   </button>
@@ -401,7 +401,7 @@ export default function CreateMenu() {
                       </p>
                       <button
                         onClick={addMenuItem}
-                        className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300"
+                        className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 cursor-pointer"
                       >
                         Add Your First Item
                       </button>

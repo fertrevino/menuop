@@ -136,7 +136,7 @@ export default function ViewMenus() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.push("/dashboard")}
-                className="text-gray-300 hover:text-white transition-colors"
+                className="text-gray-300 hover:text-white transition-color cursor-pointer"
               >
                 <svg
                   className="w-6 h-6"
@@ -157,7 +157,7 @@ export default function ViewMenus() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.push("/dashboard/create-menu")}
-                className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300"
+                className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 cursor-pointer"
               >
                 Create New Menu
               </button>
