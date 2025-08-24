@@ -8,7 +8,7 @@ export async function PATCH(
   try {
     // Await params before using its properties
     const { id } = await params;
-    
+
     const supabase = await createClient();
     const {
       data: { user },

@@ -8,7 +8,7 @@ export async function GET(
   try {
     // Await params before using its properties
     const { id } = await params;
-    
+
     const supabase = await createClient();
 
     const { data: menu, error } = await supabase

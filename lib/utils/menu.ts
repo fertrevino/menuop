@@ -213,7 +213,7 @@ export const menuUtils = {
   formatDeletedDate: (menu: Menu): string => {
     const deletedDate = menuUtils.getDeletedDate(menu);
     if (!deletedDate) return "";
-    
+
     return new Intl.DateTimeFormat("en-US", {
       year: "numeric",
       month: "long",
@@ -227,7 +227,7 @@ export const menuUtils = {
   daysSinceDeletion: (menu: Menu): number => {
     const deletedDate = menuUtils.getDeletedDate(menu);
     if (!deletedDate) return 0;
-    
+
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - deletedDate.getTime());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -235,11 +235,11 @@ export const menuUtils = {
 
   // Filter active (non-deleted) menus
   filterActiveMenus: (menus: Menu[]): Menu[] => {
-    return menus.filter(menu => !menuUtils.isMenuDeleted(menu));
+    return menus.filter((menu) => !menuUtils.isMenuDeleted(menu));
   },
 
   // Filter deleted menus (for viewing deleted items only)
   filterDeletedMenus: (menus: Menu[]): Menu[] => {
-    return menus.filter(menu => menuUtils.isMenuDeleted(menu));
+    return menus.filter((menu) => menuUtils.isMenuDeleted(menu));
   },
 };

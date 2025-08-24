@@ -9,7 +9,7 @@ export async function GET(
   try {
     // Await params before using its properties
     const { id } = await params;
-    
+
     const supabase = await createClient();
     const {
       data: { user },
@@ -60,7 +60,7 @@ export async function PUT(
   try {
     // Await params before using its properties
     const { id } = await params;
-    
+
     const supabase = await createClient();
     const {
       data: { user },
@@ -195,7 +195,7 @@ export async function DELETE(
   try {
     // Await params before using its properties
     const { id } = await params;
-    
+
     const supabase = await createClient();
     const {
       data: { user },

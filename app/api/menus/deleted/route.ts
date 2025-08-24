@@ -24,9 +24,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ 
-      menus: menus || [], 
-      total: menus?.length || 0 
+    return NextResponse.json({
+      menus: menus || [],
+      total: menus?.length || 0,
     });
   } catch (error) {
     return NextResponse.json(
