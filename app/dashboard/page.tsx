@@ -95,7 +95,7 @@ export default function Dashboard() {
               Start building your first digital menu with our easy-to-use
               editor.
             </p>
-            <button className="w-full bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl">
+            <button className="w-full bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer">
               Create Menu
             </button>
           </div>
@@ -120,7 +120,7 @@ export default function Dashboard() {
             <p className="text-gray-300 mb-6">
               View and manage all your existing digital menus.
             </p>
-            <button className="w-full border border-gray-600 hover:border-[#1F8349] bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300">
+            <button className="w-full border border-gray-600 hover:border-[#1F8349] bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300 cursor-pointer">
               View Menus
             </button>
           </div>
@@ -151,7 +151,7 @@ export default function Dashboard() {
             <p className="text-gray-300 mb-6">
               Manage your account settings and preferences.
             </p>
-            <button className="w-full border border-gray-600 hover:border-[#1F8349] bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300">
+            <button className="w-full border border-gray-600 hover:border-[#1F8349] bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300 cursor-pointer">
               Settings
             </button>
           </div>
