@@ -2,77 +2,26 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-
-interface Menu {
-  id: string;
-  name: string;
-  restaurantName: string;
-  createdAt: string;
-  itemCount: number;
-  isPublished: boolean;
-}
+import { useEffect } from "react";
+import { useUserMenus } from "@/hooks/useMenu";
 
 export default function ViewMenus() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [menus, setMenus] = useState<Menu[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const {
+    menus,
+    loading: menusLoading,
+    error,
+    deleteMenu,
+    togglePublishMenu,
+    clearError,
+  } = useUserMenus();
 
   useEffect(() => {
     if (!loading && !user) {
       router.push("/");
     }
   }, [user, loading, router]);
-
-  useEffect(() => {
-    if (user) {
-      loadMenus();
-    }
-  }, [user]);
-
-  const loadMenus = async () => {
-    setIsLoading(true);
-    try {
-      // TODO: Replace with actual API call to fetch user's menus
-      // Simulate API call for now
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Mock data for demonstration
-      const mockMenus: Menu[] = [
-        {
-          id: "1",
-          name: "Dinner Menu",
-          restaurantName: "Bella Italia",
-          createdAt: "2024-01-15",
-          itemCount: 15,
-          isPublished: true,
-        },
-        {
-          id: "2",
-          name: "Lunch Menu",
-          restaurantName: "Bella Italia",
-          createdAt: "2024-01-10",
-          itemCount: 8,
-          isPublished: false,
-        },
-        {
-          id: "3",
-          name: "Weekend Special",
-          restaurantName: "Ocean View Cafe",
-          createdAt: "2024-01-05",
-          itemCount: 12,
-          isPublished: true,
-        },
-      ];
-
-      setMenus(mockMenus);
-    } catch (error) {
-      console.error("Error loading menus:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleDeleteMenu = async (menuId: string) => {
     if (
@@ -81,41 +30,37 @@ export default function ViewMenus() {
       )
     ) {
       try {
-        // TODO: Implement actual delete functionality
-        setMenus(menus.filter((menu) => menu.id !== menuId));
+        await deleteMenu(menuId);
         alert("Menu deleted successfully!");
       } catch (error) {
-        alert("Error deleting menu. Please try again.");
+        // Error is already handled by the hook
       }
     }
   };
 
-  const handleTogglePublish = async (menuId: string) => {
+  const handleTogglePublish = async (menuId: string, isPublished: boolean) => {
     try {
-      // TODO: Implement actual publish/unpublish functionality
-      setMenus(
-        menus.map((menu) =>
-          menu.id === menuId
-            ? { ...menu, isPublished: !menu.isPublished }
-            : menu
-        )
-      );
+      await togglePublishMenu(menuId, !isPublished);
     } catch (error) {
-      alert("Error updating menu status. Please try again.");
+      // Error is already handled by the hook
     }
   };
 
   const handleEditMenu = (menuId: string) => {
-    // TODO: Navigate to edit page when implemented
     router.push(`/dashboard/edit-menu/${menuId}`);
   };
 
   const handleViewMenu = (menuId: string) => {
-    // TODO: Navigate to public menu view when implemented
     window.open(`/menu/${menuId}`, "_blank");
   };
 
-  if (loading || isLoading) {
+  const calculateItemCount = (menu: any) => {
+    // This is a placeholder since we don't have sections data in the menu list
+    // In a real implementation, you might want to add this to the database query
+    return 0;
+  };
+
+  if (loading || menusLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 flex items-center justify-center">
         <div className="text-white text-xl">Loading...</div>
@@ -165,6 +110,21 @@ export default function ViewMenus() {
           </div>
         </div>
       </nav>
+
+      {/* Error Display */}
+      {error && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+          <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg flex justify-between items-center">
+            <span>{error}</span>
+            <button
+              onClick={clearError}
+              className="text-red-300 hover:text-red-100"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {menus.length === 0 ? (
@@ -227,24 +187,24 @@ export default function ViewMenus() {
                           {menu.name}
                         </h3>
                         <p className="text-gray-400 text-sm truncate">
-                          {menu.restaurantName}
+                          {menu.restaurant_name}
                         </p>
                       </div>
                       <div
                         className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          menu.isPublished
+                          menu.is_published
                             ? "bg-green-500/20 text-green-400"
                             : "bg-yellow-500/20 text-yellow-400"
                         }`}
                       >
-                        {menu.isPublished ? "Published" : "Draft"}
+                        {menu.is_published ? "Published" : "Draft"}
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between text-sm text-gray-400 mb-6">
-                      <span>{menu.itemCount} items</span>
+                      <span>{calculateItemCount(menu)} items</span>
                       <span>
-                        Created {new Date(menu.createdAt).toLocaleDateString()}
+                        Created {new Date(menu.created_at).toLocaleDateString()}
                       </span>
                     </div>
 
@@ -265,14 +225,16 @@ export default function ViewMenus() {
                       </div>
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => handleTogglePublish(menu.id)}
+                          onClick={() =>
+                            handleTogglePublish(menu.id, menu.is_published)
+                          }
                           className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
-                            menu.isPublished
+                            menu.is_published
                               ? "bg-yellow-600 hover:bg-yellow-700 text-white"
                               : "bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white"
                           }`}
                         >
-                          {menu.isPublished ? "Unpublish" : "Publish"}
+                          {menu.is_published ? "Unpublish" : "Publish"}
                         </button>
                         <button
                           onClick={() => handleDeleteMenu(menu.id)}

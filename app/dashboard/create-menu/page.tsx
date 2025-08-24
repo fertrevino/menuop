@@ -3,35 +3,28 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-interface MenuItem {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-}
-
-interface MenuSection {
-  id: string;
-  name: string;
-  items: MenuItem[];
-}
+import { useMenu } from "@/hooks/useMenu";
 
 export default function CreateMenu() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [menuName, setMenuName] = useState("");
-  const [restaurantName, setRestaurantName] = useState("");
-  const [sections, setSections] = useState<MenuSection[]>([
-    {
-      id: "1",
-      name: "Appetizers",
-      items: [],
-    },
-  ]);
-  const [currentSection, setCurrentSection] = useState<string>("1");
-  const [isCreating, setIsCreating] = useState(false);
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+
+  const {
+    menuFormData,
+    saving,
+    error,
+    hasUnsavedChanges,
+    saveMenu,
+    updateMenuField,
+    addSection,
+    updateSection,
+    deleteSection,
+    addMenuItem,
+    updateMenuItem,
+    deleteMenuItem,
+    clearError,
+  } = useMenu();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -39,93 +32,45 @@ export default function CreateMenu() {
     }
   }, [user, loading, router]);
 
-  const addSection = () => {
-    const newSection: MenuSection = {
-      id: Date.now().toString(),
-      name: "New Section",
-      items: [],
-    };
-    setSections([...sections, newSection]);
-    setCurrentSection(newSection.id);
-  };
-
-  const updateSectionName = (sectionId: string, name: string) => {
-    setSections(
-      sections.map((section) =>
-        section.id === sectionId ? { ...section, name } : section
-      )
-    );
-  };
-
-  const deleteSection = (sectionId: string) => {
-    if (sections.length > 1) {
-      setSections(sections.filter((section) => section.id !== sectionId));
-      if (currentSection === sectionId) {
-        setCurrentSection(sections[0].id);
+  // Warn user before leaving the page with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue =
+          "You have unsaved changes. Are you sure you want to leave?";
+        return e.returnValue;
       }
-    }
-  };
-
-  const addMenuItem = () => {
-    const newItem: MenuItem = {
-      id: Date.now().toString(),
-      name: "",
-      description: "",
-      price: 0,
-      category: currentSection,
     };
 
-    setSections(
-      sections.map((section) =>
-        section.id === currentSection
-          ? { ...section, items: [...section.items, newItem] }
-          : section
-      )
-    );
-  };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [hasUnsavedChanges]);
 
-  const updateMenuItem = (
-    itemId: string,
-    field: keyof MenuItem,
-    value: string | number
-  ) => {
-    setSections(
-      sections.map((section) => ({
-        ...section,
-        items: section.items.map((item) =>
-          item.id === itemId ? { ...item, [field]: value } : item
-        ),
-      }))
-    );
-  };
-
-  const deleteMenuItem = (itemId: string) => {
-    setSections(
-      sections.map((section) => ({
-        ...section,
-        items: section.items.filter((item) => item.id !== itemId),
-      }))
-    );
+  const handleBackNavigation = () => {
+    if (hasUnsavedChanges) {
+      const confirmed = window.confirm(
+        "You have unsaved changes. Are you sure you want to leave without saving?"
+      );
+      if (!confirmed) return;
+    }
+    router.push("/dashboard");
   };
 
   const handleSaveMenu = async () => {
-    if (!menuName.trim() || !restaurantName.trim()) {
+    if (!menuFormData.name.trim() || !menuFormData.restaurant_name.trim()) {
       alert("Please fill in both menu name and restaurant name");
       return;
     }
 
-    setIsCreating(true);
-    // TODO: Implement actual save functionality with Supabase
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      alert("Menu saved successfully!");
-      router.push("/dashboard");
+      const savedMenu = await saveMenu();
+      if (savedMenu) {
+        alert("Menu saved successfully!");
+        router.push("/dashboard");
+      }
     } catch (error) {
-      alert("Error saving menu. Please try again.");
-    } finally {
-      setIsCreating(false);
+      // Error is already handled by the hook
     }
   };
 
@@ -141,9 +86,7 @@ export default function CreateMenu() {
     return null;
   }
 
-  const currentSectionData = sections.find(
-    (section) => section.id === currentSection
-  );
+  const currentSection = menuFormData.sections[currentSectionIndex];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900">
@@ -153,7 +96,7 @@ export default function CreateMenu() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => router.push("/dashboard")}
+                onClick={handleBackNavigation}
                 className="text-gray-300 hover:text-white transition-colors cursor-pointer"
               >
                 <svg
@@ -173,17 +116,37 @@ export default function CreateMenu() {
               <h1 className="text-xl font-bold text-white">Create New Menu</h1>
             </div>
             <div className="flex items-center space-x-4">
+              {hasUnsavedChanges && (
+                <span className="text-yellow-400 text-sm">
+                  • Unsaved changes
+                </span>
+              )}
               <button
                 onClick={handleSaveMenu}
-                disabled={isCreating}
+                disabled={saving}
                 className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50 cursor-pointer"
               >
-                {isCreating ? "Saving..." : "Save Menu"}
+                {saving ? "Saving..." : "Save Menu"}
               </button>
             </div>
           </div>
         </div>
       </nav>
+
+      {/* Error Display */}
+      {error && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+          <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg flex justify-between items-center">
+            <span>{error}</span>
+            <button
+              onClick={clearError}
+              className="text-red-300 hover:text-red-100"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -201,8 +164,10 @@ export default function CreateMenu() {
                   </label>
                   <input
                     type="text"
-                    value={restaurantName}
-                    onChange={(e) => setRestaurantName(e.target.value)}
+                    value={menuFormData.restaurant_name}
+                    onChange={(e) =>
+                      updateMenuField("restaurant_name", e.target.value)
+                    }
                     className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
                     placeholder="Enter restaurant name"
                   />
@@ -213,10 +178,24 @@ export default function CreateMenu() {
                   </label>
                   <input
                     type="text"
-                    value={menuName}
-                    onChange={(e) => setMenuName(e.target.value)}
+                    value={menuFormData.name}
+                    onChange={(e) => updateMenuField("name", e.target.value)}
                     className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
                     placeholder="Enter menu name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Description (Optional)
+                  </label>
+                  <textarea
+                    value={menuFormData.description || ""}
+                    onChange={(e) =>
+                      updateMenuField("description", e.target.value)
+                    }
+                    className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
+                    placeholder="Enter menu description"
+                    rows={3}
                   />
                 </div>
               </div>
@@ -246,24 +225,29 @@ export default function CreateMenu() {
                 </button>
               </div>
               <div className="space-y-2">
-                {sections.map((section) => (
+                {menuFormData.sections.map((section, index) => (
                   <div
-                    key={section.id}
+                    key={index}
                     className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${
-                      currentSection === section.id
+                      currentSectionIndex === index
                         ? "bg-[#1F8349]/20 border border-[#1F8349]/50"
                         : "bg-gray-700 hover:bg-gray-600"
                     }`}
-                    onClick={() => setCurrentSection(section.id)}
+                    onClick={() => setCurrentSectionIndex(index)}
                   >
                     <span className="text-white font-medium">
                       {section.name}
                     </span>
-                    {sections.length > 1 && (
+                    {menuFormData.sections.length > 1 && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          deleteSection(section.id);
+                          deleteSection(index);
+                          if (currentSectionIndex >= index) {
+                            setCurrentSectionIndex(
+                              Math.max(0, currentSectionIndex - 1)
+                            );
+                          }
                         }}
                         className="text-red-400 hover:text-red-300 transition-colors"
                       >
@@ -290,29 +274,49 @@ export default function CreateMenu() {
 
           {/* Main Content */}
           <div className="lg:col-span-3">
-            {currentSectionData && (
+            {currentSection && (
               <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
                 <div className="flex justify-between items-center mb-6">
                   <input
                     type="text"
-                    value={currentSectionData.name}
+                    value={currentSection.name}
                     onChange={(e) =>
-                      updateSectionName(currentSection, e.target.value)
+                      updateSection(currentSectionIndex, "name", e.target.value)
                     }
                     className="text-2xl font-bold text-white bg-transparent border-none focus:outline-none focus:ring-0 p-0"
                   />
                   <button
-                    onClick={addMenuItem}
+                    onClick={() => addMenuItem(currentSectionIndex)}
                     className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 cursor-pointer"
                   >
                     Add Item
                   </button>
                 </div>
 
+                {/* Section Description */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Section Description (Optional)
+                  </label>
+                  <textarea
+                    value={currentSection.description || ""}
+                    onChange={(e) =>
+                      updateSection(
+                        currentSectionIndex,
+                        "description",
+                        e.target.value
+                      )
+                    }
+                    className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
+                    placeholder="Section description"
+                    rows={2}
+                  />
+                </div>
+
                 <div className="space-y-4">
-                  {currentSectionData.items.map((item) => (
+                  {currentSection.items.map((item, itemIndex) => (
                     <div
-                      key={item.id}
+                      key={itemIndex}
                       className="bg-gray-700 p-4 rounded-lg border border-gray-600"
                     >
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -324,7 +328,12 @@ export default function CreateMenu() {
                             type="text"
                             value={item.name}
                             onChange={(e) =>
-                              updateMenuItem(item.id, "name", e.target.value)
+                              updateMenuItem(
+                                currentSectionIndex,
+                                itemIndex,
+                                "name",
+                                e.target.value
+                              )
                             }
                             className="w-full bg-gray-600 text-white border border-gray-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
                             placeholder="Item name"
@@ -340,7 +349,8 @@ export default function CreateMenu() {
                             value={item.price}
                             onChange={(e) =>
                               updateMenuItem(
-                                item.id,
+                                currentSectionIndex,
+                                itemIndex,
                                 "price",
                                 parseFloat(e.target.value) || 0
                               )
@@ -351,7 +361,9 @@ export default function CreateMenu() {
                         </div>
                         <div className="flex items-end">
                           <button
-                            onClick={() => deleteMenuItem(item.id)}
+                            onClick={() =>
+                              deleteMenuItem(currentSectionIndex, itemIndex)
+                            }
                             className="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded transition-colors"
                           >
                             Delete
@@ -363,10 +375,11 @@ export default function CreateMenu() {
                           Description
                         </label>
                         <textarea
-                          value={item.description}
+                          value={item.description || ""}
                           onChange={(e) =>
                             updateMenuItem(
-                              item.id,
+                              currentSectionIndex,
+                              itemIndex,
                               "description",
                               e.target.value
                             )
@@ -376,10 +389,32 @@ export default function CreateMenu() {
                           rows={2}
                         />
                       </div>
+                      <div className="mt-4 flex items-center">
+                        <input
+                          type="checkbox"
+                          id={`available-${itemIndex}`}
+                          checked={item.is_available ?? true}
+                          onChange={(e) =>
+                            updateMenuItem(
+                              currentSectionIndex,
+                              itemIndex,
+                              "is_available",
+                              e.target.checked
+                            )
+                          }
+                          className="mr-2"
+                        />
+                        <label
+                          htmlFor={`available-${itemIndex}`}
+                          className="text-sm text-gray-300"
+                        >
+                          Available for ordering
+                        </label>
+                      </div>
                     </div>
                   ))}
 
-                  {currentSectionData.items.length === 0 && (
+                  {currentSection.items.length === 0 && (
                     <div className="text-center py-12">
                       <div className="text-gray-400 mb-4">
                         <svg
@@ -400,7 +435,7 @@ export default function CreateMenu() {
                         No items in this section yet
                       </p>
                       <button
-                        onClick={addMenuItem}
+                        onClick={() => addMenuItem(currentSectionIndex)}
                         className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 cursor-pointer"
                       >
                         Add Your First Item

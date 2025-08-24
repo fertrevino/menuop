@@ -1,113 +1,39 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
+import { MenuService } from "@/lib/services/menu";
+import { PublicMenuData } from "@/lib/types/menu";
 
 interface PublicMenuProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
-}
-
-interface MenuItem {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-}
-
-interface MenuSection {
-  id: string;
-  name: string;
-  items: MenuItem[];
-}
-
-interface MenuData {
-  id: string;
-  name: string;
-  restaurantName: string;
-  sections: MenuSection[];
+  }>;
 }
 
 export default function PublicMenu({ params }: PublicMenuProps) {
   const router = useRouter();
-  const [menuData, setMenuData] = useState<MenuData | null>(null);
+  const [menuData, setMenuData] = useState<PublicMenuData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Unwrap the params Promise using React.use()
+  const { id } = use(params);
+
   useEffect(() => {
     loadMenuData();
-  }, [params.id]);
+  }, [id]);
 
   const loadMenuData = async () => {
     try {
       setIsLoading(true);
-      // TODO: Replace with actual API call to fetch menu data
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const menu = await MenuService.getPublicMenuById(id);
 
-      // Mock data for demonstration
-      const mockMenu: MenuData = {
-        id: params.id,
-        name: "Dinner Menu",
-        restaurantName: "Bella Italia",
-        sections: [
-          {
-            id: "1",
-            name: "Appetizers",
-            items: [
-              {
-                id: "1",
-                name: "Bruschetta",
-                description:
-                  "Grilled bread topped with fresh tomatoes, garlic, and basil",
-                price: 8.99,
-              },
-              {
-                id: "2",
-                name: "Caesar Salad",
-                description:
-                  "Crisp romaine lettuce with parmesan cheese and croutons",
-                price: 12.99,
-              },
-            ],
-          },
-          {
-            id: "2",
-            name: "Main Courses",
-            items: [
-              {
-                id: "3",
-                name: "Spaghetti Carbonara",
-                description:
-                  "Fresh pasta with pancetta, eggs, and parmesan cheese",
-                price: 18.99,
-              },
-              {
-                id: "4",
-                name: "Grilled Salmon",
-                description:
-                  "Atlantic salmon with lemon butter sauce and seasonal vegetables",
-                price: 24.99,
-              },
-            ],
-          },
-          {
-            id: "3",
-            name: "Desserts",
-            items: [
-              {
-                id: "5",
-                name: "Tiramisu",
-                description:
-                  "Classic Italian dessert with coffee-soaked ladyfingers",
-                price: 7.99,
-              },
-            ],
-          },
-        ],
-      };
-
-      setMenuData(mockMenu);
+      if (menu) {
+        setMenuData(menu);
+      } else {
+        setError("Menu not found or not published");
+      }
     } catch (err) {
       setError("Failed to load menu");
     } finally {
@@ -129,7 +55,7 @@ export default function PublicMenu({ params }: PublicMenuProps) {
         <div className="text-center">
           <div className="text-red-400 text-xl mb-4">Menu not found</div>
           <p className="text-gray-400">
-            This menu may have been removed or doesn't exist.
+            This menu may have been removed, unpublished, or doesn't exist.
           </p>
         </div>
       </div>
@@ -142,9 +68,12 @@ export default function PublicMenu({ params }: PublicMenuProps) {
       <div className="bg-gradient-to-r from-gray-900/95 to-gray-800/95 backdrop-blur-sm border-b border-gray-700/50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
           <h1 className="text-4xl font-bold text-white mb-2">
-            {menuData.restaurantName}
+            {menuData.restaurant_name}
           </h1>
           <p className="text-xl text-gray-300">{menuData.name}</p>
+          {menuData.description && (
+            <p className="text-gray-400 mt-2">{menuData.description}</p>
+          )}
         </div>
       </div>
 
@@ -160,33 +89,57 @@ export default function PublicMenu({ params }: PublicMenuProps) {
                 <h2 className="text-2xl font-bold text-white">
                   {section.name}
                 </h2>
+                {section.description && (
+                  <p className="text-green-100 mt-1">{section.description}</p>
+                )}
               </div>
               <div className="p-6">
                 <div className="space-y-6">
-                  {section.items.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex justify-between items-start"
-                    >
-                      <div className="flex-1 pr-4">
-                        <h3 className="text-xl font-semibold text-white mb-2">
-                          {item.name}
-                        </h3>
-                        <p className="text-gray-400 leading-relaxed">
-                          {item.description}
-                        </p>
+                  {section.items
+                    .filter((item) => item.is_available)
+                    .map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex justify-between items-start"
+                      >
+                        <div className="flex-1 pr-4">
+                          <h3 className="text-xl font-semibold text-white mb-2">
+                            {item.name}
+                          </h3>
+                          {item.description && (
+                            <p className="text-gray-400 leading-relaxed">
+                              {item.description}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <span className="text-2xl font-bold text-[#1F8349]">
+                            ${item.price.toFixed(2)}
+                          </span>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <span className="text-2xl font-bold text-[#1F8349]">
-                          ${item.price.toFixed(2)}
-                        </span>
-                      </div>
+                    ))}
+
+                  {section.items.filter((item) => item.is_available).length ===
+                    0 && (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500">
+                        No items available in this section
+                      </p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
           ))}
+
+          {menuData.sections.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-400 text-lg">
+                This menu is currently empty.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Footer */}

@@ -43,7 +43,19 @@ export async function updateSession(request: NextRequest) {
     (path) => request.nextUrl.pathname === path
   );
 
-  if (!user && !isPublicPath && !request.nextUrl.pathname.startsWith("/auth")) {
+  // Allow access to public menu pages
+  const isPublicMenuPath = request.nextUrl.pathname.startsWith("/menu/");
+
+  // Allow access to API routes for public menus
+  const isPublicApiPath = request.nextUrl.pathname.startsWith("/api/public/");
+
+  if (
+    !user &&
+    !isPublicPath &&
+    !isPublicMenuPath &&
+    !isPublicApiPath &&
+    !request.nextUrl.pathname.startsWith("/auth")
+  ) {
     // no user, redirect to home page instead of login
     const url = request.nextUrl.clone();
     url.pathname = "/";

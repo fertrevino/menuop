@@ -157,7 +157,7 @@ export default function Dashboard() {
             <p className="text-gray-300 mb-6">
               Manage your account settings and preferences.
             </p>
-            <button 
+            <button
               onClick={() => router.push("/dashboard/settings")}
               className="w-full border border-gray-600 hover:border-[#1F8349] bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300 cursor-pointer"
             >
