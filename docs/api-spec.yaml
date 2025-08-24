@@ -1,0 +1,727 @@
+openapi: 3.0.3
+info:
+  title: Menuop API
+  description: |
+    API for the Menuop digital menu management platform.
+
+    ## Authentication
+    Most endpoints require authentication via Supabase session cookies.
+
+    ## Error Responses
+    All endpoints return errors in the following format:
+    ```json
+    {
+      "error": "Error message description"
+    }
+    ```
+
+    ## Common Status Codes
+    - `200` - Success
+    - `201` - Created successfully
+    - `400` - Bad request (validation error)
+    - `401` - Unauthorized (not authenticated)
+    - `403` - Forbidden (not allowed)
+    - `404` - Not found
+    - `500` - Internal server error
+
+  version: 1.0.0
+  contact:
+    name: Menuop API Support
+    url: https://menuop.com
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:3000/api
+    description: Development server
+  - url: https://menuop.com/api
+    description: Production server
+
+components:
+  schemas:
+    Menu:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the menu
+        user_id:
+          type: string
+          format: uuid
+          description: ID of the user who owns this menu
+        name:
+          type: string
+          description: Name of the menu
+          example: "Dinner Menu"
+        restaurant_name:
+          type: string
+          description: Name of the restaurant
+          example: "Mario's Italian Restaurant"
+        description:
+          type: string
+          nullable: true
+          description: Optional description of the menu
+          example: "Our evening menu featuring traditional Italian dishes"
+        is_published:
+          type: boolean
+          description: Whether the menu is publicly accessible
+          default: false
+        slug:
+          type: string
+          nullable: true
+          description: URL-friendly identifier for public access
+          example: "marios-dinner-menu"
+        deleted_on:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp when the menu was soft deleted
+        created_at:
+          type: string
+          format: date-time
+          description: When the menu was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When the menu was last updated
+      required:
+        - id
+        - user_id
+        - name
+        - restaurant_name
+        - is_published
+        - created_at
+        - updated_at
+
+    MenuSection:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the section
+        menu_id:
+          type: string
+          format: uuid
+          description: ID of the parent menu
+        name:
+          type: string
+          description: Name of the section
+          example: "Appetizers"
+        description:
+          type: string
+          nullable: true
+          description: Optional description of the section
+          example: "Light bites to start your meal"
+        sort_order:
+          type: integer
+          description: Display order of the section
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - menu_id
+        - name
+        - sort_order
+
+    MenuItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the item
+        section_id:
+          type: string
+          format: uuid
+          description: ID of the parent section
+        name:
+          type: string
+          description: Name of the menu item
+          example: "Margherita Pizza"
+        description:
+          type: string
+          nullable: true
+          description: Description of the menu item
+          example: "Fresh mozzarella, tomato sauce, and basil"
+        price:
+          type: number
+          format: decimal
+          description: Price of the item
+          example: 15.99
+        image_url:
+          type: string
+          nullable: true
+          description: URL to an image of the item
+        is_available:
+          type: boolean
+          description: Whether the item is currently available
+          default: true
+        sort_order:
+          type: integer
+          description: Display order within the section
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - section_id
+        - name
+        - price
+        - is_available
+        - sort_order
+
+    MenuWithSections:
+      allOf:
+        - $ref: "#/components/schemas/Menu"
+        - type: object
+          properties:
+            sections:
+              type: array
+              items:
+                allOf:
+                  - $ref: "#/components/schemas/MenuSection"
+                  - type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/MenuItem"
+
+    MenuFormData:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the menu
+          example: "Dinner Menu"
+        restaurant_name:
+          type: string
+          description: Name of the restaurant
+          example: "Mario's Italian Restaurant"
+        description:
+          type: string
+          description: Optional description of the menu
+          example: "Our evening menu"
+        sections:
+          type: array
+          description: Array of menu sections
+          items:
+            $ref: "#/components/schemas/MenuSectionFormData"
+      required:
+        - name
+        - restaurant_name
+        - sections
+
+    MenuSectionFormData:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Section ID (for updates)
+        name:
+          type: string
+          description: Name of the section
+          example: "Appetizers"
+        description:
+          type: string
+          description: Optional description
+          example: "Light bites"
+        items:
+          type: array
+          description: Array of menu items in this section
+          items:
+            $ref: "#/components/schemas/MenuItemFormData"
+      required:
+        - name
+        - items
+
+    MenuItemFormData:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Item ID (for updates)
+        name:
+          type: string
+          description: Name of the menu item
+          example: "Caesar Salad"
+        description:
+          type: string
+          description: Description of the item
+          example: "Crisp romaine with parmesan"
+        price:
+          type: number
+          format: decimal
+          description: Price of the item
+          example: 12.99
+        image_url:
+          type: string
+          description: URL to item image
+        is_available:
+          type: boolean
+          description: Whether item is available
+          default: true
+      required:
+        - name
+        - price
+
+    PublicMenuData:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "Dinner Menu"
+        restaurant_name:
+          type: string
+          example: "Mario's Italian Restaurant"
+        description:
+          type: string
+          nullable: true
+        slug:
+          type: string
+          example: "marios-dinner-menu"
+        sections:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+                example: "Appetizers"
+              description:
+                type: string
+                nullable: true
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+                      example: "Caesar Salad"
+                    description:
+                      type: string
+                      nullable: true
+                    price:
+                      type: number
+                      example: 12.99
+                    image_url:
+                      type: string
+                      nullable: true
+                    is_available:
+                      type: boolean
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Menu not found"
+      required:
+        - error
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "Unauthorized"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "Menu not found"
+
+    ValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "Menu name and restaurant name are required"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: "Internal server error"
+
+paths:
+  /menus:
+    get:
+      summary: Get user's menus
+      description: Retrieve all menus owned by the authenticated user (excluding deleted ones)
+      tags:
+        - Menus
+      responses:
+        "200":
+          description: Successfully retrieved menus
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  menus:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Menu"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    post:
+      summary: Create a new menu
+      description: Create a new menu with sections and items
+      tags:
+        - Menus
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MenuFormData"
+            example:
+              name: "Lunch Menu"
+              restaurant_name: "Mario's Restaurant"
+              description: "Our delicious lunch offerings"
+              sections:
+                - name: "Salads"
+                  description: "Fresh and healthy options"
+                  items:
+                    - name: "Caesar Salad"
+                      description: "Crisp romaine with parmesan"
+                      price: 12.99
+                      is_available: true
+      responses:
+        "201":
+          description: Menu created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  menu:
+                    $ref: "#/components/schemas/MenuWithSections"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /menus/{id}:
+    get:
+      summary: Get a specific menu
+      description: Retrieve a menu by ID (must be owned by authenticated user)
+      tags:
+        - Menus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Menu ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successfully retrieved menu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  menu:
+                    $ref: "#/components/schemas/MenuWithSections"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    put:
+      summary: Update a menu
+      description: Update an existing menu with new data (replaces all sections and items)
+      tags:
+        - Menus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Menu ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MenuFormData"
+      responses:
+        "200":
+          description: Menu updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  menu:
+                    $ref: "#/components/schemas/MenuWithSections"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      summary: Delete a menu
+      description: |
+        Soft delete a menu by default, or permanently delete if permanent=true query parameter is provided.
+        Permanent deletion only works on already soft-deleted menus.
+      tags:
+        - Menus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Menu ID
+          schema:
+            type: string
+            format: uuid
+        - name: permanent
+          in: query
+          required: false
+          description: Whether to permanently delete (only works on soft-deleted menus)
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: Menu deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /menus/{id}/publish:
+    patch:
+      summary: Publish or unpublish a menu
+      description: Toggle the published status of a menu
+      tags:
+        - Menus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Menu ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_published:
+                  type: boolean
+                  description: Whether to publish (true) or unpublish (false)
+              required:
+                - is_published
+            example:
+              is_published: true
+      responses:
+        "200":
+          description: Menu publish status updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  menu:
+                    $ref: "#/components/schemas/Menu"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /menus/{id}/restore:
+    patch:
+      summary: Restore a deleted menu
+      description: |
+        Restore a soft-deleted menu. Currently disabled for regular users.
+        Returns 403 Forbidden.
+      tags:
+        - Menus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Menu ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "403":
+          description: Menu restoration not allowed for users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: "Forbidden: Menu restoration is not allowed for users"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /menus/deleted:
+    get:
+      summary: Get deleted menus
+      description: Retrieve all soft-deleted menus owned by the authenticated user
+      tags:
+        - Menus
+      responses:
+        "200":
+          description: Successfully retrieved deleted menus
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  menus:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Menu"
+                  total:
+                    type: integer
+                    description: Total number of deleted menus
+                    example: 5
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /public/menus/{id}:
+    get:
+      summary: Get a public menu
+      description: |
+        Retrieve a published menu by ID. No authentication required.
+        Only returns menus that are published and not deleted.
+        Sections and items are sorted by sort_order.
+      tags:
+        - Public
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Menu ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successfully retrieved public menu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  menu:
+                    $ref: "#/components/schemas/PublicMenuData"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /auth/callback:
+    get:
+      summary: OAuth callback
+      description: |
+        Handle OAuth authentication callback from Supabase.
+        Exchanges authorization code for session.
+      tags:
+        - Authentication
+      parameters:
+        - name: code
+          in: query
+          required: false
+          description: Authorization code from OAuth provider
+          schema:
+            type: string
+        - name: next
+          in: query
+          required: false
+          description: Redirect URL after successful authentication
+          schema:
+            type: string
+            default: "/dashboard"
+      responses:
+        "302":
+          description: Redirect to dashboard or specified next URL
+        "302 ":
+          description: Redirect to error page if authentication fails
+
+tags:
+  - name: Menus
+    description: Menu management operations
+  - name: Public
+    description: Public menu access (no authentication required)
+  - name: Authentication
+    description: Authentication related endpoints
