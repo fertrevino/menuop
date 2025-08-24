@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 
 interface SignInModalProps {
@@ -17,6 +18,7 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
+  const router = useRouter();
 
   const {
     signUp,
@@ -48,6 +50,7 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
           setError(error.message);
         } else {
           onClose();
+          router.push("/dashboard");
         }
       }
     } catch (err) {
@@ -63,8 +66,9 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
     const { error } = await signInWithGoogle();
     if (error) {
       setError(error.message);
+      setLoading(false);
     }
-    setLoading(false);
+    // Note: For OAuth, we don't reset loading here because the user will be redirected
   };
 
   const handleFacebookSignIn = async () => {
@@ -73,8 +77,9 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
     const { error } = await signInWithFacebook();
     if (error) {
       setError(error.message);
+      setLoading(false);
     }
-    setLoading(false);
+    // Note: For OAuth, we don't reset loading here because the user will be redirected
   };
 
   const handleResendConfirmation = async () => {

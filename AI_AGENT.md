@@ -26,4 +26,5 @@ This repo creates Menuop, a Saas platform for food business owners to create and
 [x] Add sign up and sign in capabilities using supabase as the provider.
 When the user signs up the landing page shows information saying that the sign up suceeded (if that's the case) and prompts the user to check his email.
 [x] When an element of the navigation bar in the landing page is clicked, the page smoothly scrolls to that section rather than jump abruptly as done now.
+[ ] When the user logs in, it should be taken to the dashboard route. Currently it just goes to the landing page somehow.
 [ ] Add sign in with Apple
