@@ -3,9 +3,12 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Await params before using its properties
+    const { id } = await params;
+    
     const supabase = await createClient();
 
     const { data: menu, error } = await supabase
@@ -34,8 +37,9 @@ export async function GET(
         )
       `
       )
-      .eq("id", params.id)
+      .eq("id", id)
       .eq("is_published", true)
+      .is("deleted_on", null)
       .single();
 
     if (error || !menu) {

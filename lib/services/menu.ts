@@ -3,6 +3,7 @@ import {
   MenuWithSections,
   MenuFormData,
   PublicMenuData,
+  DeletedMenusResponse,
 } from "../types/menu";
 
 // Client-side API service (makes HTTP requests to our API routes)
@@ -63,6 +64,20 @@ export class MenuService {
 
   static async deleteMenu(menuId: string): Promise<void> {
     const response = await fetch(`/api/menus/${menuId}`, {
+      method: "DELETE",
+    });
+
+    await this.handleResponse<{ success: boolean }>(response);
+  }
+
+  static async getDeletedMenus(): Promise<DeletedMenusResponse> {
+    const response = await fetch("/api/menus/deleted");
+    const result = await this.handleResponse<DeletedMenusResponse>(response);
+    return result;
+  }
+
+  static async permanentlyDeleteMenu(menuId: string): Promise<void> {
+    const response = await fetch(`/api/menus/${menuId}?permanent=true`, {
       method: "DELETE",
     });
 

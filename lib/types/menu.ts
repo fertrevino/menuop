@@ -54,6 +54,7 @@ export interface MenuStats {
   totalMenus: number;
   publishedMenus: number;
   draftMenus: number;
+  deletedMenus: number;
   totalItems: number;
 }
 
@@ -76,4 +77,10 @@ export interface PublicMenuData {
       is_available: boolean;
     }[];
   }[];
+}
+
+// Soft delete utility types
+export interface DeletedMenusResponse {
+  menus: Menu[];
+  total: number;
 }

@@ -29,5 +29,5 @@ When the user signs up the landing page shows information saying that the sign u
 [x] When the user logs in, it should be taken to the dashboard route. Currently it just goes to the landing page somehow.
 [x] Create the pages or components necessary for when the user clicks in Create Menu, View Menus and Settings in the dashboard.
 [x] Create the databse model that allows users to create, manage and publish their menus.
-[ ] Add soft delete for menus using a column called 'deleted on'
+[x] Add soft delete for menus using a column called 'deleted on'
 [ ] Add sign in with Apple

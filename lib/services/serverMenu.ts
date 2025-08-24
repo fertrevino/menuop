@@ -38,6 +38,7 @@ export class ServerMenuService {
       )
       .eq("slug", slug)
       .eq("is_published", true)
+      .is("deleted_on", null)
       .single();
 
     if (error) {
@@ -79,6 +80,7 @@ export class ServerMenuService {
       )
       .eq("id", menuId)
       .eq("is_published", true)
+      .is("deleted_on", null)
       .single();
 
     if (error) {

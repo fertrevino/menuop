@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS public.menus (
     description TEXT,
     is_published BOOLEAN DEFAULT false,
     slug TEXT UNIQUE,
+    deleted_on TIMESTAMP WITH TIME ZONE DEFAULT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -40,6 +41,7 @@ CREATE TABLE IF NOT EXISTS public.menu_items (
 CREATE INDEX IF NOT EXISTS idx_menus_user_id ON public.menus(user_id);
 CREATE INDEX IF NOT EXISTS idx_menus_slug ON public.menus(slug);
 CREATE INDEX IF NOT EXISTS idx_menus_published ON public.menus(is_published);
+CREATE INDEX IF NOT EXISTS idx_menus_deleted_on ON public.menus(deleted_on);
 CREATE INDEX IF NOT EXISTS idx_menu_sections_menu_id ON public.menu_sections(menu_id);
 CREATE INDEX IF NOT EXISTS idx_menu_sections_sort_order ON public.menu_sections(sort_order);
 CREATE INDEX IF NOT EXISTS idx_menu_items_section_id ON public.menu_items(section_id);
@@ -73,47 +75,50 @@ ALTER TABLE public.menu_sections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.menu_items ENABLE ROW LEVEL SECURITY;
 
 -- Create policies for menus table
-CREATE POLICY "Users can view their own menus" ON public.menus
-    FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can view their own non-deleted menus" ON public.menus
+    FOR SELECT USING (auth.uid() = user_id AND deleted_on IS NULL);
 
 CREATE POLICY "Users can insert their own menus" ON public.menus
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update their own menus" ON public.menus
-    FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can update their own non-deleted menus" ON public.menus
+    FOR UPDATE USING (auth.uid() = user_id AND deleted_on IS NULL);
 
 CREATE POLICY "Users can delete their own menus" ON public.menus
     FOR DELETE USING (auth.uid() = user_id);
 
--- Allow public access to published menus
-CREATE POLICY "Anyone can view published menus" ON public.menus
-    FOR SELECT USING (is_published = true);
+-- Allow public access to published non-deleted menus
+CREATE POLICY "Anyone can view published non-deleted menus" ON public.menus
+    FOR SELECT USING (is_published = true AND deleted_on IS NULL);
 
 -- Create policies for menu_sections table
-CREATE POLICY "Users can view sections of their own menus" ON public.menu_sections
+CREATE POLICY "Users can view sections of their own non-deleted menus" ON public.menu_sections
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM public.menus 
             WHERE menus.id = menu_sections.menu_id 
             AND menus.user_id = auth.uid()
+            AND menus.deleted_on IS NULL
         )
     );
 
-CREATE POLICY "Users can insert sections to their own menus" ON public.menu_sections
+CREATE POLICY "Users can insert sections to their own non-deleted menus" ON public.menu_sections
     FOR INSERT WITH CHECK (
         EXISTS (
             SELECT 1 FROM public.menus 
             WHERE menus.id = menu_sections.menu_id 
             AND menus.user_id = auth.uid()
+            AND menus.deleted_on IS NULL
         )
     );
 
-CREATE POLICY "Users can update sections of their own menus" ON public.menu_sections
+CREATE POLICY "Users can update sections of their own non-deleted menus" ON public.menu_sections
     FOR UPDATE USING (
         EXISTS (
             SELECT 1 FROM public.menus 
             WHERE menus.id = menu_sections.menu_id 
             AND menus.user_id = auth.uid()
+            AND menus.deleted_on IS NULL
         )
     );
 
@@ -126,44 +131,48 @@ CREATE POLICY "Users can delete sections of their own menus" ON public.menu_sect
         )
     );
 
--- Allow public access to sections of published menus
-CREATE POLICY "Anyone can view sections of published menus" ON public.menu_sections
+-- Allow public access to sections of published non-deleted menus
+CREATE POLICY "Anyone can view sections of published non-deleted menus" ON public.menu_sections
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM public.menus 
             WHERE menus.id = menu_sections.menu_id 
             AND menus.is_published = true
+            AND menus.deleted_on IS NULL
         )
     );
 
 -- Create policies for menu_items table
-CREATE POLICY "Users can view items of their own menus" ON public.menu_items
+CREATE POLICY "Users can view items of their own non-deleted menus" ON public.menu_items
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM public.menu_sections 
             JOIN public.menus ON menus.id = menu_sections.menu_id
             WHERE menu_sections.id = menu_items.section_id 
             AND menus.user_id = auth.uid()
+            AND menus.deleted_on IS NULL
         )
     );
 
-CREATE POLICY "Users can insert items to their own menus" ON public.menu_items
+CREATE POLICY "Users can insert items to their own non-deleted menus" ON public.menu_items
     FOR INSERT WITH CHECK (
         EXISTS (
             SELECT 1 FROM public.menu_sections 
             JOIN public.menus ON menus.id = menu_sections.menu_id
             WHERE menu_sections.id = menu_items.section_id 
             AND menus.user_id = auth.uid()
+            AND menus.deleted_on IS NULL
         )
     );
 
-CREATE POLICY "Users can update items of their own menus" ON public.menu_items
+CREATE POLICY "Users can update items of their own non-deleted menus" ON public.menu_items
     FOR UPDATE USING (
         EXISTS (
             SELECT 1 FROM public.menu_sections 
             JOIN public.menus ON menus.id = menu_sections.menu_id
             WHERE menu_sections.id = menu_items.section_id 
             AND menus.user_id = auth.uid()
+            AND menus.deleted_on IS NULL
         )
     );
 
@@ -177,14 +186,15 @@ CREATE POLICY "Users can delete items of their own menus" ON public.menu_items
         )
     );
 
--- Allow public access to items of published menus
-CREATE POLICY "Anyone can view items of published menus" ON public.menu_items
+-- Allow public access to items of published non-deleted menus
+CREATE POLICY "Anyone can view items of published non-deleted menus" ON public.menu_items
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM public.menu_sections 
             JOIN public.menus ON menus.id = menu_sections.menu_id
             WHERE menu_sections.id = menu_items.section_id 
             AND menus.is_published = true
+            AND menus.deleted_on IS NULL
         )
     );
 
@@ -233,3 +243,27 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trigger_set_menu_slug
     BEFORE INSERT ON public.menus
     FOR EACH ROW EXECUTE FUNCTION set_menu_slug();
+
+-- Create utility functions for soft delete operations
+CREATE OR REPLACE FUNCTION soft_delete_menu(menu_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+    UPDATE public.menus 
+    SET deleted_on = NOW() 
+    WHERE id = menu_id AND deleted_on IS NULL;
+    
+    RETURN FOUND;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create a function to restore a soft deleted menu (currently disabled for users)
+CREATE OR REPLACE FUNCTION restore_menu(menu_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+    UPDATE public.menus 
+    SET deleted_on = NULL 
+    WHERE id = menu_id AND deleted_on IS NOT NULL;
+    
+    RETURN FOUND;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

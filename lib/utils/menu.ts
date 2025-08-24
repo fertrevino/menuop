@@ -2,6 +2,7 @@ import {
   MenuFormData,
   MenuSectionFormData,
   MenuItemFormData,
+  Menu,
 } from "../types/menu";
 
 export const menuUtils = {
@@ -198,5 +199,47 @@ export const menuUtils = {
     current: MenuFormData
   ): boolean => {
     return JSON.stringify(original) !== JSON.stringify(current);
+  },
+
+  // Soft delete utility functions
+  isMenuDeleted: (menu: Menu): boolean => {
+    return menu.deleted_on !== null;
+  },
+
+  getDeletedDate: (menu: Menu): Date | null => {
+    return menu.deleted_on ? new Date(menu.deleted_on) : null;
+  },
+
+  formatDeletedDate: (menu: Menu): string => {
+    const deletedDate = menuUtils.getDeletedDate(menu);
+    if (!deletedDate) return "";
+    
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(deletedDate);
+  },
+
+  // Calculate days since deletion (useful for showing how long ago it was deleted)
+  daysSinceDeletion: (menu: Menu): number => {
+    const deletedDate = menuUtils.getDeletedDate(menu);
+    if (!deletedDate) return 0;
+    
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - deletedDate.getTime());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  },
+
+  // Filter active (non-deleted) menus
+  filterActiveMenus: (menus: Menu[]): Menu[] => {
+    return menus.filter(menu => !menuUtils.isMenuDeleted(menu));
+  },
+
+  // Filter deleted menus (for viewing deleted items only)
+  filterDeletedMenus: (menus: Menu[]): Menu[] => {
+    return menus.filter(menu => menuUtils.isMenuDeleted(menu));
   },
 };

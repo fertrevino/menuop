@@ -19,26 +19,13 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { is_published } = await request.json();
-
-    const { data: menu, error } = await supabase
-      .from("menus")
-      .update({ is_published })
-      .eq("id", id)
-      .eq("user_id", user.id) // Ensure user owns this menu
-      .is("deleted_on", null) // Only allow publishing/unpublishing non-deleted menus
-      .select()
-      .single();
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
-    if (!menu) {
-      return NextResponse.json({ error: "Menu not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ menu });
+    // Deny access - users cannot restore their own deleted menus
+    // This enforces the business rule that once deleted, menus stay deleted
+    // unless restored by an administrator (not implemented)
+    return NextResponse.json(
+      { error: "Forbidden: Menu restoration is not allowed for users" },
+      { status: 403 }
+    );
   } catch (error) {
     return NextResponse.json(
       { error: "Internal server error" },

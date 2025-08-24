@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
       .from("menus")
       .select("*")
       .eq("user_id", user.id)
+      .is("deleted_on", null)
       .order("created_at", { ascending: false });
 
     if (error) {
