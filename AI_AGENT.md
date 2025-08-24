@@ -23,3 +23,5 @@ This repo creates Menuop, a Saas platform for food business owners to create and
 
 [x] Create landing page that presents the product features.
 [x] Add a sign in window that appears when a user clicks on sign in in the landing page.
+[ ] Add sign up and sign in capabilities using supabase as the provider.
+When the user signs up the landing page shows information saying that the sign up suceeded (if that's the case) and prompts the user to check his email.

@@ -1,13 +1,29 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import SignInModal from "./components/SignInModal";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Home() {
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+  const { user, signOut, loading } = useAuth();
+  const router = useRouter();
 
   const openSignInModal = () => setIsSignInModalOpen(true);
   const closeSignInModal = () => setIsSignInModalOpen(false);
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
+  const handleGetStarted = () => {
+    if (user) {
+      router.push("/dashboard");
+    } else {
+      openSignInModal();
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900">
@@ -46,14 +62,32 @@ export default function Home() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              {!loading &&
+                (user ? (
+                  <div className="flex items-center space-x-4">
+                    <span className="text-gray-300 text-sm">
+                      Welcome, {user.user_metadata?.full_name || user.email}!
+                    </span>
+                    <button
+                      onClick={handleSignOut}
+                      className="text-gray-300 hover:text-white font-medium cursor-pointer transition-colors"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={openSignInModal}
+                    className="text-gray-300 hover:text-white font-medium cursor-pointer transition-colors"
+                  >
+                    Sign In
+                  </button>
+                ))}
               <button
-                onClick={openSignInModal}
-                className="text-gray-300 hover:text-white font-medium cursor-pointer transition-colors"
+                onClick={handleGetStarted}
+                className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl"
               >
-                Sign In
-              </button>
-              <button className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-4 py-2 rounded-lg font-medium transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl">
-                Get Started
+                {user ? "Dashboard" : "Get Started"}
               </button>
             </div>
           </div>
@@ -78,8 +112,11 @@ export default function Home() {
               create, simple to manage, and designed to increase your sales.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                Start Free Trial
+              <button
+                onClick={handleGetStarted}
+                className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                {user ? "Go to Dashboard" : "Start Free Trial"}
               </button>
               <button className="border border-gray-600 hover:border-[#1F8349] bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 cursor-pointer backdrop-blur-sm">
                 View Demo
