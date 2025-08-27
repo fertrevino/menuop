@@ -11,6 +11,12 @@ export async function GET(
 
     const supabase = await createClient();
 
+    // Try to find menu by ID first (UUID format), then by slug
+    const isUUID =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        id
+      );
+
     const { data: menu, error } = await supabase
       .from("menus")
       .select(
@@ -37,7 +43,7 @@ export async function GET(
         )
       `
       )
-      .eq("id", id)
+      .eq(isUUID ? "id" : "slug", id)
       .eq("is_published", true)
       .is("deleted_on", null)
       .single();

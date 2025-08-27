@@ -9,7 +9,7 @@ export async function POST(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id: menuId } = await context.params;
+    const { id: menuIdentifier } = await context.params;
 
     // Get user agent and other tracking info from headers
     const userAgent = request.headers.get("user-agent") || undefined;
@@ -26,8 +26,29 @@ export async function POST(
       .toString("base64")
       .substring(0, 32);
 
-    // Get the QR code for this menu
     const supabase = createClient();
+
+    // First, get the menu ID from either ID or slug
+    const isUUID =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        menuIdentifier
+      );
+
+    const { data: menu } = await supabase
+      .from("menus")
+      .select("id")
+      .eq(isUUID ? "id" : "slug", menuIdentifier)
+      .eq("is_published", true)
+      .is("deleted_on", null)
+      .single();
+
+    if (!menu) {
+      return NextResponse.json({ error: "Menu not found" }, { status: 404 });
+    }
+
+    const menuId = menu.id;
+
+    // Get the QR code for this menu
     const { data: qrCode } = await supabase
       .from("qr_codes")
       .select("id")
