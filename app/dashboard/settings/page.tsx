@@ -474,8 +474,8 @@ export default function Settings() {
                     Change Password
                   </h3>
                   <p className="text-gray-400 mb-6">
-                    To change your password, you'll need to reset it using your
-                    email address.
+                    To change your password, you&apos;ll need to reset it using
+                    your email address.
                   </p>
                   <button
                     onClick={() => {

@@ -21,7 +21,7 @@ export async function PATCH(
 
     const { is_published } = await request.json();
 
-    const { data: menu, error } = await supabase
+    const { data: menu, error: updateError } = await supabase
       .from("menus")
       .update({ is_published })
       .eq("id", id)
@@ -30,8 +30,8 @@ export async function PATCH(
       .select()
       .single();
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (updateError) {
+      return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
     if (!menu) {

@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useEffect } from "react";
 
 export default function Dashboard() {
@@ -38,12 +39,12 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <a
+              <Link
                 href="/"
                 className="text-2xl font-bold text-white hover:text-[#1F8349] transition-colors cursor-pointer"
               >
                 Menuop
-              </a>
+              </Link>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-gray-300 text-sm">

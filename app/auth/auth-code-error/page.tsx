@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function AuthCodeError() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 flex items-center justify-center">
@@ -5,7 +7,7 @@ export default function AuthCodeError() {
         <div className="text-center">
           <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg
-              className="w-8 h-8 text-red-500"
+              className="w-8 h-8 text-red-5000"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -25,12 +27,12 @@ export default function AuthCodeError() {
             Something went wrong during the authentication process. Please try
             signing in again.
           </p>
-          <a
+          <Link
             href="/"
             className="inline-block bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             Back to Home
-          </a>
+          </Link>
         </div>
       </div>
     </div>

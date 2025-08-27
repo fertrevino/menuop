@@ -3,6 +3,8 @@ import {
   MenuSectionFormData,
   MenuItemFormData,
   Menu,
+  MenuWithSections,
+  MenuSectionWithItems,
 } from "../types/menu";
 
 export const menuUtils = {
@@ -146,16 +148,17 @@ export const menuUtils = {
   },
 
   // Sort sections and items by sort_order
-  sortMenuData: (menuData: any) => {
+  sortMenuData: (menuData: MenuWithSections) => {
     if (menuData.sections) {
       menuData.sections.sort(
-        (a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0)
+        (a: MenuSectionWithItems, b: MenuSectionWithItems) =>
+          (a.sort_order || 0) - (b.sort_order || 0)
       );
 
-      menuData.sections.forEach((section: any) => {
+      menuData.sections.forEach((section: MenuSectionWithItems) => {
         if (section.items) {
           section.items.sort(
-            (a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0)
+            (a, b) => (a.sort_order || 0) - (b.sort_order || 0)
           );
         }
       });
@@ -165,18 +168,18 @@ export const menuUtils = {
   },
 
   // Convert database menu to form data
-  convertMenuToFormData: (menu: any): MenuFormData => {
+  convertMenuToFormData: (menu: MenuWithSections): MenuFormData => {
     return {
       name: menu.name,
       restaurant_name: menu.restaurant_name,
       description: menu.description || "",
       sections:
-        menu.sections?.map((section: any) => ({
+        menu.sections?.map((section: MenuSectionWithItems) => ({
           id: section.id,
           name: section.name,
           description: section.description || "",
           items:
-            section.items?.map((item: any) => ({
+            section.items?.map((item) => ({
               id: item.id,
               name: item.name,
               description: item.description || "",

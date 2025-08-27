@@ -172,7 +172,7 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
                   Check Your Email
                 </h2>
                 <p className="text-gray-300 mb-6">
-                  We've sent a confirmation link to{" "}
+                  We&apos;ve sent a confirmation link to{" "}
                   <span className="text-[#1F8349] font-medium">{email}</span>
                 </p>
                 <p className="text-gray-400 text-sm mb-8">

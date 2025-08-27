@@ -30,4 +30,9 @@ When the user signs up the landing page shows information saying that the sign u
 [x] Create the pages or components necessary for when the user clicks in Create Menu, View Menus and Settings in the dashboard.
 [x] Create the databse model that allows users to create, manage and publish their menus.
 [x] Add soft delete for menus using a column called 'deleted on'
+[x] QR Code Generation & Management.
+Auto-generate QR codes for each published menu.
+Customizable QR code designs with restaurant branding.
+QR code analytics (scans, locations, times).
+Downloadable QR codes in various formats
 [ ] Add sign in with Apple

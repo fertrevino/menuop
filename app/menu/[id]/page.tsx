@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useCallback } from "react";
 import { MenuService } from "@/lib/services/menu";
 import { PublicMenuData } from "@/lib/types/menu";
+import { trackQRScan } from "@/lib/utils/qrTracking";
 
 interface PublicMenuProps {
   params: Promise<{
@@ -20,11 +21,7 @@ export default function PublicMenu({ params }: PublicMenuProps) {
   // Unwrap the params Promise using React.use()
   const { id } = use(params);
 
-  useEffect(() => {
-    loadMenuData();
-  }, [id]);
-
-  const loadMenuData = async () => {
+  const loadMenuData = useCallback(async () => {
     try {
       setIsLoading(true);
       const menu = await MenuService.getPublicMenuById(id);
@@ -34,12 +31,19 @@ export default function PublicMenu({ params }: PublicMenuProps) {
       } else {
         setError("Menu not found or not published");
       }
-    } catch (err) {
+    } catch {
       setError("Failed to load menu");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    loadMenuData();
+
+    // Track QR scan if menu accessed via QR code
+    trackQRScan(id);
+  }, [id, loadMenuData]);
 
   if (isLoading) {
     return (
@@ -55,7 +59,7 @@ export default function PublicMenu({ params }: PublicMenuProps) {
         <div className="text-center">
           <div className="text-red-400 text-xl mb-4">Menu not found</div>
           <p className="text-gray-400">
-            This menu may have been removed, unpublished, or doesn't exist.
+            This menu may have been removed, unpublished, or doesn&apos;t exist.
           </p>
         </div>
       </div>

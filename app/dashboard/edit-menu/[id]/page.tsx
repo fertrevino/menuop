@@ -93,8 +93,8 @@ export default function EditMenu({ params }: EditMenuProps) {
         <div className="text-center">
           <div className="text-red-400 text-xl mb-4">Menu not found</div>
           <p className="text-gray-400">
-            This menu may have been deleted or you don't have permission to edit
-            it.
+            This menu may have been deleted or you don&apos;t have permission to
+            edit it.
           </p>
           <button
             onClick={() => router.push("/dashboard/view-menus")}

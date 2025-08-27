@@ -2,12 +2,16 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useUserMenus } from "@/hooks/useMenu";
+import QRCodeManager from "@/app/components/QRCodeManager";
 
 export default function ViewMenus() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [selectedMenuForQR, setSelectedMenuForQR] = useState<string | null>(
+    null
+  );
   const {
     menus,
     loading: menusLoading,
@@ -32,7 +36,7 @@ export default function ViewMenus() {
       try {
         await deleteMenu(menuId);
         alert("Menu deleted successfully!");
-      } catch (error) {
+      } catch {
         // Error is already handled by the hook
       }
     }
@@ -41,7 +45,7 @@ export default function ViewMenus() {
   const handleTogglePublish = async (menuId: string, isPublished: boolean) => {
     try {
       await togglePublishMenu(menuId, !isPublished);
-    } catch (error) {
+    } catch {
       // Error is already handled by the hook
     }
   };
@@ -54,7 +58,7 @@ export default function ViewMenus() {
     window.open(`/menu/${menuId}`, "_blank");
   };
 
-  const calculateItemCount = (menu: any) => {
+  const calculateItemCount = () => {
     // This is a placeholder since we don't have sections data in the menu list
     // In a real implementation, you might want to add this to the database query
     return 0;
@@ -202,7 +206,7 @@ export default function ViewMenus() {
                     </div>
 
                     <div className="flex items-center justify-between text-sm text-gray-400 mb-6">
-                      <span>{calculateItemCount(menu)} items</span>
+                      <span>{calculateItemCount()} items</span>
                       <span>
                         Created {new Date(menu.created_at).toLocaleDateString()}
                       </span>
@@ -236,6 +240,14 @@ export default function ViewMenus() {
                         >
                           {menu.is_published ? "Unpublish" : "Publish"}
                         </button>
+                        {menu.is_published && (
+                          <button
+                            onClick={() => setSelectedMenuForQR(menu.id)}
+                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors"
+                          >
+                            QR Code
+                          </button>
+                        )}
                         <button
                           onClick={() => handleDeleteMenu(menu.id)}
                           className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors"
@@ -251,6 +263,54 @@ export default function ViewMenus() {
           </div>
         )}
       </div>
+
+      {/* QR Code Modal */}
+      {selectedMenuForQR && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-900 rounded-xl border border-gray-700 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-white">
+                  QR Code Management
+                </h2>
+                <button
+                  onClick={() => setSelectedMenuForQR(null)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              {(() => {
+                const selectedMenu = menus.find(
+                  (m) => m.id === selectedMenuForQR
+                );
+                return selectedMenu ? (
+                  <QRCodeManager
+                    menuId={selectedMenu.id}
+                    menuSlug={selectedMenu.slug || undefined}
+                    isPublished={selectedMenu.is_published}
+                    restaurantName={selectedMenu.restaurant_name}
+                    menuName={selectedMenu.name}
+                  />
+                ) : null;
+              })()}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

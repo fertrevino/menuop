@@ -141,6 +141,107 @@ export type Database = {
           }
         ];
       };
+      qr_codes: {
+        Row: {
+          id: string;
+          menu_id: string;
+          qr_data: string;
+          url: string;
+          design_config: Json;
+          format: string;
+          size: number;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          menu_id: string;
+          qr_data: string;
+          url: string;
+          design_config?: Json;
+          format?: string;
+          size?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          menu_id?: string;
+          qr_data?: string;
+          url?: string;
+          design_config?: Json;
+          format?: string;
+          size?: number;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "qr_codes_menu_id_fkey";
+            columns: ["menu_id"];
+            isOneToOne: false;
+            referencedRelation: "menus";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      qr_code_analytics: {
+        Row: {
+          id: string;
+          qr_code_id: string;
+          menu_id: string;
+          scan_timestamp: string;
+          user_agent: string | null;
+          ip_address: string | null;
+          referrer: string | null;
+          location: Json | null;
+          device_info: Json;
+          session_id: string | null;
+        };
+        Insert: {
+          id?: string;
+          qr_code_id: string;
+          menu_id: string;
+          scan_timestamp?: string;
+          user_agent?: string | null;
+          ip_address?: string | null;
+          referrer?: string | null;
+          location?: Json | null;
+          device_info?: Json;
+          session_id?: string | null;
+        };
+        Update: {
+          id?: string;
+          qr_code_id?: string;
+          menu_id?: string;
+          scan_timestamp?: string;
+          user_agent?: string | null;
+          ip_address?: string | null;
+          referrer?: string | null;
+          location?: Json | null;
+          device_info?: Json;
+          session_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "qr_code_analytics_qr_code_id_fkey";
+            columns: ["qr_code_id"];
+            isOneToOne: false;
+            referencedRelation: "qr_codes";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "qr_code_analytics_menu_id_fkey";
+            columns: ["menu_id"];
+            isOneToOne: false;
+            referencedRelation: "menus";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
