@@ -47,6 +47,7 @@ export default function QRCodeManager({
   });
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isUpdatingDesign, setIsUpdatingDesign] = useState(false);
 
   const handleGenerateQRCode = useCallback(async () => {
     // Prevent multiple simultaneous generations
@@ -115,10 +116,15 @@ export default function QRCodeManager({
   const handleUpdateDesign = useCallback(async () => {
     if (!qrCode) return;
 
-    const updated = await updateQRCode(menuId, designConfig);
-    if (updated) {
-      setQrCode(updated);
-      setShowDesignPanel(false);
+    setIsUpdatingDesign(true);
+    try {
+      const updated = await updateQRCode(menuId, designConfig);
+      if (updated) {
+        setQrCode(updated);
+        setShowDesignPanel(false);
+      }
+    } finally {
+      setIsUpdatingDesign(false);
     }
   }, [menuId, designConfig, updateQRCode, qrCode]);
 
@@ -423,10 +429,10 @@ export default function QRCodeManager({
               <div className="mt-4 flex gap-2">
                 <button
                   onClick={handleUpdateDesign}
-                  disabled={loading}
+                  disabled={isUpdatingDesign}
                   className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50"
                 >
-                  {loading ? "Updating..." : "Update Design"}
+                  {isUpdatingDesign ? "Updating Design..." : "Update Design"}
                 </button>
                 <button
                   onClick={() => setShowDesignPanel(false)}

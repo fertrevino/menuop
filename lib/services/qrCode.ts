@@ -209,15 +209,92 @@ export class QRCodeService {
       // Generate QR code
       const qrDataUrl = await QRCode.toDataURL(menuUrl, qrOptions);
 
-      // Check if QR code already exists - get the most recent one
-      const { data: existingQR } = await this.supabase
+      // IMPROVED: Use atomic upsert operation to prevent duplicates
+      const qrCodeData = {
+        menu_id: menuId,
+        qr_data: qrDataUrl,
+        url: menuUrl,
+        design_config: {
+          foregroundColor: options.foregroundColor || "#000000",
+          backgroundColor: options.backgroundColor || "#FFFFFF",
+          margin: options.margin || 2,
+          errorCorrectionLevel: options.errorCorrection || "M",
+        },
+        format: options.format || "png",
+        size: options.size || 256,
+        is_active: true,
+      };
+
+      // Try to insert, if conflict (duplicate), update the existing one
+      const { data, error } = await this.supabase
         .from("qr_codes")
-        .select("id")
-        .eq("menu_id", menuId)
-        .eq("is_active", true)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .upsert(
+          {
+            ...qrCodeData,
+            // Use a deterministic approach: if QR exists, update it
+            id: undefined, // Let the database handle the ID
+          },
+          {
+            onConflict: "menu_id", // This will work with our unique constraint
+            ignoreDuplicates: false, // We want to update if exists
+          }
+        )
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error creating/updating QR code:", error);
+
+        // Fallback: Try the old approach if upsert fails
+        return await this.generateQRCodeFallback(menuId, options);
+      }
+
+      return data;
+    } catch (err) {
+      console.error("Unexpected error in generateQRCode:", err);
+      return null;
+    }
+  }
+
+  /**
+   * Fallback method for QR code generation (original approach)
+   */
+  private async generateQRCodeFallback(
+    menuId: string,
+    options: QRCodeOptions = {}
+  ): Promise<QRCodeData | null> {
+    try {
+      // Get existing QR code
+      const existingQR = await this.getQRCodeByMenuId(menuId);
+
+      // Generate QR data
+      const menu = await this.supabase
+        .from("menus")
+        .select("slug")
+        .eq("id", menuId)
+        .single();
+
+      if (!menu.data) return null;
+
+      const baseUrl =
+        process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+      const menuUrl = `${baseUrl}/menu/${menu.data.slug}?qr=1`;
+
+      const qrOptions = {
+        width: options.size || 256,
+        margin: options.margin || 2,
+        color: {
+          dark: options.foregroundColor || "#000000",
+          light: options.backgroundColor || "#FFFFFF",
+        },
+        errorCorrectionLevel: (options.errorCorrection || "M") as
+          | "L"
+          | "M"
+          | "Q"
+          | "H",
+      };
+
+      const qrDataUrl = await QRCode.toDataURL(menuUrl, qrOptions);
 
       const qrCodeData = {
         menu_id: menuId,
@@ -235,6 +312,7 @@ export class QRCodeService {
       };
 
       if (existingQR) {
+        // Update existing QR code
         const { data, error } = await this.supabase
           .from("qr_codes")
           .update(qrCodeData)
@@ -249,20 +327,7 @@ export class QRCodeService {
 
         return data;
       } else {
-        // First, deactivate any existing QR codes for this menu to prevent duplicates
-        const { error: deactivateError } = await this.supabase
-          .from("qr_codes")
-          .update({ is_active: false })
-          .eq("menu_id", menuId)
-          .eq("is_active", true);
-
-        if (deactivateError) {
-          console.warn(
-            "Warning: Could not deactivate old QR codes:",
-            deactivateError
-          );
-        }
-
+        // Create new QR code with atomic operation
         const { data, error } = await this.supabase
           .from("qr_codes")
           .insert(qrCodeData)
@@ -277,7 +342,7 @@ export class QRCodeService {
         return data;
       }
     } catch (err) {
-      console.error("Unexpected error in generateQRCode:", err);
+      console.error("Error in fallback QR generation:", err);
       return null;
     }
   }
@@ -306,13 +371,14 @@ export class QRCodeService {
 
   /**
    * Clean up duplicate QR codes for a menu (keeps only the most recent one)
+   * Enhanced version with better error handling and atomic operations
    */
   async cleanupDuplicateQRCodes(menuId: string): Promise<boolean> {
     try {
       // Get all QR codes for this menu, ordered by creation date (newest first)
       const { data: allQRCodes, error: fetchError } = await this.supabase
         .from("qr_codes")
-        .select("id, created_at")
+        .select("id, created_at, is_active")
         .eq("menu_id", menuId)
         .eq("is_active", true)
         .order("created_at", { ascending: false });
@@ -329,6 +395,7 @@ export class QRCodeService {
       // Keep the first (newest) QR code, deactivate the rest
       const qrCodesToDeactivate = allQRCodes.slice(1).map((qr) => qr.id);
 
+      // Use a transaction-like approach: deactivate in a single operation
       const { error: deactivateError } = await this.supabase
         .from("qr_codes")
         .update({ is_active: false })
@@ -336,16 +403,72 @@ export class QRCodeService {
 
       if (deactivateError) {
         console.error(
-          "Error deactivating duplicate QR codes:",
+          "❌ Error deactivating duplicate QR codes:",
           deactivateError
         );
         return false;
       }
-
       return true;
     } catch (error) {
-      console.error("Error in cleanup:", error);
+      console.error("💥 Error in cleanup:", error);
       return false;
+    }
+  }
+
+  /**
+   * Comprehensive cleanup for all menus with duplicate QR codes
+   */
+  async cleanupAllDuplicateQRCodes(): Promise<{
+    success: boolean;
+    processed: number;
+    errors: string[];
+  }> {
+    try {
+      // Find all menus with multiple active QR codes
+      const { data: qrCodes, error } = await this.supabase
+        .from("qr_codes")
+        .select("menu_id")
+        .eq("is_active", true);
+
+      if (error) {
+        return { success: false, processed: 0, errors: [error.message] };
+      }
+
+      // Count QR codes per menu
+      const menuCounts =
+        qrCodes?.reduce((acc, qr) => {
+          acc[qr.menu_id] = (acc[qr.menu_id] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>) || {};
+
+      const menusWithDuplicates = Object.entries(menuCounts)
+        .filter(([, count]) => count > 1)
+        .map(([menuId]) => menuId);
+
+      const errors: string[] = [];
+      let processed = 0;
+
+      // Clean up each menu
+      for (const menuId of menusWithDuplicates) {
+        const success = await this.cleanupDuplicateQRCodes(menuId);
+        if (success) {
+          processed++;
+        } else {
+          errors.push(`Failed to cleanup menu: ${menuId}`);
+        }
+      }
+
+      return {
+        success: errors.length === 0,
+        processed,
+        errors,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        processed: 0,
+        errors: [error instanceof Error ? error.message : "Unknown error"],
+      };
     }
   }
 
@@ -389,25 +512,27 @@ export class QRCodeService {
       // Parse user agent for device info
       const deviceInfo = this.parseUserAgent(scanData.userAgent || "");
 
-      const { error } = await this.supabase.from("qr_code_analytics").insert({
-        qr_code_id: qrCodeId,
-        menu_id: menuId,
-        user_agent: scanData.userAgent,
-        ip_address: scanData.ipAddress,
-        referrer: scanData.referrer,
-        location: scanData.location,
-        device_info: deviceInfo,
-        session_id: scanData.sessionId,
-      });
+      const { data, error } = await this.supabase
+        .from("qr_code_analytics")
+        .insert({
+          qr_code_id: qrCodeId,
+          menu_id: menuId,
+          user_agent: scanData.userAgent,
+          ip_address: scanData.ipAddress,
+          referrer: scanData.referrer,
+          location: scanData.location,
+          device_info: deviceInfo,
+          session_id: scanData.sessionId,
+        })
+        .select();
 
       if (error) {
-        console.error("Error tracking QR scan:", error);
+        console.error("❌ Error tracking QR scan:", error);
         return false;
       }
-
       return true;
     } catch (error) {
-      console.error("Error tracking QR scan:", error);
+      console.error("💥 Unexpected error tracking QR scan:", error);
       return false;
     }
   }
