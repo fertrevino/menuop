@@ -225,22 +225,46 @@ export class QRCodeService {
         is_active: true,
       };
 
-      // Try to insert, if conflict (duplicate), update the existing one
-      const { data, error } = await this.supabase
+      // IMPROVED: Handle the unique constraint properly
+      // First, try to update existing active QR code
+      const { data: existingQR } = await this.supabase
         .from("qr_codes")
-        .upsert(
-          {
-            ...qrCodeData,
-            // Use a deterministic approach: if QR exists, update it
-            id: undefined, // Let the database handle the ID
-          },
-          {
-            onConflict: "menu_id", // This will work with our unique constraint
-            ignoreDuplicates: false, // We want to update if exists
-          }
-        )
-        .select()
+        .select("id")
+        .eq("menu_id", menuId)
+        .eq("is_active", true)
         .single();
+
+      let data, error;
+
+      if (existingQR) {
+        // Update existing QR code
+        const result = await this.supabase
+          .from("qr_codes")
+          .update({
+            qr_data: qrDataUrl,
+            url: menuUrl,
+            design_config: options,
+            format: options.format,
+            size: options.size,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", existingQR.id)
+          .select()
+          .single();
+
+        data = result.data;
+        error = result.error;
+      } else {
+        // Insert new QR code
+        const result = await this.supabase
+          .from("qr_codes")
+          .insert(qrCodeData)
+          .select()
+          .single();
+
+        data = result.data;
+        error = result.error;
+      }
 
       if (error) {
         console.error("Error creating/updating QR code:", error);

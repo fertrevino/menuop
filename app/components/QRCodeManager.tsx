@@ -45,9 +45,52 @@ export default function QRCodeManager({
     format: "png",
     size: 256,
   });
+
+  // Generate preview QR code when design config changes
+  const generatePreview = useCallback(
+    async (config: QRCodeOptions) => {
+      if (!qrCode) return;
+
+      try {
+        const menuUrl = `${window.location.origin}/menu/${menuSlug || menuId}`;
+        const QRCode = (await import("qrcode")).default;
+
+        const qrOptions = {
+          width: config.size,
+          margin: config.margin,
+          color: {
+            dark: config.foregroundColor,
+            light: config.backgroundColor,
+          },
+          errorCorrectionLevel: config.errorCorrection as "L" | "M" | "Q" | "H",
+        };
+
+        const qrDataUrl = await QRCode.toDataURL(menuUrl, qrOptions);
+        setPreviewQRCode(qrDataUrl);
+        setPreviewKey((prev) => prev + 1);
+      } catch (err) {
+        console.error("Error generating preview:", err);
+        setPreviewQRCode(null);
+      }
+    },
+    [qrCode, menuSlug, menuId]
+  );
+
+  // Generate preview when design config changes
+  useEffect(() => {
+    if (showDesignPanel && qrCode) {
+      const debounceTimer = setTimeout(() => {
+        generatePreview(designConfig);
+      }, 150); // Fast, responsive debounce
+
+      return () => clearTimeout(debounceTimer);
+    }
+  }, [designConfig, showDesignPanel, qrCode, generatePreview]);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isUpdatingDesign, setIsUpdatingDesign] = useState(false);
+  const [previewQRCode, setPreviewQRCode] = useState<string | null>(null);
+  const [previewKey, setPreviewKey] = useState(0);
 
   const handleGenerateQRCode = useCallback(async () => {
     // Prevent multiple simultaneous generations
@@ -78,40 +121,78 @@ export default function QRCodeManager({
     }
   }, [menuId, designConfig, generateQRCode, verifyDatabase]);
 
-  const loadQRCode = useCallback(async () => {
-    try {
-      const existing = await getQRCode(menuId);
+  const loadQRCode = useCallback(
+    async (shouldUpdateDesignConfig = false) => {
+      try {
+        const existing = await getQRCode(menuId);
 
-      if (existing) {
-        setQrCode(existing);
-        // Update design config from existing QR code
-        if (existing.design_config) {
-          setDesignConfig((prev) => ({
-            ...prev,
-            ...existing.design_config,
-          }));
+        if (existing) {
+          setQrCode(existing);
+          // Only update design config when explicitly requested
+          if (existing.design_config && shouldUpdateDesignConfig) {
+            setDesignConfig((prev) => ({
+              ...prev,
+              ...existing.design_config,
+            }));
+          }
+        } else {
+          setQrCode(null);
         }
-        setInitialLoadComplete(true);
-      } else {
-        // No QR code exists
-        setQrCode(null);
-        setInitialLoadComplete(true);
-
-        // Auto-generate if menu is published
-        if (isPublished) {
-          handleGenerateQRCode();
-        }
+      } catch (err) {
+        console.error("Error loading QR code:", err);
       }
-    } catch (err) {
-      console.error("Error loading QR code:", err);
-      setInitialLoadComplete(true);
-    }
-  }, [menuId, getQRCode, isPublished, handleGenerateQRCode]);
+    },
+    [menuId, getQRCode]
+  ); // Removed dependencies that cause infinite loops
 
   // Single effect to handle initial load
   useEffect(() => {
-    loadQRCode();
-  }, [loadQRCode]);
+    const initialLoad = async () => {
+      try {
+        const existing = await getQRCode(menuId);
+
+        if (existing) {
+          setQrCode(existing);
+          // Only update design config on initial load
+          if (existing.design_config) {
+            setDesignConfig((prev) => ({
+              ...prev,
+              ...existing.design_config,
+            }));
+          }
+          setInitialLoadComplete(true);
+        } else {
+          // No QR code exists
+          setQrCode(null);
+          setInitialLoadComplete(true);
+
+          // Auto-generate if menu is published
+          if (isPublished) {
+            // Use default design config for auto-generation
+            const defaultConfig = {
+              foregroundColor: "#000000",
+              backgroundColor: "#FFFFFF",
+              margin: 2,
+              errorCorrection: "M" as const,
+              format: "png" as const,
+              size: 256,
+            };
+            const generated = await generateQRCode(menuId, defaultConfig);
+            if (generated) {
+              setQrCode(generated);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error loading QR code:", err);
+        setInitialLoadComplete(true);
+      }
+    };
+
+    if (!initialLoadComplete) {
+      initialLoad();
+    }
+  }, [menuId, getQRCode, isPublished, initialLoadComplete, generateQRCode]); // Added generateQRCode dependency
 
   const handleUpdateDesign = useCallback(async () => {
     if (!qrCode) return;
@@ -142,8 +223,8 @@ export default function QRCodeManager({
   const handleCleanupDuplicates = useCallback(async () => {
     const success = await cleanupDuplicates(menuId);
     if (success) {
-      // Reload the QR code after cleanup
-      loadQRCode();
+      // Reload the QR code after cleanup (without updating design config)
+      loadQRCode(false);
     }
   }, [menuId, cleanupDuplicates, loadQRCode]);
 
@@ -188,6 +269,18 @@ export default function QRCodeManager({
 
   return (
     <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+      {/* Custom CSS for smooth animations */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          0% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+      `}</style>
+
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-semibold text-white">QR Code</h3>
         {qrCode && (
@@ -347,86 +440,129 @@ export default function QRCodeManager({
               <h4 className="text-lg font-semibold text-white mb-4">
                 Customize Design
               </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Foreground Color
-                  </label>
-                  <input
-                    type="color"
-                    value={designConfig.foregroundColor}
-                    onChange={(e) =>
-                      setDesignConfig({
-                        ...designConfig,
-                        foregroundColor: e.target.value,
-                      })
-                    }
-                    className="w-full h-10 rounded border border-gray-600 bg-gray-800"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Background Color
-                  </label>
-                  <input
-                    type="color"
-                    value={designConfig.backgroundColor}
-                    onChange={(e) =>
-                      setDesignConfig({
-                        ...designConfig,
-                        backgroundColor: e.target.value,
-                      })
-                    }
-                    className="w-full h-10 rounded border border-gray-600 bg-gray-800"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Margin
-                  </label>
-                  <input
-                    type="range"
-                    min="1"
-                    max="10"
-                    value={designConfig.margin}
-                    onChange={(e) =>
-                      setDesignConfig({
-                        ...designConfig,
-                        margin: parseInt(e.target.value),
-                      })
-                    }
-                    className="w-full"
-                  />
-                  <div className="text-sm text-gray-400 mt-1">
-                    {designConfig.margin}
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Design Controls */}
+                <div className="space-y-6">
+                  <div className="group">
+                    <label className="block text-sm font-medium text-gray-300 mb-3 transition-all duration-300 group-hover:text-white group-hover:translate-x-1">
+                      Foreground Color
+                    </label>
+                    <input
+                      type="color"
+                      value={designConfig.foregroundColor}
+                      onChange={(e) => {
+                        setDesignConfig({
+                          ...designConfig,
+                          foregroundColor: e.target.value,
+                        });
+                      }}
+                      className="w-full h-12 rounded-lg border border-gray-600 bg-gray-800 transition-all duration-300 hover:border-gray-500 hover:shadow-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:scale-105"
+                    />
+                  </div>
+                  <div className="group">
+                    <label className="block text-sm font-medium text-gray-300 mb-3 transition-all duration-300 group-hover:text-white group-hover:translate-x-1">
+                      Background Color
+                    </label>
+                    <input
+                      type="color"
+                      value={designConfig.backgroundColor}
+                      onChange={(e) =>
+                        setDesignConfig({
+                          ...designConfig,
+                          backgroundColor: e.target.value,
+                        })
+                      }
+                      className="w-full h-12 rounded-lg border border-gray-600 bg-gray-800 transition-all duration-300 hover:border-gray-500 hover:shadow-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:scale-105"
+                    />
+                  </div>
+                  <div className="group">
+                    <label className="block text-sm font-medium text-gray-300 mb-3 transition-all duration-300 group-hover:text-white group-hover:translate-x-1">
+                      Margin
+                    </label>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      value={designConfig.margin}
+                      onChange={(e) =>
+                        setDesignConfig({
+                          ...designConfig,
+                          margin: parseInt(e.target.value),
+                        })
+                      }
+                      className="w-full h-3 accent-[#1F8349] transition-all duration-300 hover:accent-[#2ea358]"
+                      style={{
+                        background: `linear-gradient(to right, #1F8349 0%, #1F8349 ${
+                          ((designConfig.margin || 2) - 1) * 11.11
+                        }%, #374151 ${
+                          ((designConfig.margin || 2) - 1) * 11.11
+                        }%, #374151 100%)`,
+                      }}
+                    />
+                    <div className="text-sm text-gray-400 mt-2 transition-all duration-300 group-hover:text-gray-300 group-hover:font-medium">
+                      Margin: {designConfig.margin}
+                    </div>
+                  </div>
+                  <div className="group">
+                    <label className="block text-sm font-medium text-gray-300 mb-3 transition-all duration-300 group-hover:text-white group-hover:translate-x-1">
+                      Error Correction
+                    </label>
+                    <select
+                      value={designConfig.errorCorrection}
+                      onChange={(e) =>
+                        setDesignConfig({
+                          ...designConfig,
+                          errorCorrection: e.target.value as
+                            | "L"
+                            | "M"
+                            | "Q"
+                            | "H",
+                        })
+                      }
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white transition-all duration-300 hover:border-gray-500 hover:shadow-lg focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 focus:scale-105"
+                    >
+                      <option value="L">Low (7%)</option>
+                      <option value="M">Medium (15%)</option>
+                      <option value="Q">Quartile (25%)</option>
+                      <option value="H">High (30%)</option>
+                    </select>
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Error Correction
-                  </label>
-                  <select
-                    value={designConfig.errorCorrection}
-                    onChange={(e) =>
-                      setDesignConfig({
-                        ...designConfig,
-                        errorCorrection: e.target.value as
-                          | "L"
-                          | "M"
-                          | "Q"
-                          | "H",
-                      })
-                    }
-                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
-                  >
-                    <option value="L">Low (7%)</option>
-                    <option value="M">Medium (15%)</option>
-                    <option value="Q">Quartile (25%)</option>
-                    <option value="H">High (30%)</option>
-                  </select>
+
+                {/* Live Preview */}
+                <div className="flex flex-col items-center">
+                  <h5 className="text-md font-medium text-gray-300 mb-3">
+                    Live Preview
+                  </h5>
+                  <div className="bg-white rounded-lg p-4 inline-block mb-4 shadow-lg">
+                    {previewQRCode ? (
+                      <Image
+                        key={previewKey}
+                        src={previewQRCode}
+                        alt="QR Code Preview"
+                        width={192}
+                        height={192}
+                        className="w-48 h-48 transition-all duration-300 ease-out hover:scale-105"
+                        style={{
+                          animation: "fadeIn 0.3s ease-out",
+                        }}
+                      />
+                    ) : (
+                      <div className="w-48 h-48 flex items-center justify-center bg-gray-100 rounded">
+                        <span className="text-gray-500 text-sm">
+                          Preview not available
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-400 text-center">
+                    Preview updates as you change the design options
+                  </p>
                 </div>
               </div>
-              <div className="mt-4 flex gap-2">
+
+              <div className="mt-6 flex gap-2">
                 <button
                   onClick={handleUpdateDesign}
                   disabled={isUpdatingDesign}
@@ -435,7 +571,10 @@ export default function QRCodeManager({
                   {isUpdatingDesign ? "Updating Design..." : "Update Design"}
                 </button>
                 <button
-                  onClick={() => setShowDesignPanel(false)}
+                  onClick={() => {
+                    setShowDesignPanel(false);
+                    setPreviewQRCode(null); // Clear preview when closing
+                  }}
                   className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors"
                 >
                   Cancel
