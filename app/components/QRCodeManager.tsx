@@ -250,17 +250,84 @@ export default function QRCodeManager({
     );
   }
 
-  // Show loading screen until initial load is complete
+  // Show skeleton loading state until initial load is complete
   if (!initialLoadComplete) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-lg shadow-xl max-w-md w-full m-4 p-6">
-          <div className="text-center">
-            <div className="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">
-              Loading QR Code Manager
-            </h2>
-            <p className="text-gray-600">Checking for existing QR codes...</p>
+      <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+        {/* Shimmer effect styles */}
+        <style jsx>{`
+          @keyframes shimmer {
+            0% {
+              background-position: -200px 0;
+            }
+            100% {
+              background-position: calc(200px + 100%) 0;
+            }
+          }
+          .shimmer {
+            background: linear-gradient(
+              90deg,
+              #374151 0%,
+              #4b5563 50%,
+              #374151 100%
+            );
+            background-size: 200px 100%;
+            animation: shimmer 1.5s ease-in-out infinite;
+          }
+        `}</style>
+
+        {/* Skeleton Header */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="h-7 w-24 bg-gray-700 rounded shimmer"></div>
+          <div className="h-8 w-20 bg-gray-700 rounded shimmer"></div>
+        </div>
+
+        {/* Skeleton Content */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Skeleton QR Code Area */}
+          <div className="flex-1">
+            <div className="bg-white rounded-lg p-4 inline-block">
+              <div className="w-64 h-64 bg-gray-200 rounded-lg shimmer flex items-center justify-center">
+                <svg
+                  className="w-16 h-16 text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm0 8h8v8H3v-8zm2 2v4h4v-4H5zm8-12h8v8h-8V3zm2 2v4h4V5h-4z" />
+                  <path d="M13 13h2v2h-2v-2zm4 0h2v2h-2v-2zm-4 4h2v2h-2v-2zm4 0h2v2h-2v-2zm0-8h2v2h-2V9z" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Skeleton Download Buttons */}
+            <div className="mt-4 flex flex-wrap gap-2">
+              <div className="h-9 w-28 bg-gray-700 rounded shimmer"></div>
+              <div className="h-9 w-28 bg-gray-700 rounded shimmer"></div>
+              <div className="h-9 w-28 bg-gray-700 rounded shimmer"></div>
+            </div>
+          </div>
+
+          {/* Skeleton Analytics */}
+          <div className="flex-1">
+            <div className="h-6 w-32 bg-gray-700 rounded shimmer mb-4"></div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gray-700/50 rounded-lg p-3">
+                <div className="h-8 w-12 bg-gray-600 rounded shimmer mb-2"></div>
+                <div className="h-4 w-20 bg-gray-600 rounded shimmer"></div>
+              </div>
+              <div className="bg-gray-700/50 rounded-lg p-3">
+                <div className="h-8 w-12 bg-gray-600 rounded shimmer mb-2"></div>
+                <div className="h-4 w-24 bg-gray-600 rounded shimmer"></div>
+              </div>
+              <div className="bg-gray-700/50 rounded-lg p-3">
+                <div className="h-8 w-8 bg-gray-600 rounded shimmer mb-2"></div>
+                <div className="h-4 w-12 bg-gray-600 rounded shimmer"></div>
+              </div>
+              <div className="bg-gray-700/50 rounded-lg p-3">
+                <div className="h-8 w-12 bg-gray-600 rounded shimmer mb-2"></div>
+                <div className="h-4 w-16 bg-gray-600 rounded shimmer"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
