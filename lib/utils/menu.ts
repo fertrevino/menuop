@@ -187,6 +187,7 @@ export const menuUtils = {
       name: menu.name,
       restaurant_name: menu.restaurant_name,
       description: menu.description || "",
+      currency: menu.currency || "USD",
       theme_config: themeConfig,
       sections:
         menu.sections?.map((section: MenuSectionWithItems) => ({
