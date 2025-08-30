@@ -231,8 +231,8 @@ export default function Home() {
                 Menu Analytics Dashboard
               </h3>
               <p className="text-gray-300">
-                Track menu views and customer engagement with detailed analytics.
-                Export comprehensive reports to grow your business.
+                Track menu views and customer engagement with detailed
+                analytics. Export comprehensive reports to grow your business.
               </p>
             </div>
           </div>
@@ -259,7 +259,8 @@ export default function Home() {
                 QR Code Generation
               </h3>
               <p className="text-gray-300">
-                Auto-generate branded QR codes for each menu. Track scans and analytics with downloadable codes in multiple formats.
+                Auto-generate branded QR codes for each menu. Track scans and
+                analytics with downloadable codes in multiple formats.
               </p>
             </div>
 
