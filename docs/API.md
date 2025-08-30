@@ -124,6 +124,58 @@ Create a new menu with sections and items.
 }
 ```
 
+#### POST /menus/developer-import
+
+**Developer Mode Endpoint** - Bulk import menus using JSON data structure. Provides enhanced validation and error messages for rapid menu creation.
+
+**Request Body:**
+
+```json
+{
+  "name": "Quick Import Menu",
+  "restaurant_name": "Dev Restaurant",
+  "description": "Imported via developer mode",
+  "sections": [
+    {
+      "name": "Appetizers",
+      "description": "Starters",
+      "items": [
+        {
+          "name": "Garlic Bread",
+          "description": "Fresh baked with herbs",
+          "price": 8.99,
+          "image_url": "https://example.com/image.jpg",
+          "is_available": true
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Response:**
+
+```json
+{
+  "menu": {
+    "id": "uuid",
+    "name": "Quick Import Menu",
+    "restaurant_name": "Dev Restaurant",
+    "sections": [...]
+  },
+  "message": "Menu imported successfully"
+}
+```
+
+**Enhanced Features:**
+
+- Detailed validation error messages with field-specific feedback
+- Automatic sort order assignment
+- Batch processing for large menu imports
+- Optional fields handling with sensible defaults
+
+````
+
 #### GET /menus/{id}
 
 Get a specific menu by ID.
@@ -161,7 +213,7 @@ Delete a menu (soft delete by default).
 {
   "success": true
 }
-```
+````
 
 #### PATCH /menus/{id}/publish
 

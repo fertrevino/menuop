@@ -93,8 +93,8 @@ export default function Dashboard() {
               Create New Menu
             </h3>
             <p className="text-gray-300 mb-6">
-              Start building your first digital menu with our easy-to-use
-              editor.
+              Start building your digital menu with our easy-to-use editor, or
+              use developer mode for JSON imports.
             </p>
             <button
               onClick={() => router.push("/dashboard/create-menu")}
