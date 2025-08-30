@@ -158,6 +158,12 @@ export class QRCodeService {
         return null;
       }
 
+      // Validate that QR code data is not empty
+      if (!data.qr_data || data.qr_data.trim() === "") {
+        console.warn("QR code found but data is empty, returning null");
+        return null;
+      }
+
       return data;
     } catch (err) {
       console.error("Unexpected error in getQRCodeByMenuId:", err);
@@ -208,6 +214,12 @@ export class QRCodeService {
 
       // Generate QR code
       const qrDataUrl = await QRCode.toDataURL(menuUrl, qrOptions);
+
+      // Validate that QR code generation was successful
+      if (!qrDataUrl || qrDataUrl.trim() === "") {
+        console.error("QR code generation failed: empty data URL");
+        return null;
+      }
 
       // IMPROVED: Use atomic upsert operation to prevent duplicates
       const qrCodeData = {
@@ -319,6 +331,12 @@ export class QRCodeService {
       };
 
       const qrDataUrl = await QRCode.toDataURL(menuUrl, qrOptions);
+
+      // Validate that QR code generation was successful
+      if (!qrDataUrl || qrDataUrl.trim() === "") {
+        console.error("QR code generation failed: empty data URL");
+        return null;
+      }
 
       const qrCodeData = {
         menu_id: menuId,

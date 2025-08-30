@@ -427,11 +427,19 @@ export default function QRCodeManager({
             <div className="flex-1">
               <div className="bg-white rounded-lg p-4 inline-block">
                 {qrCode.format === "svg" ? (
-                  <div
-                    dangerouslySetInnerHTML={{ __html: qrCode.qr_data }}
-                    className="w-64 h-64"
-                  />
-                ) : (
+                  qrCode.qr_data && qrCode.qr_data.trim() !== "" ? (
+                    <div
+                      dangerouslySetInnerHTML={{ __html: qrCode.qr_data }}
+                      className="w-64 h-64"
+                    />
+                  ) : (
+                    <div className="w-64 h-64 flex items-center justify-center bg-gray-100 rounded">
+                      <span className="text-gray-500 text-sm">
+                        QR Code not available
+                      </span>
+                    </div>
+                  )
+                ) : qrCode.qr_data && qrCode.qr_data.trim() !== "" ? (
                   <Image
                     src={qrCode.qr_data}
                     alt="Menu QR Code"
@@ -439,6 +447,12 @@ export default function QRCodeManager({
                     height={256}
                     className="w-64 h-64"
                   />
+                ) : (
+                  <div className="w-64 h-64 flex items-center justify-center bg-gray-100 rounded">
+                    <span className="text-gray-500 text-sm">
+                      QR Code not available
+                    </span>
+                  </div>
                 )}
               </div>
 
@@ -603,7 +617,7 @@ export default function QRCodeManager({
                     Live Preview
                   </h5>
                   <div className="bg-white rounded-lg p-4 inline-block mb-4 shadow-lg">
-                    {previewQRCode ? (
+                    {previewQRCode && previewQRCode.trim() !== "" ? (
                       <Image
                         key={previewKey}
                         src={previewQRCode}
