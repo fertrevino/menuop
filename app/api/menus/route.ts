@@ -64,6 +64,7 @@ export async function POST(request: NextRequest) {
         name: menuData.name,
         restaurant_name: menuData.restaurant_name,
         description: menuData.description,
+        theme_config: menuData.theme_config || null,
       })
       .select()
       .single();

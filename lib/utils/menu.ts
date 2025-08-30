@@ -6,6 +6,7 @@ import {
   MenuWithSections,
   MenuSectionWithItems,
 } from "../types/menu";
+import { MenuThemeConfig, THEME_PRESETS } from "../types/theme";
 
 export const menuUtils = {
   // Generate a random ID for temporary use in forms
@@ -18,6 +19,7 @@ export const menuUtils = {
     name: "",
     restaurant_name: "",
     description: "",
+    theme_config: THEME_PRESETS[0].config, // Default to first theme preset
     sections: [
       {
         name: "Appetizers",
@@ -169,10 +171,23 @@ export const menuUtils = {
 
   // Convert database menu to form data
   convertMenuToFormData: (menu: MenuWithSections): MenuFormData => {
+    // Parse theme_config if it exists, otherwise use default theme
+    let themeConfig: MenuThemeConfig;
+    try {
+      themeConfig = menu.theme_config
+        ? typeof menu.theme_config === "string"
+          ? JSON.parse(menu.theme_config)
+          : (menu.theme_config as unknown as MenuThemeConfig)
+        : THEME_PRESETS[0].config;
+    } catch {
+      themeConfig = THEME_PRESETS[0].config;
+    }
+
     return {
       name: menu.name,
       restaurant_name: menu.restaurant_name,
       description: menu.description || "",
+      theme_config: themeConfig,
       sections:
         menu.sections?.map((section: MenuSectionWithItems) => ({
           id: section.id,

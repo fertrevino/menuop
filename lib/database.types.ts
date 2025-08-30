@@ -19,6 +19,7 @@ export type Database = {
           is_published: boolean;
           slug: string | null;
           deleted_on: string | null;
+          theme_config: Json | null;
           created_at: string;
           updated_at: string;
         };
@@ -31,6 +32,7 @@ export type Database = {
           is_published?: boolean;
           slug?: string | null;
           deleted_on?: string | null;
+          theme_config?: Json | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -43,6 +45,7 @@ export type Database = {
           is_published?: boolean;
           slug?: string | null;
           deleted_on?: string | null;
+          theme_config?: Json | null;
           created_at?: string;
           updated_at?: string;
         };

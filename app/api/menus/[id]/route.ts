@@ -88,6 +88,7 @@ export async function PUT(
         name: menuData.name,
         restaurant_name: menuData.restaurant_name,
         description: menuData.description,
+        theme_config: menuData.theme_config || null,
       })
       .eq("id", id)
       .eq("user_id", user.id) // Ensure user owns this menu

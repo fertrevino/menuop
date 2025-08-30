@@ -1,4 +1,5 @@
 import { Database } from "../database.types";
+import { MenuThemeConfig } from "./theme";
 
 export type Menu = Database["public"]["Tables"]["menus"]["Row"];
 export type MenuInsert = Database["public"]["Tables"]["menus"]["Insert"];
@@ -31,6 +32,7 @@ export interface MenuFormData {
   restaurant_name: string;
   description?: string;
   sections: MenuSectionFormData[];
+  theme_config?: MenuThemeConfig;
 }
 
 export interface MenuSectionFormData {
@@ -64,6 +66,7 @@ export interface PublicMenuData {
   restaurant_name: string;
   description?: string;
   slug: string;
+  theme_config?: MenuThemeConfig;
   sections: {
     id: string;
     name: string;

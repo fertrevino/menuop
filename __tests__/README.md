@@ -28,6 +28,7 @@ npm test -- __tests__/utils/uuid-slug-detection.test.ts  # UUID vs Slug logic
 npm test -- __tests__/utils/qr-detection.test.ts         # QR parameter detection
 npm test -- __tests__/utils/menu.test.ts                 # Menu validation
 npm test -- __tests__/database/slug-generation.test.ts   # Database slug rules
+npm test -- __tests__/developer-mode
 
 # Run all prevention tests together
 npm test -- __tests__/utils/ __tests__/database/

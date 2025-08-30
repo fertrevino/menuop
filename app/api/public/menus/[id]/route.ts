@@ -26,6 +26,7 @@ export async function GET(
         restaurant_name,
         description,
         slug,
+        theme_config,
         sections:menu_sections(
           id,
           name,
