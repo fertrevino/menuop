@@ -31,6 +31,7 @@ export interface MenuFormData {
   name: string;
   restaurant_name: string;
   description?: string;
+  currency?: string;
   sections: MenuSectionFormData[];
   theme_config?: MenuThemeConfig;
 }
@@ -66,6 +67,7 @@ export interface PublicMenuData {
   restaurant_name: string;
   description?: string;
   slug: string;
+  currency: string;
   theme_config?: MenuThemeConfig;
   sections: {
     id: string;

@@ -7,6 +7,7 @@ import {
   MenuSectionWithItems,
 } from "../types/menu";
 import { MenuThemeConfig, THEME_PRESETS } from "../types/theme";
+import { getCurrencyByCode } from "./currency";
 
 export const menuUtils = {
   // Generate a random ID for temporary use in forms
@@ -15,18 +16,14 @@ export const menuUtils = {
   },
 
   // Create empty menu form data
+  // Create empty menu form
   createEmptyMenu: (): MenuFormData => ({
     name: "",
     restaurant_name: "",
     description: "",
-    theme_config: THEME_PRESETS[0].config, // Default to first theme preset
-    sections: [
-      {
-        name: "Appetizers",
-        description: "",
-        items: [],
-      },
-    ],
+    currency: "USD",
+    sections: [],
+    theme_config: THEME_PRESETS[0].config,
   }),
 
   // Create empty section
@@ -134,7 +131,10 @@ export const menuUtils = {
 
   // Format price for display
   formatPrice: (price: number, currency: string = "USD"): string => {
-    return new Intl.NumberFormat("en-US", {
+    const currencyObj = getCurrencyByCode(currency);
+    const locale = currencyObj?.locale || "en-US";
+
+    return new Intl.NumberFormat(locale, {
       style: "currency",
       currency,
     }).format(price);

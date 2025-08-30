@@ -88,6 +88,7 @@ export async function PUT(
         name: menuData.name,
         restaurant_name: menuData.restaurant_name,
         description: menuData.description,
+        currency: menuData.currency || "USD",
         theme_config: menuData.theme_config || null,
       })
       .eq("id", id)

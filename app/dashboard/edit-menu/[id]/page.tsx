@@ -7,6 +7,11 @@ import { useMenu } from "@/hooks/useMenu";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import ThemePreview from "@/app/components/ThemePreview";
 import { MenuThemeConfig, THEME_PRESETS } from "@/lib/types/theme";
+import {
+  CURRENCY_OPTIONS,
+  POPULAR_CURRENCIES,
+  getCurrencySymbol,
+} from "@/lib/utils/currency";
 
 interface EditMenuProps {
   params: Promise<{
@@ -259,6 +264,42 @@ export default function EditMenu({ params }: EditMenuProps) {
                         rows={3}
                       />
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Currency
+                      </label>
+                      <select
+                        value={menuFormData.currency || "USD"}
+                        onChange={(e) =>
+                          updateMenuField("currency", e.target.value)
+                        }
+                        className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
+                      >
+                        <optgroup label="Popular Currencies">
+                          {POPULAR_CURRENCIES.map((code) => {
+                            const currency = CURRENCY_OPTIONS.find(
+                              (c) => c.code === code
+                            );
+                            return currency ? (
+                              <option key={code} value={code}>
+                                {currency.code} ({currency.symbol}) -{" "}
+                                {currency.name}
+                              </option>
+                            ) : null;
+                          })}
+                        </optgroup>
+                        <optgroup label="All Currencies">
+                          {CURRENCY_OPTIONS.filter(
+                            (c) => !POPULAR_CURRENCIES.includes(c.code)
+                          ).map((currency) => (
+                            <option key={currency.code} value={currency.code}>
+                              {currency.code} ({currency.symbol}) -{" "}
+                              {currency.name}
+                            </option>
+                          ))}
+                        </optgroup>
+                      </select>
+                    </div>
                   </div>
                 </div>
 
@@ -450,7 +491,8 @@ export default function EditMenu({ params }: EditMenuProps) {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-300 mb-1">
-                            Price ($)
+                            Price (
+                            {getCurrencySymbol(menuFormData.currency || "USD")})
                           </label>
                           <input
                             type="number"

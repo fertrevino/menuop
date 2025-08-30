@@ -4,11 +4,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useMenu } from "@/hooks/useMenu";
+import {
+  CURRENCY_OPTIONS,
+  POPULAR_CURRENCIES,
+  getCurrencySymbol,
+} from "@/lib/utils/currency";
 
 interface DevMenuData {
   name: string;
   restaurant_name: string;
   description?: string;
+  currency?: string;
   sections: {
     name: string;
     description?: string;
@@ -172,6 +178,7 @@ export default function CreateMenu() {
       name: "Lunch Special",
       restaurant_name: "Mario's Pizzeria",
       description: "Our delicious lunch offerings",
+      currency: "USD",
       sections: [
         {
           name: "Appetizers",
@@ -449,6 +456,7 @@ export default function CreateMenu() {
   "name": "Menu Name (required)",
   "restaurant_name": "Restaurant Name (required)",
   "description": "Optional description",
+  "currency": "USD",
   "sections": [
     {
       "name": "Section Name (required)",
@@ -473,9 +481,9 @@ export default function CreateMenu() {
                   sections, section.name, item.name, item.price
                 </p>
                 <p>
-                  <strong>Optional fields:</strong> description,
-                  section.description, item.description, item.image_url,
-                  item.is_available (defaults to true)
+                  <strong>Optional fields:</strong> description, currency
+                  (defaults to USD), section.description, item.description,
+                  item.image_url, item.is_available (defaults to true)
                 </p>
               </div>
             </div>
@@ -533,6 +541,42 @@ export default function CreateMenu() {
                       placeholder="Enter menu description"
                       rows={3}
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Currency
+                    </label>
+                    <select
+                      value={menuFormData.currency || "USD"}
+                      onChange={(e) =>
+                        updateMenuField("currency", e.target.value)
+                      }
+                      className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
+                    >
+                      <optgroup label="Popular Currencies">
+                        {POPULAR_CURRENCIES.map((code) => {
+                          const currency = CURRENCY_OPTIONS.find(
+                            (c) => c.code === code
+                          );
+                          return currency ? (
+                            <option key={code} value={code}>
+                              {currency.code} ({currency.symbol}) -{" "}
+                              {currency.name}
+                            </option>
+                          ) : null;
+                        })}
+                      </optgroup>
+                      <optgroup label="All Currencies">
+                        {CURRENCY_OPTIONS.filter(
+                          (c) => !POPULAR_CURRENCIES.includes(c.code)
+                        ).map((currency) => (
+                          <option key={currency.code} value={currency.code}>
+                            {currency.code} ({currency.symbol}) -{" "}
+                            {currency.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -681,7 +725,11 @@ export default function CreateMenu() {
                           </div>
                           <div>
                             <label className="block text-sm font-medium text-gray-300 mb-1">
-                              Price ($)
+                              Price (
+                              {getCurrencySymbol(
+                                menuFormData.currency || "USD"
+                              )}
+                              )
                             </label>
                             <input
                               type="number"

@@ -5,6 +5,7 @@ import { useEffect, useState, use, useCallback } from "react";
 import { MenuService } from "@/lib/services/menu";
 import { PublicMenuData } from "@/lib/types/menu";
 import { trackQRScan } from "@/lib/utils/qrTracking";
+import { formatPrice } from "@/lib/utils/currency";
 import {
   MenuThemeConfig,
   THEME_PRESETS,
@@ -210,7 +211,7 @@ export default function PublicMenu({ params }: PublicMenuProps) {
                               className={`${bodySize} font-bold`}
                               style={{ color: theme.colors.accent }}
                             >
-                              ${item.price.toFixed(2)}
+                              {formatPrice(item.price, menuData.currency)}
                             </span>
                           </div>
                         </div>

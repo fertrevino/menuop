@@ -20,6 +20,7 @@ export type Database = {
           slug: string | null;
           deleted_on: string | null;
           theme_config: Json | null;
+          currency: string;
           created_at: string;
           updated_at: string;
         };
@@ -33,6 +34,7 @@ export type Database = {
           slug?: string | null;
           deleted_on?: string | null;
           theme_config?: Json | null;
+          currency?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -46,6 +48,7 @@ export type Database = {
           slug?: string | null;
           deleted_on?: string | null;
           theme_config?: Json | null;
+          currency?: string;
           created_at?: string;
           updated_at?: string;
         };

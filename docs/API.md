@@ -82,6 +82,7 @@ Create a new menu with sections and items.
   "name": "Lunch Menu",
   "restaurant_name": "Mario's Restaurant",
   "description": "Our delicious lunch offerings",
+  "currency": "USD",
   "sections": [
     {
       "name": "Salads",
@@ -327,6 +328,7 @@ interface Menu {
   name: string; // Menu name
   restaurant_name: string; // Restaurant name
   description?: string; // Optional description
+  currency: string; // Currency code (ISO 4217)
   is_published: boolean; // Public visibility
   slug?: string; // URL-friendly identifier
   deleted_on?: string; // Soft delete timestamp

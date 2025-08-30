@@ -26,6 +26,11 @@ This is perfect for:
 - `restaurant_name`: Restaurant name (string)
 - `sections`: Array of menu sections
 
+### Optional Fields
+
+- `description`: Menu description (string)
+- `currency`: Currency code (string, defaults to "USD")
+
 ### Section Structure
 
 - `name`: Section name (string, required)
@@ -47,6 +52,7 @@ This is perfect for:
   "name": "Lunch Special",
   "restaurant_name": "Mario's Pizzeria",
   "description": "Our delicious lunch offerings",
+  "currency": "USD",
   "sections": [
     {
       "name": "Appetizers",

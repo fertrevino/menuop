@@ -5,6 +5,7 @@ interface DevMenuData {
   name: string;
   restaurant_name: string;
   description?: string;
+  currency?: string;
   sections: {
     name: string;
     description?: string;
@@ -108,6 +109,7 @@ export async function POST(request: NextRequest) {
         name: menuData.name,
         restaurant_name: menuData.restaurant_name,
         description: menuData.description || null,
+        currency: menuData.currency || "USD",
       })
       .select()
       .single();
