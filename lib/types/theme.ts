@@ -104,7 +104,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         text: "#1f2937",
         textSecondary: "#6b7280",
         headerText: "#ffffff",
-        accent: "#dc2626",
+        accent: "#059669",
         border: "#e5e7eb",
       },
       fonts: {
@@ -144,7 +144,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         text: "#451a03",
         textSecondary: "#78716c",
         headerText: "#ffffff",
-        accent: "#dc2626",
+        accent: "#92400e",
         border: "#fdba74",
       },
       fonts: {
@@ -224,7 +224,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         text: "#000000",
         textSecondary: "#666666",
         headerText: "#ffffff",
-        accent: "#ff6b6b",
+        accent: "#2563eb",
         border: "#e0e0e0",
       },
       fonts: {
@@ -264,7 +264,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         text: "#3c2414",
         textSecondary: "#8b7355",
         headerText: "#ffffff",
-        accent: "#dc143c",
+        accent: "#8b4513",
         border: "#deb887",
       },
       fonts: {
@@ -344,7 +344,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         text: "#7c2d12",
         textSecondary: "#92400e",
         headerText: "#ffffff",
-        accent: "#16a34a",
+        accent: "#059669",
         border: "#f59e0b",
       },
       fonts: {
@@ -464,7 +464,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         text: "#14532d",
         textSecondary: "#166534",
         headerText: "#ffffff",
-        accent: "#dc2626",
+        accent: "#059669",
         border: "#bbf7d0",
       },
       fonts: {
@@ -624,7 +624,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         text: "#111827",
         textSecondary: "#6b7280",
         headerText: "#ffffff",
-        accent: "#ef4444",
+        accent: "#2563eb",
         border: "#e5e7eb",
       },
       fonts: {
@@ -664,7 +664,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         text: "#7c2d12",
         textSecondary: "#92400e",
         headerText: "#ffffff",
-        accent: "#dc2626",
+        accent: "#c2410c",
         border: "#fdba74",
       },
       fonts: {
