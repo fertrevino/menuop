@@ -5,6 +5,183 @@ import { useRouter } from "next/navigation";
 import SignInModal from "./components/SignInModal";
 import { useAuth } from "@/hooks/useAuth";
 
+// Interactive Preview Component
+function InteractivePreview() {
+  const [selectedColor, setSelectedColor] = useState("#1F8349");
+  const [selectedFont, setSelectedFont] = useState("Inter");
+  const [selectedLayout, setSelectedLayout] = useState("rounded-sm");
+
+  const colorOptions = [
+    { name: "Forest Green", value: "#1F8349" },
+    { name: "Ocean Blue", value: "#0066CC" },
+    { name: "Sunset Orange", value: "#FF6B35" },
+    { name: "Royal Purple", value: "#8B5CF6" },
+  ];
+
+  const fontOptions = [
+    { name: "Inter", label: "Inter • Clean & Modern" },
+    { name: "Playfair", label: "Playfair • Elegant" },
+    { name: "Roboto", label: "Roboto • Professional" },
+  ];
+
+  const layoutOptions = [
+    { name: "rounded-sm", label: "Minimal" },
+    { name: "rounded-md", label: "Balanced" },
+    { name: "rounded-lg", label: "Rounded" },
+  ];
+
+  return (
+    <div className="space-y-4">
+      {/* Color Palette Section */}
+      <div
+        className="bg-gray-700 p-4 rounded-lg border border-gray-600/30 transition-all duration-300 group"
+        style={{ borderColor: `${selectedColor}50` }}
+        onMouseEnter={(e) => {
+          (
+            e.currentTarget as HTMLElement
+          ).style.borderColor = `${selectedColor}80`;
+        }}
+        onMouseLeave={(e) => {
+          (
+            e.currentTarget as HTMLElement
+          ).style.borderColor = `${selectedColor}50`;
+        }}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-gray-300 text-sm group-hover:text-white transition-colors">
+            Color Palette
+          </span>
+          <div className="flex space-x-2">
+            {colorOptions.map((color) => (
+              <button
+                key={color.value}
+                onClick={() => setSelectedColor(color.value)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 cursor-pointer hover:scale-125 group-hover:scale-110 ${
+                  selectedColor === color.value
+                    ? "ring-2 ring-white scale-110"
+                    : ""
+                }`}
+                style={{ backgroundColor: color.value }}
+                title={color.name}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="text-white font-semibold mb-2 transition-colors duration-300">
+          Restaurant Name
+        </div>
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm transform group-hover:-translate-y-1 transition-all duration-300">
+            <span className="text-gray-300 group-hover:text-white transition-colors">
+              Menu Item
+            </span>
+            <span
+              className="font-semibold group-hover:scale-105 transition-all duration-300"
+              style={{ color: selectedColor }}
+            >
+              $12.99
+            </span>
+          </div>
+          <div className="flex justify-between text-sm transform group-hover:-translate-y-1 transition-all duration-300 delay-75">
+            <span className="text-gray-300 group-hover:text-white transition-colors">
+              Another Item
+            </span>
+            <span
+              className="font-semibold group-hover:scale-105 transition-all duration-300"
+              style={{ color: selectedColor }}
+            >
+              $8.50
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Typography Section */}
+      <div
+        className="bg-gray-700 p-4 rounded-lg border border-gray-600/30 transition-all duration-300 group"
+        style={{ borderColor: `${selectedColor}50` }}
+        onMouseEnter={(e) => {
+          (
+            e.currentTarget as HTMLElement
+          ).style.borderColor = `${selectedColor}80`;
+        }}
+        onMouseLeave={(e) => {
+          (
+            e.currentTarget as HTMLElement
+          ).style.borderColor = `${selectedColor}50`;
+        }}
+      >
+        <div className="text-gray-300 text-sm mb-2 group-hover:text-white transition-colors">
+          Typography
+        </div>
+        <div className="space-y-1 text-sm">
+          {fontOptions.map((font) => (
+            <button
+              key={font.name}
+              onClick={() => setSelectedFont(font.name)}
+              className={`block w-full text-left transition-all duration-300 origin-left hover:scale-105 group-hover:scale-105 ${
+                selectedFont === font.name
+                  ? "text-white font-bold"
+                  : "text-gray-300 group-hover:text-white"
+              } ${font.name === "Playfair" ? "font-serif" : ""}`}
+            >
+              {font.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Layout Style Section */}
+      <div
+        className="bg-gray-700 p-4 rounded-lg border border-gray-600/30 transition-all duration-300 group"
+        style={{ borderColor: `${selectedColor}50` }}
+        onMouseEnter={(e) => {
+          (
+            e.currentTarget as HTMLElement
+          ).style.borderColor = `${selectedColor}80`;
+        }}
+        onMouseLeave={(e) => {
+          (
+            e.currentTarget as HTMLElement
+          ).style.borderColor = `${selectedColor}50`;
+        }}
+      >
+        <div className="text-gray-300 text-sm mb-2 group-hover:text-white transition-colors">
+          Layout Style
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {layoutOptions.map((layout, index) => (
+            <button
+              key={layout.name}
+              onClick={() => setSelectedLayout(layout.name)}
+              className={`h-6 transition-all duration-300 cursor-pointer hover:scale-105 group-hover:scale-105 ${
+                layout.name
+              } ${selectedLayout === layout.name ? "scale-105" : ""}`}
+              style={{
+                backgroundColor:
+                  selectedLayout === layout.name ? selectedColor : "#4B5563",
+                transitionDelay: `${index * 75}ms`,
+              }}
+              onMouseEnter={(e) => {
+                if (selectedLayout !== layout.name) {
+                  (e.target as HTMLElement).style.backgroundColor =
+                    selectedColor;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (selectedLayout !== layout.name) {
+                  (e.target as HTMLElement).style.backgroundColor = "#4B5563";
+                }
+              }}
+              title={layout.label}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
   const { user, signOut, loading } = useAuth();
@@ -237,8 +414,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Second row - 2 features centered */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mt-8">
+          {/* Second row - 4 features */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-8">
             <div className="bg-gradient-to-br from-gray-700 to-gray-800 p-8 rounded-xl shadow-lg border border-gray-600/50 hover:border-[#1F8349]/50 transition-all duration-300 hover:transform hover:-translate-y-1 group">
               <div className="w-12 h-12 bg-gradient-to-br from-[#1F8349]/20 to-[#2ea358]/10 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <svg
@@ -276,6 +453,56 @@ export default function Home() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth="2"
+                    d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"
+                  ></path>
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-4">
+                Theme Templates
+              </h3>
+              <p className="text-gray-300">
+                Choose from 18+ professionally designed themes. Italian
+                Trattoria, Japanese Zen, French Bistro, and more.
+              </p>
+            </div>
+
+            <div className="bg-gradient-to-br from-gray-700 to-gray-800 p-8 rounded-xl shadow-lg border border-gray-600/50 hover:border-[#1F8349]/50 transition-all duration-300 hover:transform hover:-translate-y-1 group">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#1F8349]/20 to-[#2ea358]/10 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg
+                  className="w-6 h-6 text-[#1F8349] group-hover:text-[#2ea358] transition-colors"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a1 1 0 01-1-1V9a1 1 0 011-1h1a2 2 0 100-4H4a1 1 0 01-1-1V4a1 1 0 011-1h3a1 1 0 001-1v-1a2 2 0 114 0z"
+                  ></path>
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-4">
+                Advanced Customization
+              </h3>
+              <p className="text-gray-300">
+                Customize colors, fonts, spacing, and layouts. Create your
+                unique brand experience with powerful design tools.
+              </p>
+            </div>
+
+            <div className="bg-gradient-to-br from-gray-700 to-gray-800 p-8 rounded-xl shadow-lg border border-gray-600/50 hover:border-[#1F8349]/50 transition-all duration-300 hover:transform hover:-translate-y-1 group">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#1F8349]/20 to-[#2ea358]/10 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg
+                  className="w-6 h-6 text-[#1F8349] group-hover:text-[#2ea358] transition-colors"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
                     d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
                   ></path>
                 </svg>
@@ -287,6 +514,337 @@ export default function Home() {
                 Your menus look perfect on all devices. Customers can easily
                 browse and order from any smartphone.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Theme Templates Showcase Section */}
+      <section className="py-20 bg-gray-900 relative overflow-hidden">
+        {/* Background accents */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-[#1F8349]/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Beautiful Theme Templates
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Choose from 18+ professionally designed themes that match your
+              restaurant's personality. From elegant French bistros to vibrant
+              Mexican cantinas, we have the perfect look for your business.
+            </p>
+          </div>
+
+          {/* Theme Categories */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div className="text-center">
+              <div className="bg-gradient-to-br from-gray-800 to-gray-700 p-6 rounded-xl border border-gray-600/50 h-full">
+                <div className="w-12 h-12 bg-[#1F8349]/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg
+                    className="w-6 h-6 text-[#1F8349]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                    ></path>
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-3">
+                  Light & Elegant
+                </h3>
+                <p className="text-gray-300 text-sm">
+                  Clean, sophisticated designs perfect for upscale dining
+                  establishments
+                </p>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-gradient-to-br from-gray-800 to-gray-700 p-6 rounded-xl border border-gray-600/50 h-full">
+                <div className="w-12 h-12 bg-[#1F8349]/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg
+                    className="w-6 h-6 text-[#1F8349]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                    ></path>
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-3">
+                  Dark & Modern
+                </h3>
+                <p className="text-gray-300 text-sm">
+                  Sleek contemporary themes ideal for trendy restaurants and
+                  bars
+                </p>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-gradient-to-br from-gray-800 to-gray-700 p-6 rounded-xl border border-gray-600/50 h-full">
+                <div className="w-12 h-12 bg-[#1F8349]/10 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <svg
+                    className="w-6 h-6 text-[#1F8349]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"
+                    ></path>
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-3">
+                  Cultural Themes
+                </h3>
+                <p className="text-gray-300 text-sm">
+                  Culturally-inspired designs that celebrate global cuisines
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Featured Theme Previews */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Italian Trattoria Theme */}
+            <div className="group cursor-pointer">
+              <div className="bg-gradient-to-br from-[#8b4513] to-[#cd853f] p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:-translate-y-1 border-2 border-transparent hover:border-[#8b4513]/50">
+                <div className="bg-[#fdf6e3] p-4 rounded-lg mb-4">
+                  <div className="text-[#8b4513] font-bold text-lg mb-2">
+                    Nonna's Kitchen
+                  </div>
+                  <div className="text-[#3c2414] text-sm space-y-1">
+                    <div className="flex justify-between">
+                      <span>Margherita Pizza</span>
+                      <span className="text-[#dc143c] font-semibold">$16</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Pasta Carbonara</span>
+                      <span className="text-[#dc143c] font-semibold">$14</span>
+                    </div>
+                  </div>
+                </div>
+                <h3 className="text-white font-semibold text-center">
+                  Italian Trattoria
+                </h3>
+              </div>
+            </div>
+
+            {/* Japanese Zen Theme */}
+            <div className="group cursor-pointer">
+              <div className="bg-gradient-to-br from-[#2d5016] to-[#4a7c59] p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:-translate-y-1 border-2 border-transparent hover:border-[#2d5016]/50">
+                <div className="bg-[#f7f5f3] p-4 rounded-lg mb-4">
+                  <div className="text-[#2d5016] font-bold text-lg mb-2">
+                    Zen Garden
+                  </div>
+                  <div className="text-[#1a1a1a] text-sm space-y-1">
+                    <div className="flex justify-between">
+                      <span>Salmon Sashimi</span>
+                      <span className="text-[#d4af37] font-semibold">
+                        ¥1800
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Miso Ramen</span>
+                      <span className="text-[#d4af37] font-semibold">
+                        ¥1200
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <h3 className="text-white font-semibold text-center">
+                  Japanese Zen
+                </h3>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <p className="text-gray-300 mb-6">
+              + 16 more themes including Mexican Cantina, French Bistro, Korean
+              Modern, Spanish Tapas, and Nordic Minimalist
+            </p>
+            <button
+              onClick={handleGetStarted}
+              className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              {user ? "Explore Themes in Dashboard" : "Try All Themes Free"}
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Customization Features Section */}
+      <section className="py-20 bg-gradient-to-b from-gray-800 to-gray-900 relative">
+        {/* Background accents */}
+        <div className="absolute top-20 left-10 w-32 h-32 bg-[#1F8349]/10 rounded-full blur-2xl"></div>
+        <div className="absolute bottom-20 right-10 w-40 h-40 bg-purple-500/5 rounded-full blur-2xl"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                Powerful Customization Tools
+              </h2>
+              <p className="text-lg text-gray-300 mb-8">
+                Create a truly unique menu experience with our advanced
+                customization features. Every aspect of your menu can be
+                tailored to match your brand perfectly.
+              </p>
+
+              <div className="space-y-6">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#1F8349]/30 to-[#2ea358]/20 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-5 h-5 text-[#1F8349]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"
+                        ></path>
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      Color Customization
+                    </h3>
+                    <p className="text-gray-300">
+                      Choose from unlimited color combinations. Set primary,
+                      secondary, background, and accent colors to match your
+                      brand identity.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#1F8349]/30 to-[#2ea358]/20 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-5 h-5 text-[#1F8349]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M4 6h16M4 12h16M4 18h7"
+                        ></path>
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      Typography Control
+                    </h3>
+                    <p className="text-gray-300">
+                      Select from 20+ professional fonts including Inter,
+                      Playfair Display, and culture-specific options like Noto
+                      Sans JP.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#1F8349]/30 to-[#2ea358]/20 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-5 h-5 text-[#1F8349]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M4 8V4a1 1 0 011-1h4m0 0V2a1 1 0 011-1h4a1 1 0 011 1v1m4 0h4a1 1 0 011 1v4m0 4v4a1 1 0 01-1 1h-4m0 0v1a1 1 0 01-1 1h-4a1 1 0 01-1-1v-1m-4 0H4a1 1 0 01-1-1v-4"
+                        ></path>
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      Layout & Spacing
+                    </h3>
+                    <p className="text-gray-300">
+                      Adjust section spacing, item padding, and corner radius to
+                      create the perfect visual hierarchy for your menu.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#1F8349]/30 to-[#2ea358]/20 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-5 h-5 text-[#1F8349]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M12 3v1m0 12v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                        ></path>
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      Multi-Currency Support
+                    </h3>
+                    <p className="text-gray-300">
+                      Display prices in 150+ currencies with proper formatting.
+                      Perfect for international restaurants and tourism.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:text-center">
+              <div className="bg-gradient-to-br from-gray-800 to-gray-700 p-8 rounded-2xl border border-gray-600 shadow-2xl">
+                <h3 className="text-xl font-semibold text-white mb-6 text-center">
+                  Live Preview
+                </h3>
+
+                {/* Interactive Demo State */}
+                <InteractivePreview />
+
+                {/* Customization indicator */}
+                <div className="mt-6 flex items-center justify-center">
+                  <span className="text-gray-400 text-xs">
+                    Click colors, fonts, and layouts to customize
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
