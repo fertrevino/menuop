@@ -279,7 +279,9 @@ export default function ImageInput({
   const [aiImages, setAiImages] = useState<ImageSuggestion[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
-  const [previewImage, setPreviewImage] = useState<ImageSuggestion | null>(null);
+  const [previewImage, setPreviewImage] = useState<ImageSuggestion | null>(
+    null
+  );
 
   const handleAIGeneration = async () => {
     setIsGenerating(true);
@@ -362,7 +364,9 @@ export default function ImageInput({
       {showAIImages && (
         <div className="mt-4 bg-gray-700 rounded-lg border border-gray-600">
           <div className="flex items-center justify-between p-4 border-b border-gray-600">
-            <h3 className="text-lg font-medium text-white">AI Generated Images</h3>
+            <h3 className="text-lg font-medium text-white">
+              AI Generated Images
+            </h3>
             <button
               onClick={() => {
                 setShowAIImages(false);
@@ -378,20 +382,22 @@ export default function ImageInput({
             {isGenerating ? (
               <div className="flex justify-center items-center py-8">
                 <div className="animate-spin w-8 h-8 border-2 border-gray-600 border-t-[#1F8349] rounded-full"></div>
-                <span className="ml-3 text-gray-300">Generating AI images...</span>
+                <span className="ml-3 text-gray-300">
+                  Generating AI images...
+                </span>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {aiImages.map((suggestion, index) => (
                   <div key={index} className="group">
-                    <div 
+                    <div
                       className="relative overflow-hidden rounded-lg border-2 border-gray-600 group-hover:border-[#1F8349] transition-colors"
                       style={{
-                        backgroundColor: '#ffffff',
-                        minHeight: '128px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
+                        backgroundColor: "#ffffff",
+                        minHeight: "128px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
                       <img
@@ -399,41 +405,52 @@ export default function ImageInput({
                         alt={suggestion.alt}
                         className="group-hover:scale-105 transition-transform duration-200"
                         style={{
-                          width: '100%',
-                          height: '128px',
-                          objectFit: 'cover',
-                          display: 'block',
-                          backgroundColor: '#ffffff',
-                          border: 'none',
-                          outline: 'none',
-                          opacity: '1',
-                          visibility: 'visible',
-                          zIndex: '1',
-                          position: 'relative'
+                          width: "100%",
+                          height: "128px",
+                          objectFit: "cover",
+                          display: "block",
+                          backgroundColor: "#ffffff",
+                          border: "none",
+                          outline: "none",
+                          opacity: "1",
+                          visibility: "visible",
+                          zIndex: "1",
+                          position: "relative",
                         }}
                         onLoad={(e) => {
-                          console.log(`✅ Image ${index + 1} loaded successfully`);
-                          e.currentTarget.style.opacity = '1';
+                          console.log(
+                            `✅ Image ${index + 1} loaded successfully`
+                          );
+                          e.currentTarget.style.opacity = "1";
                         }}
                         onError={(e) => {
-                          console.error(`❌ Image ${index + 1} failed to load:`, suggestion.url);
+                          console.error(
+                            `❌ Image ${index + 1} failed to load:`,
+                            suggestion.url
+                          );
                           const target = e.currentTarget as HTMLImageElement;
-                          target.style.backgroundColor = '#ef4444';
-                          target.style.color = 'white';
-                          target.style.display = 'flex';
-                          target.style.alignItems = 'center';
-                          target.style.justifyContent = 'center';
-                          target.style.fontSize = '12px';
-                          target.alt = 'Failed to load image';
+                          target.style.backgroundColor = "#ef4444";
+                          target.style.color = "white";
+                          target.style.display = "flex";
+                          target.style.alignItems = "center";
+                          target.style.justifyContent = "center";
+                          target.style.fontSize = "12px";
+                          target.alt = "Failed to load image";
                         }}
                       />
                       {/* Action buttons on hover */}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ 
-                        zIndex: '10',
-                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-                        pointerEvents: 'none'
-                      }}>
-                        <div className="flex gap-2" style={{ pointerEvents: 'auto' }}>
+                      <div
+                        className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{
+                          zIndex: "10",
+                          backgroundColor: "rgba(0, 0, 0, 0.6)",
+                          pointerEvents: "none",
+                        }}
+                      >
+                        <div
+                          className="flex gap-2"
+                          style={{ pointerEvents: "auto" }}
+                        >
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -495,12 +512,12 @@ export default function ImageInput({
                   alt={previewImage.alt}
                   className="max-w-full max-h-96 object-contain rounded-lg"
                   style={{
-                    backgroundColor: '#ffffff',
-                    display: 'block'
+                    backgroundColor: "#ffffff",
+                    display: "block",
                   }}
                 />
               </div>
-              
+
               <p className="text-sm text-gray-300 text-center mb-4">
                 {previewImage.alt}
               </p>
