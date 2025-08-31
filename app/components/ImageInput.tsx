@@ -282,6 +282,7 @@ export default function ImageInput({
   const [previewImage, setPreviewImage] = useState<ImageSuggestion | null>(
     null
   );
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAIGeneration = async () => {
     setIsGenerating(true);
@@ -323,8 +324,50 @@ export default function ImageInput({
     setShowCamera(false);
   };
 
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Check file type
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file.");
+      return;
+    }
+
+    // Check file size (limit to 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      alert("File size must be less than 5MB.");
+      return;
+    }
+
+    // Convert to base64 data URL
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      onChange(dataUrl);
+    };
+    reader.onerror = () => {
+      alert("Error reading file. Please try again.");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
     <div className={`space-y-4 ${className}`}>
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileUpload}
+        className="hidden"
+      />
+
       {/* Action Buttons */}
       <div className="flex space-x-2">
         <button
@@ -333,6 +376,14 @@ export default function ImageInput({
           className="text-xs bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white px-3 py-1 rounded-md transition-colors"
         >
           📷 Camera
+        </button>
+
+        <button
+          type="button"
+          onClick={triggerFileUpload}
+          className="text-xs bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-3 py-1 rounded-md transition-colors"
+        >
+          📁 Upload
         </button>
 
         <button
