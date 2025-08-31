@@ -136,6 +136,9 @@ npm test -- __tests__/integration/qr-menu-workflow.test.ts
 
 # Run all prevention tests at once (86 tests in ~1 second)
 npm test -- __tests__/utils/ __tests__/database/
+
+# Run services tests
+npm test -- __tests__/services/
 ```
 
 ## Benefits for AI Development
