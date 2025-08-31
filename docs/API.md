@@ -92,6 +92,7 @@ Create a new menu with sections and items.
           "name": "Caesar Salad",
           "description": "Crisp romaine with parmesan",
           "price": 12.99,
+          "image_url": "https://example.com/caesar-salad.jpg",
           "is_available": true
         }
       ]
@@ -308,6 +309,7 @@ Get a published menu by ID. No authentication required.
             "name": "Caesar Salad",
             "description": "Crisp romaine",
             "price": 12.99,
+            "image_url": "https://example.com/caesar-salad.jpg",
             "is_available": true
           }
         ]
@@ -425,6 +427,7 @@ const menuData = {
           name: "Caesar Salad",
           description: "Romaine, parmesan, croutons",
           price: 12.99,
+          image_url: "https://example.com/caesar-salad.jpg",
           is_available: true,
         },
       ],
