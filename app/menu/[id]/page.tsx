@@ -7,6 +7,11 @@ import { PublicMenuData } from "@/lib/types/menu";
 import { trackQRScan } from "@/lib/utils/qrTracking";
 import { formatPrice } from "@/lib/utils/currency";
 import {
+  getResponsiveImageClasses,
+  generateImageAlt,
+  IMAGE_OPTIMIZATION,
+} from "@/lib/utils/images";
+import {
   MenuThemeConfig,
   THEME_PRESETS,
   FONT_SIZE_MAP,
@@ -182,40 +187,74 @@ export default function PublicMenu({ params }: PublicMenuProps) {
                   <div className={itemSpacing}>
                     {section.items
                       .filter((item) => item.is_available)
-                      .map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex justify-between items-start"
-                        >
-                          <div className="flex-1 pr-4">
-                            <h3
-                              className={`${bodySize} font-semibold mb-2`}
-                              style={{
-                                color: theme.colors.text,
-                                fontFamily: theme.fonts.heading,
-                              }}
-                            >
-                              {item.name}
-                            </h3>
-                            {item.description && (
-                              <p
-                                className="text-sm leading-relaxed"
-                                style={{ color: theme.colors.textSecondary }}
-                              >
-                                {item.description}
-                              </p>
+                      .map((item) => {
+                        const optimizedImageUrl = item.image_url
+                          ? IMAGE_OPTIMIZATION.optimize(
+                              item.image_url,
+                              400,
+                              400
+                            )
+                          : null;
+
+                        return (
+                          <div
+                            key={item.id}
+                            className={`flex items-start gap-4 ${itemCorners} border p-4 transition-all duration-200 hover:shadow-md`}
+                            style={{
+                              backgroundColor: theme.colors.background,
+                              borderColor: theme.colors.border,
+                            }}
+                          >
+                            {optimizedImageUrl && (
+                              <div className="flex-shrink-0">
+                                <img
+                                  src={optimizedImageUrl}
+                                  alt={generateImageAlt(item.name)}
+                                  className={`${getResponsiveImageClasses()} ${itemCorners} border`}
+                                  style={{ borderColor: theme.colors.border }}
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = "none";
+                                  }}
+                                  loading="lazy"
+                                />
+                              </div>
                             )}
+                            <div className="flex-1">
+                              <div className="flex justify-between items-start">
+                                <div className="flex-1 pr-4">
+                                  <h3
+                                    className={`${bodySize} font-semibold mb-2`}
+                                    style={{
+                                      color: theme.colors.text,
+                                      fontFamily: theme.fonts.heading,
+                                    }}
+                                  >
+                                    {item.name}
+                                  </h3>
+                                  {item.description && (
+                                    <p
+                                      className="text-sm leading-relaxed"
+                                      style={{
+                                        color: theme.colors.textSecondary,
+                                      }}
+                                    >
+                                      {item.description}
+                                    </p>
+                                  )}
+                                </div>
+                                <div className="text-right">
+                                  <span
+                                    className={`${bodySize} font-bold`}
+                                    style={{ color: theme.colors.accent }}
+                                  >
+                                    {formatPrice(item.price, menuData.currency)}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
                           </div>
-                          <div className="text-right">
-                            <span
-                              className={`${bodySize} font-bold`}
-                              style={{ color: theme.colors.accent }}
-                            >
-                              {formatPrice(item.price, menuData.currency)}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
 
                     {section.items.filter((item) => item.is_available)
                       .length === 0 && (

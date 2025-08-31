@@ -6,6 +6,7 @@ import { useEffect, useState, use } from "react";
 import { useMenu } from "@/hooks/useMenu";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import ThemePreview from "@/app/components/ThemePreview";
+import ImageInput from "@/app/components/ImageInput";
 import { MenuThemeConfig, THEME_PRESETS } from "@/lib/types/theme";
 import {
   CURRENCY_OPTIONS,
@@ -540,6 +541,19 @@ export default function EditMenu({ params }: EditMenuProps) {
                           rows={2}
                         />
                       </div>
+                      <ImageInput
+                        value={item.image_url}
+                        onChange={(url) =>
+                          updateMenuItem(
+                            currentSectionIndex,
+                            itemIndex,
+                            "image_url",
+                            url
+                          )
+                        }
+                        itemName={item.name}
+                        className="mt-4"
+                      />
                       <div className="mt-4 flex items-center">
                         <input
                           type="checkbox"

@@ -4,6 +4,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useMenu } from "@/hooks/useMenu";
+import ImageInput from "@/app/components/ImageInput";
+import { getBestImageRecommendation } from "@/lib/services/imageRecommendation";
 import {
   CURRENCY_OPTIONS,
   POPULAR_CURRENCIES,
@@ -85,6 +87,10 @@ export default function CreateMenu() {
       if (!confirmed) return;
     }
     router.push("/dashboard");
+  };
+
+  const resetForm = () => {
+    // Reset form logic can be added here if needed
   };
 
   const handleSaveMenu = async () => {
@@ -188,12 +194,14 @@ export default function CreateMenu() {
               name: "Garlic Bread",
               description: "Fresh baked bread with garlic and herbs",
               price: 8.99,
+              image_url: "",
               is_available: true,
             },
             {
               name: "Caesar Salad",
               description: "Crisp romaine with parmesan and croutons",
               price: 12.99,
+              image_url: "",
               is_available: true,
             },
           ],
@@ -206,12 +214,14 @@ export default function CreateMenu() {
               name: "Margherita Pizza",
               description: "Fresh mozzarella, tomato sauce, and basil",
               price: 18.99,
+              image_url: "",
               is_available: true,
             },
             {
               name: "Chicken Parmesan",
               description: "Breaded chicken with marinara and mozzarella",
               price: 24.99,
+              image_url: "",
               is_available: true,
             },
           ],
@@ -777,6 +787,19 @@ export default function CreateMenu() {
                             rows={2}
                           />
                         </div>
+                        <ImageInput
+                          value={item.image_url}
+                          onChange={(url) =>
+                            updateMenuItem(
+                              currentSectionIndex,
+                              itemIndex,
+                              "image_url",
+                              url
+                            )
+                          }
+                          itemName={item.name}
+                          className="mt-4"
+                        />
                         <div className="mt-4 flex items-center">
                           <input
                             type="checkbox"
