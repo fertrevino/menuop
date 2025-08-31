@@ -336,8 +336,8 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* First row - 3 features */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* First row - 4 features */}
             <div className="bg-gradient-to-br from-gray-700 to-gray-800 p-8 rounded-xl shadow-lg border border-gray-600/50 hover:border-[#1F8349]/50 transition-all duration-300 hover:transform hover:-translate-y-1 group">
               <div className="w-12 h-12 bg-gradient-to-br from-[#1F8349]/20 to-[#2ea358]/10 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <svg
@@ -360,6 +360,31 @@ export default function Home() {
               <p className="text-gray-300">
                 Build stunning menus in minutes with our intuitive drag-and-drop
                 editor. No technical skills required.
+              </p>
+            </div>
+
+            <div className="bg-gradient-to-br from-gray-700 to-gray-800 p-8 rounded-xl shadow-lg border border-gray-600/50 hover:border-[#1F8349]/50 transition-all duration-300 hover:transform hover:-translate-y-1 group">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#1F8349]/20 to-[#2ea358]/10 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg
+                  className="w-6 h-6 text-[#1F8349] group-hover:text-[#2ea358] transition-colors"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  ></path>
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-4">
+                AI Image Generation
+              </h3>
+              <p className="text-gray-300">
+                Generate stunning food images instantly with AI. Perfect visuals
+                for every dish, even without professional photography.
               </p>
             </div>
 
