@@ -263,6 +263,8 @@ interface ImageInputProps {
   onChange: (value: string) => void;
   placeholder?: string;
   required?: boolean;
+  itemName?: string;
+  className?: string;
 }
 
 export default function ImageInput({
@@ -270,18 +272,25 @@ export default function ImageInput({
   onChange,
   placeholder = "Select an image using the buttons below",
   required = false,
+  itemName,
+  className = "",
 }: ImageInputProps) {
   const [showAIImages, setShowAIImages] = useState(false);
   const [aiImages, setAiImages] = useState<ImageSuggestion[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
+  const [previewImage, setPreviewImage] = useState<ImageSuggestion | null>(null);
 
   const handleAIGeneration = async () => {
     setIsGenerating(true);
     setShowAIImages(true);
 
     try {
-      const suggestions = await getImageRecommendations("food image");
+      // Use the itemName if available, otherwise fallback to generic food image
+      const searchTerm = itemName && itemName.trim() ? itemName : "food image";
+      console.log("🎨 Generating AI images for:", searchTerm);
+      const suggestions = await getImageRecommendations(searchTerm);
+      console.log("🖼️ Received suggestions:", suggestions);
       setAiImages(suggestions);
     } catch (error) {
       console.error("Error generating AI images:", error);
@@ -296,6 +305,15 @@ export default function ImageInput({
     onChange(imageDataUrl);
     setShowAIImages(false);
     setAiImages([]);
+    setPreviewImage(null);
+  };
+
+  const handleImagePreview = (suggestion: ImageSuggestion) => {
+    setPreviewImage(suggestion);
+  };
+
+  const closePreview = () => {
+    setPreviewImage(null);
   };
 
   const handleCameraCapture = (dataUrl: string) => {
@@ -304,7 +322,7 @@ export default function ImageInput({
   };
 
   return (
-    <div className="space-y-4">
+    <div className={`space-y-4 ${className}`}>
       {/* Action Buttons */}
       <div className="flex space-x-2">
         <button
@@ -340,58 +358,110 @@ export default function ImageInput({
         </div>
       )}
 
-      {/* AI Image Suggestions Modal */}
+      {/* AI Image Suggestions - Inline */}
       {showAIImages && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="text-lg font-medium">AI Generated Images</h3>
-              <button
-                onClick={() => {
-                  setShowAIImages(false);
-                  setAiImages([]);
-                }}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
-            </div>
+        <div className="mt-4 bg-gray-700 rounded-lg border border-gray-600">
+          <div className="flex items-center justify-between p-4 border-b border-gray-600">
+            <h3 className="text-lg font-medium text-white">AI Generated Images</h3>
+            <button
+              onClick={() => {
+                setShowAIImages(false);
+                setAiImages([]);
+              }}
+              className="text-gray-400 hover:text-white"
+            >
+              ✕
+            </button>
+          </div>
 
-            <div className="p-6">
-              {isGenerating ? (
-                <div className="flex justify-center items-center py-8">
-                  <div className="animate-spin w-8 h-8 border-2 border-gray-300 border-t-[#1F8349] rounded-full"></div>
-                  <span className="ml-3">Generating AI images...</span>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {aiImages.map((suggestion, index) => (
-                    <div
-                      key={index}
-                      className="cursor-pointer group"
-                      onClick={() => handleAIImageSelect(suggestion.url)}
+          <div className="p-4">
+            {isGenerating ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="animate-spin w-8 h-8 border-2 border-gray-600 border-t-[#1F8349] rounded-full"></div>
+                <span className="ml-3 text-gray-300">Generating AI images...</span>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {aiImages.map((suggestion, index) => (
+                  <div key={index} className="group">
+                    <div 
+                      className="relative overflow-hidden rounded-lg border-2 border-gray-600 group-hover:border-[#1F8349] transition-colors"
+                      style={{
+                        backgroundColor: '#ffffff',
+                        minHeight: '128px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
                     >
-                      <div className="relative overflow-hidden rounded-lg border-2 border-gray-200 group-hover:border-[#1F8349] transition-colors">
-                        <img
-                          src={suggestion.url}
-                          alt={suggestion.alt}
-                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-200"
-                          style={{
-                            maxWidth: "100%",
-                            height: "192px",
-                            objectFit: "cover",
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity"></div>
+                      <img
+                        src={suggestion.url}
+                        alt={suggestion.alt}
+                        className="group-hover:scale-105 transition-transform duration-200"
+                        style={{
+                          width: '100%',
+                          height: '128px',
+                          objectFit: 'cover',
+                          display: 'block',
+                          backgroundColor: '#ffffff',
+                          border: 'none',
+                          outline: 'none',
+                          opacity: '1',
+                          visibility: 'visible',
+                          zIndex: '1',
+                          position: 'relative'
+                        }}
+                        onLoad={(e) => {
+                          console.log(`✅ Image ${index + 1} loaded successfully`);
+                          e.currentTarget.style.opacity = '1';
+                        }}
+                        onError={(e) => {
+                          console.error(`❌ Image ${index + 1} failed to load:`, suggestion.url);
+                          const target = e.currentTarget as HTMLImageElement;
+                          target.style.backgroundColor = '#ef4444';
+                          target.style.color = 'white';
+                          target.style.display = 'flex';
+                          target.style.alignItems = 'center';
+                          target.style.justifyContent = 'center';
+                          target.style.fontSize = '12px';
+                          target.alt = 'Failed to load image';
+                        }}
+                      />
+                      {/* Action buttons on hover */}
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" style={{ 
+                        zIndex: '10',
+                        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                        pointerEvents: 'none'
+                      }}>
+                        <div className="flex gap-2" style={{ pointerEvents: 'auto' }}>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleImagePreview(suggestion);
+                            }}
+                            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md transition-colors"
+                          >
+                            👁️ Preview
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleAIImageSelect(suggestion.url);
+                            }}
+                            className="px-3 py-1 bg-[#1F8349] hover:bg-[#176e3e] text-white text-sm rounded-md transition-colors"
+                          >
+                            ✓ Select
+                          </button>
+                        </div>
                       </div>
-                      <p className="mt-2 text-sm text-gray-600 text-center">
-                        {suggestion.alt}
-                      </p>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    <p className="mt-2 text-sm text-gray-400 text-center truncate">
+                      {suggestion.alt}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -402,6 +472,56 @@ export default function ImageInput({
           onCapture={handleCameraCapture}
           onClose={() => setShowCamera(false)}
         />
+      )}
+
+      {/* Image Preview Modal */}
+      {previewImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-gray-600">
+              <h3 className="text-lg font-medium text-white">Image Preview</h3>
+              <button
+                onClick={closePreview}
+                className="text-gray-400 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-4">
+              <div className="flex justify-center mb-4">
+                <img
+                  src={previewImage.url}
+                  alt={previewImage.alt}
+                  className="max-w-full max-h-96 object-contain rounded-lg"
+                  style={{
+                    backgroundColor: '#ffffff',
+                    display: 'block'
+                  }}
+                />
+              </div>
+              
+              <p className="text-sm text-gray-300 text-center mb-4">
+                {previewImage.alt}
+              </p>
+
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={closePreview}
+                  className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleAIImageSelect(previewImage.url)}
+                  className="px-6 py-2 bg-[#1F8349] hover:bg-[#176e3e] text-white rounded-lg font-medium"
+                >
+                  ✓ Use This Image
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
