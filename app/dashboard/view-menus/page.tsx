@@ -45,6 +45,10 @@ export default function ViewMenus() {
   const handleTogglePublish = async (menuId: string, isPublished: boolean) => {
     try {
       await togglePublishMenu(menuId, !isPublished);
+      // If we're unpublishing and have the QR modal open for this menu, close it
+      if (isPublished && selectedMenuForQR === menuId) {
+        setSelectedMenuForQR(null);
+      }
     } catch {
       // Error is already handled by the hook
     }
@@ -212,49 +216,160 @@ export default function ViewMenus() {
                       </span>
                     </div>
 
-                    <div className="flex flex-col space-y-2">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleEditMenu(menu.id)}
-                          className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors"
+                    <div className="flex justify-center space-x-2">
+                      {/* Edit Button */}
+                      <button
+                        onClick={() => handleEditMenu(menu.id)}
+                        className="group relative bg-indigo-600 hover:bg-indigo-500 text-white p-2.5 rounded-lg transition-all duration-200 hover:scale-105"
+                        title="Edit Menu"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
                         >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleViewMenu(menu.id)}
-                          className="flex-1 border border-gray-600 hover:border-[#1F8349] bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white py-2 px-3 rounded-lg text-sm font-medium transition-all"
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                          />
+                        </svg>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                          Edit Menu
+                        </div>
+                      </button>
+
+                      {/* View Button */}
+                      <button
+                        onClick={() => handleViewMenu(menu.id)}
+                        className="group relative bg-sky-600 hover:bg-sky-500 text-white p-2.5 rounded-lg transition-all duration-200 hover:scale-105"
+                        title="View Menu"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
                         >
-                          View
-                        </button>
-                      </div>
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() =>
-                            handleTogglePublish(menu.id, menu.is_published)
-                          }
-                          className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
-                            menu.is_published
-                              ? "bg-yellow-600 hover:bg-yellow-700 text-white"
-                              : "bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white"
-                          }`}
-                        >
-                          {menu.is_published ? "Unpublish" : "Publish"}
-                        </button>
-                        {menu.is_published && (
-                          <button
-                            onClick={() => setSelectedMenuForQR(menu.id)}
-                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors"
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          />
+                        </svg>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                          View Menu
+                        </div>
+                      </button>
+
+                      {/* Publish/Unpublish Button */}
+                      <button
+                        onClick={() =>
+                          handleTogglePublish(menu.id, menu.is_published)
+                        }
+                        className={`group relative p-2.5 rounded-lg transition-all duration-200 hover:scale-105 ${
+                          menu.is_published
+                            ? "bg-amber-600 hover:bg-amber-500 text-white"
+                            : "bg-emerald-600 hover:bg-emerald-500 text-white"
+                        }`}
+                        title={
+                          menu.is_published ? "Unpublish Menu" : "Publish Menu"
+                        }
+                      >
+                        {menu.is_published ? (
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
                           >
-                            QR Code
-                          </button>
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
                         )}
-                        <button
-                          onClick={() => handleDeleteMenu(menu.id)}
-                          className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors"
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                          {menu.is_published
+                            ? "Unpublish Menu"
+                            : "Publish Menu"}
+                        </div>
+                      </button>
+
+                      {/* QR Code Button (only for published menus) */}
+                      <button
+                        onClick={() => setSelectedMenuForQR(menu.id)}
+                        className="group relative bg-violet-600 hover:bg-violet-500 text-white p-2.5 rounded-lg transition-all duration-200 hover:scale-105"
+                        title="Generate QR Code"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
                         >
-                          Delete
-                        </button>
-                      </div>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
+                          />
+                        </svg>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                          Generate QR Code
+                        </div>
+                      </button>
+
+                      {/* Copy Link Button (only for published menus) */}
+
+                      {/* Delete Button */}
+                      <button
+                        onClick={() => handleDeleteMenu(menu.id)}
+                        className="group relative bg-rose-600 hover:bg-rose-500 text-white p-2.5 rounded-lg transition-all duration-200 hover:scale-105"
+                        title="Delete Menu"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                          Delete Menu
+                        </div>
+                      </button>
                     </div>
                   </div>
                 </div>
