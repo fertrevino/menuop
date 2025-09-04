@@ -254,7 +254,7 @@ export default function CreateMenu() {
             <div className="flex-1 flex items-center space-x-2">
               <button
                 onClick={handleBackNavigation}
-                className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-gray-700/50"
+                className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-gray-700/50 cursor-pointer"
               >
                 <svg
                   className="w-5 h-5"
@@ -820,7 +820,7 @@ export default function CreateMenu() {
                           />
                         </div>
                         <ImageInput
-                          value={item.image_url}
+                          value={item.image_url || ""}
                           onChange={(url) =>
                             updateMenuItem(
                               currentSectionIndex,

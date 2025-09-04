@@ -9,6 +9,15 @@ export default function Settings() {
   const router = useRouter();
 
   // Profile settings
+  const [initialProfileData, setInitialProfileData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    businessName: "",
+    businessType: "",
+    website: "",
+  });
+
   const [profileData, setProfileData] = useState({
     fullName: "",
     email: "",
@@ -19,6 +28,13 @@ export default function Settings() {
   });
 
   // Notification preferences
+  const [initialNotifications, setInitialNotifications] = useState({
+    emailUpdates: true,
+    menuAnalytics: false,
+    newFeatures: true,
+    marketingEmails: false,
+  });
+
   const [notifications, setNotifications] = useState({
     emailUpdates: true,
     menuAnalytics: false,
@@ -27,6 +43,12 @@ export default function Settings() {
   });
 
   // Menu preferences
+  const [initialMenuPreferences, setInitialMenuPreferences] = useState({
+    defaultCurrency: "USD",
+    timeFormat: "12h",
+    theme: "dark",
+  });
+
   const [menuPreferences, setMenuPreferences] = useState({
     defaultCurrency: "USD",
     timeFormat: "12h",
@@ -45,16 +67,27 @@ export default function Settings() {
   useEffect(() => {
     if (user) {
       // Load user data
-      setProfileData({
+      const userData = {
         fullName: user.user_metadata?.full_name || "",
         email: user.email || "",
         phone: user.user_metadata?.phone || "",
         businessName: user.user_metadata?.business_name || "",
         businessType: user.user_metadata?.business_type || "",
         website: user.user_metadata?.website || "",
-      });
+      };
+      setInitialProfileData(userData);
+      setProfileData(userData);
     }
   }, [user]);
+
+  // Function to check for unsaved changes
+  const hasUnsavedChanges = () => {
+    const profileChanged = JSON.stringify(profileData) !== JSON.stringify(initialProfileData);
+    const notificationsChanged = JSON.stringify(notifications) !== JSON.stringify(initialNotifications);
+    const preferencesChanged = JSON.stringify(menuPreferences) !== JSON.stringify(initialMenuPreferences);
+    
+    return profileChanged || notificationsChanged || preferencesChanged;
+  };
 
   const handleSaveProfile = async () => {
     setIsLoading(true);
@@ -62,6 +95,8 @@ export default function Settings() {
       // TODO: Implement actual profile update with Supabase
       await new Promise((resolve) => setTimeout(resolve, 1000));
       alert("Profile updated successfully!");
+      // Update initial data to match current data after successful save
+      setInitialProfileData({...profileData});
     } catch (error) {
       alert("Error updating profile. Please try again.");
     } finally {
@@ -75,6 +110,8 @@ export default function Settings() {
       // TODO: Implement actual notification preferences update
       await new Promise((resolve) => setTimeout(resolve, 500));
       alert("Notification preferences updated!");
+      // Update initial notifications to match current notifications after successful save
+      setInitialNotifications({...notifications});
     } catch (error) {
       alert("Error updating preferences. Please try again.");
     } finally {
@@ -88,6 +125,8 @@ export default function Settings() {
       // TODO: Implement actual menu preferences update
       await new Promise((resolve) => setTimeout(resolve, 500));
       alert("Menu preferences updated!");
+      // Update initial preferences to match current preferences after successful save
+      setInitialMenuPreferences({...menuPreferences});
     } catch (error) {
       alert("Error updating preferences. Please try again.");
     } finally {
@@ -145,8 +184,18 @@ export default function Settings() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
               <button
-                onClick={() => router.push("/dashboard")}
-                className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-gray-700/50"
+                onClick={() => {
+                  const hasUnsaved = hasUnsavedChanges();
+
+                  if (hasUnsaved) {
+                    const confirmed = window.confirm(
+                      "You have unsaved changes. Are you sure you want to leave?"
+                    );
+                    if (!confirmed) return;
+                  }
+                  router.push("/dashboard");
+                }}
+                className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-gray-700/50 cursor-pointer"
               >
                 <svg
                   className="w-5 h-5"

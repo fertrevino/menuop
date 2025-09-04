@@ -162,7 +162,7 @@ export default function ViewMenus() {
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => router.push("/dashboard")}
-                className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-gray-700/50"
+                className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-gray-700/50 cursor-pointer"
               >
                 <svg
                   className="w-5 h-5"
