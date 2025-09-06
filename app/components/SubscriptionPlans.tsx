@@ -30,36 +30,39 @@ export default function SubscriptionPlans() {
   const [plans, setPlans] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentSubscription, setCurrentSubscription] = useState<any>(null);
+  const [loadingSubscription, setLoadingSubscription] = useState(true);
 
   useEffect(() => {
-    const fetchPlans = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch("/api/stripe/subscription-plans");
-        const data = await response.json();
+        const [plansResponse, subscriptionResponse] = await Promise.all([
+          fetch("/api/stripe/subscription-plans"),
+          fetch("/api/stripe/current-subscription"),
+        ]);
 
-        if (!data.success) {
-          throw new Error(data.error || "Failed to fetch subscription plans");
+        const plansData = await plansResponse.json();
+        const subscriptionData = await subscriptionResponse.json();
+
+        if (!plansData.success) {
+          throw new Error(
+            plansData.error || "Failed to fetch subscription plans"
+          );
         }
 
-        console.log("Received subscription plans:", data.products);
-        data.products.forEach((product: Product) => {
-          console.log(`Product ${product.name}:`, {
-            metadata: product.metadata,
-            popular: product.metadata.popular,
-            best_value: product.metadata.best_value,
-            features: product.metadata.features,
-          });
-        });
-
-        setPlans(data.products);
+        setPlans(plansData.products);
+        if (subscriptionData.success) {
+          setCurrentSubscription(subscriptionData.subscription);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
+        setLoadingSubscription(false);
       }
     };
 
-    fetchPlans();
+    fetchData();
   }, []);
 
   if (loading) {
@@ -201,15 +204,72 @@ export default function SubscriptionPlans() {
                     </ul>
                   </div>
                 )}
-              <button
-                className="w-full bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
-                onClick={() => {
-                  // TODO: Handle subscription selection
-                  console.log("Selected plan:", plan.id);
-                }}
-              >
-                Select Plan
-              </button>
+              {currentSubscription &&
+              currentSubscription.product.name === plan.name ? (
+                <div className="space-y-2">
+                  {currentSubscription.cancelAtPeriodEnd ? (
+                    <div className="text-sm text-amber-500 text-center">
+                      Active until{" "}
+                      {new Date(
+                        currentSubscription.currentPeriodEnd
+                      ).toLocaleDateString()}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-[#1F8349] text-center">
+                      Active subscription
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  className="w-full bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50"
+                  onClick={async () => {
+                    try {
+                      if (!plan.price?.id) {
+                        console.error(
+                          "No price ID available for plan:",
+                          plan.id
+                        );
+                        return;
+                      }
+
+                      const response = await fetch(
+                        "/api/stripe/create-checkout-session",
+                        {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            priceId: plan.price.id,
+                          }),
+                        }
+                      );
+
+                      const data = await response.json();
+                      if (data.url) {
+                        window.location.href = data.url;
+                      } else {
+                        throw new Error(
+                          data.error || "Failed to create checkout session"
+                        );
+                      }
+                    } catch (error) {
+                      console.error("Error creating checkout session:", error);
+                      alert(
+                        "Failed to start checkout process. Please try again."
+                      );
+                    }
+                  }}
+                  disabled={loading}
+                >
+                  {loading
+                    ? "Loading..."
+                    : currentSubscription
+                    ? "Change Plan"
+                    : "Select Plan"}
+                </button>
+              )}
             </div>
           ))}
         </div>

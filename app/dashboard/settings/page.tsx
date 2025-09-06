@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import SubscriptionPlans from "@/app/components/SubscriptionPlans";
+import { CurrentSubscription } from "@/app/components/CurrentSubscription";
 
 export default function Settings() {
   const { user, loading, signOut } = useAuth();
@@ -483,8 +484,14 @@ export default function Settings() {
                     Subscription Management
                   </h3>
                 </div>
-                <div className="mb-8">
-                  <SubscriptionPlans />
+                <div className="space-y-8">
+                  <CurrentSubscription />
+                  <div className="pt-4 border-t border-gray-700">
+                    <h4 className="text-lg font-semibold text-white mb-4">
+                      Available Plans
+                    </h4>
+                    <SubscriptionPlans />
+                  </div>
                 </div>
               </div>
             )}
