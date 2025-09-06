@@ -3,6 +3,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import SubscriptionPlans from "@/app/components/SubscriptionPlans";
 
 export default function Settings() {
   const { user, loading, signOut } = useAuth();
@@ -177,6 +178,7 @@ export default function Settings() {
     { id: "profile", name: "Profile", icon: "👤" },
     { id: "notifications", name: "Notifications", icon: "🔔" },
     { id: "menu-preferences", name: "Menu Preferences", icon: "📋" },
+    { id: "subscription", name: "Subscription", icon: "💳" },
     { id: "account", name: "Account", icon: "⚙️" },
   ];
 
@@ -470,6 +472,19 @@ export default function Settings() {
                       </label>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "subscription" && (
+              <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-2xl font-bold text-white">
+                    Subscription Management
+                  </h3>
+                </div>
+                <div className="mb-8">
+                  <SubscriptionPlans />
                 </div>
               </div>
             )}

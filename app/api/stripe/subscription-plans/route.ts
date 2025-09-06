@@ -10,9 +10,15 @@ export async function GET() {
       expand: ["data.default_price"], // This will include the default price in the response
     });
 
+    console.log("Raw Stripe products:", JSON.stringify(products.data, null, 2));
+
     // Format the response to include price information
     const formattedProducts = products.data.map((product) => {
       const price = product.default_price as any; // We'll improve this typing later
+      console.log(`Processing product ${product.name}:`, {
+        metadata: product.metadata,
+        features: product.metadata.features,
+      });
       return {
         id: product.id,
         name: product.name,
@@ -33,6 +39,7 @@ export async function GET() {
             }
           : null,
         metadata: product.metadata,
+        marketing_features: product.marketing_features,
       };
     });
 
