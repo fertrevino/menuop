@@ -37,11 +37,6 @@ export async function GET() {
       limit: 1,
     });
 
-    console.log(
-      "Raw subscription data:",
-      JSON.stringify(subscriptions.data[0], null, 2)
-    );
-
     if (subscriptions.data.length === 0) {
       return NextResponse.json({
         success: true,
@@ -56,11 +51,6 @@ export async function GET() {
     const subscription = await stripe.subscriptions.retrieve(
       currentSubscription.id
     );
-    console.log(
-      "Full subscription data:",
-      JSON.stringify(subscription, null, 2)
-    );
-
     // Get price and product details separately
     const price = await stripe.prices.retrieve(
       currentSubscription.items.data[0].price.id,
@@ -99,7 +89,6 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error("Error fetching subscription:", error);
     return NextResponse.json(
       {
         success: false,

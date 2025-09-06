@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSubscriptionData } from "@/hooks/useSubscriptionData";
 
 interface Price {
   id: string;
@@ -27,48 +27,66 @@ interface Product {
 }
 
 export default function SubscriptionPlans() {
-  const [plans, setPlans] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [currentSubscription, setCurrentSubscription] = useState<any>(null);
-  const [loadingSubscription, setLoadingSubscription] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [plansResponse, subscriptionResponse] = await Promise.all([
-          fetch("/api/stripe/subscription-plans"),
-          fetch("/api/stripe/current-subscription"),
-        ]);
-
-        const plansData = await plansResponse.json();
-        const subscriptionData = await subscriptionResponse.json();
-
-        if (!plansData.success) {
-          throw new Error(
-            plansData.error || "Failed to fetch subscription plans"
-          );
-        }
-
-        setPlans(plansData.products);
-        if (subscriptionData.success) {
-          setCurrentSubscription(subscriptionData.subscription);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-      } finally {
-        setLoading(false);
-        setLoadingSubscription(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const {
+    plans,
+    currentSubscription,
+    isLoading: loading,
+    error,
+    refreshData,
+  } = useSubscriptionData();
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[200px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <div className="min-h-[calc(100vh-6rem)] flex items-start justify-center w-full py-16">
+        <div className="w-full max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {[1, 2].map((index) => (
+              <div
+                key={index}
+                className="relative bg-gradient-to-br from-gray-700 to-gray-800 p-8 rounded-xl shadow-lg border border-gray-600/50 w-full"
+              >
+                {/* Popular/Best Value Badge Skeleton */}
+                <div className="absolute -top-4 -right-4">
+                  <div className="bg-gradient-to-r from-gray-600 to-gray-700 h-6 w-20 rounded-full animate-pulse" />
+                </div>
+
+                {/* Title Skeleton */}
+                <div className="h-7 bg-gray-600 rounded-md w-3/4 mb-2 animate-pulse" />
+
+                {/* Price Skeleton */}
+                <div className="mb-6 space-y-2">
+                  <div className="h-9 bg-gray-600 rounded-md w-1/2 animate-pulse" />
+                  <div className="h-4 bg-gray-600 rounded-md w-1/3 animate-pulse" />
+                </div>
+
+                {/* Description Skeleton */}
+                <div className="space-y-2 mb-6">
+                  <div className="h-4 bg-gray-600 rounded-md w-full animate-pulse" />
+                  <div className="h-4 bg-gray-600 rounded-md w-5/6 animate-pulse" />
+                </div>
+
+                {/* Features Skeleton */}
+                <div className="mb-6">
+                  <div className="h-5 bg-gray-600 rounded-md w-1/4 mb-3 animate-pulse" />
+                  <div className="space-y-2">
+                    {[1, 2, 3, 4].map((featureIndex) => (
+                      <div
+                        key={featureIndex}
+                        className="flex items-center space-x-2"
+                      >
+                        <div className="h-5 w-5 bg-gray-600 rounded animate-pulse" />
+                        <div className="h-4 bg-gray-600 rounded-md w-5/6 animate-pulse" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Button Skeleton */}
+                <div className="h-12 bg-gray-600 rounded-lg w-full animate-pulse" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
@@ -148,59 +166,61 @@ export default function SubscriptionPlans() {
                       Features:
                     </h4>
                     <ul className="space-y-2">
-                      {plan.marketing_features.map((feature, index) => {
-                        const isNegativeFeature =
-                          feature.name.startsWith("NOT-");
-                        const featureName = isNegativeFeature
-                          ? feature.name.substring(4)
-                          : feature.name;
+                      {plan.marketing_features.map(
+                        (feature: MarketingFeature, index: number) => {
+                          const isNegativeFeature =
+                            feature.name.startsWith("NOT-");
+                          const featureName = isNegativeFeature
+                            ? feature.name.substring(4)
+                            : feature.name;
 
-                        return (
-                          <li
-                            key={index}
-                            className="flex items-start text-gray-300"
-                          >
-                            {isNegativeFeature ? (
-                              <svg
-                                className="w-5 h-5 text-gray-500 mr-2 flex-shrink-0"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
-                              </svg>
-                            ) : (
-                              <svg
-                                className="w-5 h-5 text-[#1F8349] mr-2 flex-shrink-0"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                            )}
-                            <span
-                              className={`text-sm ${
-                                isNegativeFeature
-                                  ? "text-gray-500 line-through"
-                                  : "text-gray-300"
-                              }`}
+                          return (
+                            <li
+                              key={index}
+                              className="flex items-start text-gray-300"
                             >
-                              {featureName}
-                            </span>
-                          </li>
-                        );
-                      })}
+                              {isNegativeFeature ? (
+                                <svg
+                                  className="w-5 h-5 text-gray-500 mr-2 flex-shrink-0"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                  />
+                                </svg>
+                              ) : (
+                                <svg
+                                  className="w-5 h-5 text-[#1F8349] mr-2 flex-shrink-0"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M5 13l4 4L19 7"
+                                  />
+                                </svg>
+                              )}
+                              <span
+                                className={`text-sm ${
+                                  isNegativeFeature
+                                    ? "text-gray-500 line-through"
+                                    : "text-gray-300"
+                                }`}
+                              >
+                                {featureName}
+                              </span>
+                            </li>
+                          );
+                        }
+                      )}
                     </ul>
                   </div>
                 )}
@@ -226,10 +246,6 @@ export default function SubscriptionPlans() {
                   onClick={async () => {
                     try {
                       if (!plan.price?.id) {
-                        console.error(
-                          "No price ID available for plan:",
-                          plan.id
-                        );
                         return;
                       }
 
@@ -255,7 +271,6 @@ export default function SubscriptionPlans() {
                         );
                       }
                     } catch (error) {
-                      console.error("Error creating checkout session:", error);
                       alert(
                         "Failed to start checkout process. Please try again."
                       );

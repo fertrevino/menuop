@@ -1,52 +1,13 @@
-import { useEffect, useState } from "react";
 import { Card, CardHeader, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
-
-interface SubscriptionDetails {
-  id: string;
-  status: string;
-  currentPeriodEnd: string;
-  cancelAtPeriodEnd: boolean;
-  product: {
-    name: string;
-    description: string;
-  };
-  price: {
-    amount: number;
-    currency: string;
-    formattedAmount: string;
-    interval: string;
-    intervalCount: number;
-  };
-}
+import { useSubscriptionData } from "@/hooks/useSubscriptionData";
 
 export function CurrentSubscription() {
-  const [subscription, setSubscription] = useState<SubscriptionDetails | null>(
-    null
-  );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchSubscription = async () => {
-      try {
-        const response = await fetch("/api/stripe/current-subscription");
-        const data = await response.json();
-
-        if (data.success) {
-          setSubscription(data.subscription);
-        } else {
-          setError(data.message || "Failed to load subscription");
-        }
-      } catch (err) {
-        setError("Failed to load subscription information");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSubscription();
-  }, []);
+  const {
+    currentSubscription: subscription,
+    isLoading: loading,
+    error,
+  } = useSubscriptionData();
 
   if (loading) {
     return (
