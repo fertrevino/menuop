@@ -82,10 +82,14 @@ export default function Settings() {
 
   // Function to check for unsaved changes
   const hasUnsavedChanges = () => {
-    const profileChanged = JSON.stringify(profileData) !== JSON.stringify(initialProfileData);
-    const notificationsChanged = JSON.stringify(notifications) !== JSON.stringify(initialNotifications);
-    const preferencesChanged = JSON.stringify(menuPreferences) !== JSON.stringify(initialMenuPreferences);
-    
+    const profileChanged =
+      JSON.stringify(profileData) !== JSON.stringify(initialProfileData);
+    const notificationsChanged =
+      JSON.stringify(notifications) !== JSON.stringify(initialNotifications);
+    const preferencesChanged =
+      JSON.stringify(menuPreferences) !==
+      JSON.stringify(initialMenuPreferences);
+
     return profileChanged || notificationsChanged || preferencesChanged;
   };
 
@@ -96,7 +100,7 @@ export default function Settings() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       alert("Profile updated successfully!");
       // Update initial data to match current data after successful save
-      setInitialProfileData({...profileData});
+      setInitialProfileData({ ...profileData });
     } catch (error) {
       alert("Error updating profile. Please try again.");
     } finally {
@@ -111,7 +115,7 @@ export default function Settings() {
       await new Promise((resolve) => setTimeout(resolve, 500));
       alert("Notification preferences updated!");
       // Update initial notifications to match current notifications after successful save
-      setInitialNotifications({...notifications});
+      setInitialNotifications({ ...notifications });
     } catch (error) {
       alert("Error updating preferences. Please try again.");
     } finally {
@@ -126,7 +130,7 @@ export default function Settings() {
       await new Promise((resolve) => setTimeout(resolve, 500));
       alert("Menu preferences updated!");
       // Update initial preferences to match current preferences after successful save
-      setInitialMenuPreferences({...menuPreferences});
+      setInitialMenuPreferences({ ...menuPreferences });
     } catch (error) {
       alert("Error updating preferences. Please try again.");
     } finally {

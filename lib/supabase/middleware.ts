@@ -46,8 +46,10 @@ export async function updateSession(request: NextRequest) {
   // Allow access to public menu pages
   const isPublicMenuPath = request.nextUrl.pathname.startsWith("/menu/");
 
-  // Allow access to API routes for public menus
-  const isPublicApiPath = request.nextUrl.pathname.startsWith("/api/public/");
+  // Allow access to API routes for public menus and webhooks
+  const isPublicApiPath =
+    request.nextUrl.pathname.startsWith("/api/public/") ||
+    request.nextUrl.pathname.startsWith("/api/stripe/webhooks");
 
   if (
     !user &&
