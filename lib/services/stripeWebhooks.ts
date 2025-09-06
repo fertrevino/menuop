@@ -1,7 +1,7 @@
-import { stripe } from "./stripe";
 import { createClient } from "@/lib/supabase/server";
+import type Stripe from "stripe";
 
-export async function handleStripeCustomerCreated(customer: any) {
+export async function handleStripeCustomerCreated(customer: Stripe.Customer) {
   try {
     const supabase = await createClient();
 
@@ -38,7 +38,12 @@ export async function handleStripeCustomerCreated(customer: any) {
   }
 }
 
-export async function handleStripeSubscriptionCreated(subscription: any) {
+export async function handleStripeSubscriptionCreated(
+  subscription: Stripe.Subscription & {
+    current_period_start: number;
+    current_period_end: number;
+  }
+) {
   try {
     const supabase = await createClient();
 

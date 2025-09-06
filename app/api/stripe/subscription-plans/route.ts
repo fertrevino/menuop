@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/services/stripe";
 import { formatStripePrice } from "@/lib/services/stripe";
+import type Stripe from "stripe";
 
 export async function GET() {
   try {
@@ -12,7 +13,9 @@ export async function GET() {
 
     // Format the response to include price information
     const formattedProducts = products.data.map((product) => {
-      const price = product.default_price as any; // We'll improve this typing later
+      const price = product.default_price as Stripe.Price & {
+        recurring?: { interval?: string; interval_count?: number };
+      };
       return {
         id: product.id,
         name: product.name,

@@ -557,8 +557,9 @@ export default function Home() {
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Choose from 18+ professionally designed themes that match your
-              restaurant's personality. From elegant French bistros to vibrant
-              Mexican cantinas, we have the perfect look for your business.
+              restaurant&apos;s personality. From elegant French bistros to
+              vibrant Mexican cantinas, we have the perfect look for your
+              business.
             </p>
           </div>
 
@@ -652,7 +653,7 @@ export default function Home() {
               <div className="bg-gradient-to-br from-[#8b4513] to-[#cd853f] p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:-translate-y-1 border-2 border-transparent hover:border-[#8b4513]/50">
                 <div className="bg-[#fdf6e3] p-4 rounded-lg mb-4">
                   <div className="text-[#8b4513] font-bold text-lg mb-2">
-                    Nonna's Kitchen
+                    Nonna&apos;s Kitchen
                   </div>
                   <div className="text-[#3c2414] text-sm space-y-1">
                     <div className="flex justify-between">
@@ -1018,7 +1019,7 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to transform your restaurant?
+            Ready to transform your restaurant&apos;s success?
           </h2>
           <p className="text-xl text-green-100 mb-8 max-w-2xl mx-auto">
             Join thousands of restaurants already using Menuop to create

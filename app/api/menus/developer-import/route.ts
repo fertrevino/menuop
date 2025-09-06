@@ -196,13 +196,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    interface MenuSection {
+      id: string;
+      menu_id: string;
+      name: string;
+      description: string | null;
+      sort_order: number;
+      items: MenuItem[];
+    }
+
+    interface MenuItem {
+      id: string;
+      section_id: string;
+      name: string;
+      description: string | null;
+      price: number;
+      image_url: string | null;
+      is_available: boolean;
+      sort_order: number;
+    }
+
     // Sort sections and items by their sort_order
     completeMenu.sections = completeMenu.sections
-      .sort((a: any, b: any) => a.sort_order - b.sort_order)
-      .map((section: any) => ({
+      .sort((a: MenuSection, b: MenuSection) => a.sort_order - b.sort_order)
+      .map((section: MenuSection) => ({
         ...section,
         items: section.items.sort(
-          (a: any, b: any) => a.sort_order - b.sort_order
+          (a: MenuItem, b: MenuItem) => a.sort_order - b.sort_order
         ),
       }));
 

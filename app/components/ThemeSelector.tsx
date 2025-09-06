@@ -6,8 +6,6 @@ import {
   MenuThemePreset,
   THEME_PRESETS,
   FONT_OPTIONS,
-  getThemePreset,
-  createCustomTheme,
 } from "@/lib/types/theme";
 
 interface ThemeSelectorProps {
@@ -39,7 +37,7 @@ export default function ThemeSelector({
   const handleCustomChange = (
     section: keyof MenuThemeConfig,
     key: string,
-    value: any
+    value: string
   ) => {
     const updatedConfig = { ...customConfig };
 
@@ -49,7 +47,8 @@ export default function ThemeSelector({
       section === "spacing" ||
       section === "corners"
     ) {
-      (updatedConfig[section] as any)[key] = value;
+      const sectionObj = updatedConfig[section] as Record<string, string>;
+      sectionObj[key] = value;
     }
 
     setCustomConfig(updatedConfig);

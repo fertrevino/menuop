@@ -1,9 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { stripe, formatStripePrice } from "@/lib/services/stripe";
 import type Stripe from "stripe";
 
-export async function GET() {
+interface StripeSubscriptionWithTime extends Stripe.Subscription {
+  current_period_end: number;
+}
+
+export const runtime = 'edge';
+
+export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const supabase = await createClient();
 
@@ -48,9 +54,10 @@ export async function GET() {
     const currentSubscription = subscriptions.data[0];
 
     // Get subscription with expanded details
-    const subscription = await stripe.subscriptions.retrieve(
+    const subscription = (await stripe.subscriptions.retrieve(
       currentSubscription.id
-    );
+    )) as unknown as StripeSubscriptionWithTime;
+
     // Get price and product details separately
     const price = await stripe.prices.retrieve(
       currentSubscription.items.data[0].price.id,
@@ -59,12 +66,12 @@ export async function GET() {
     const product = price.product as Stripe.Product;
 
     // Get the period end date safely
-    const subscriptionData = subscription as any;
-    const timestamp = subscriptionData.current_period_end;
+    const timestamp = subscription.current_period_end;
     const periodEndDate = new Date(timestamp * 1000);
     const periodEnd = !isNaN(periodEndDate.getTime())
       ? periodEndDate.toISOString()
       : new Date().toISOString();
+
     return NextResponse.json({
       success: true,
       subscription: {

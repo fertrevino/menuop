@@ -259,7 +259,7 @@ function CameraCapture({
 }
 
 interface ImageInputProps {
-  value: string;
+  value?: string;
   onChange: (value: string) => void;
   placeholder?: string;
   required?: boolean;
