@@ -1,5 +1,4 @@
 import { stripe } from "./stripe";
-import type Stripe from "stripe";
 
 /**
  * Get a customer's active subscription
