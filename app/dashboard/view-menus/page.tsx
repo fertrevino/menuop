@@ -20,6 +20,7 @@ export default function ViewMenus() {
     error,
     deleteMenu,
     togglePublishMenu,
+    pendingPublishIds,
     clearError,
   } = useUserMenus();
 
@@ -46,11 +47,10 @@ export default function ViewMenus() {
 
   const handleTogglePublish = async (menuId: string, isPublished: boolean) => {
     try {
-      await togglePublishMenu(menuId, !isPublished);
-      // If we're unpublishing and have the QR modal open for this menu, close it
-      if (isPublished && selectedMenuForQR === menuId) {
+      // Optimistically close QR modal immediately if unpublishing
+      if (isPublished && selectedMenuForQR === menuId)
         setSelectedMenuForQR(null);
-      }
+      await togglePublishMenu(menuId, !isPublished);
     } catch {
       // Error is already handled by the hook
     }
@@ -365,11 +365,14 @@ export default function ViewMenus() {
                             onClick={() =>
                               handleTogglePublish(menu.id, menu.is_published)
                             }
-                            className="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500/50"
+                            className="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500/50 disabled:opacity-60 disabled:cursor-not-allowed"
+                            disabled={pendingPublishIds.has(menu.id)}
                             title="Unpublish Menu"
                             aria-label="Unpublish Menu"
                           >
-                            Published
+                            {pendingPublishIds.has(menu.id)
+                              ? "Updating…"
+                              : "Published"}
                           </button>
                           <span className="pointer-events-none absolute -top-8 right-0 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-gray-200 opacity-0 group-hover/tooltip:opacity-100 transition-opacity">
                             Unpublish menu
@@ -381,11 +384,14 @@ export default function ViewMenus() {
                             onClick={() =>
                               handleTogglePublish(menu.id, menu.is_published)
                             }
-                            className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
+                            className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-500/50 disabled:opacity-60 disabled:cursor-not-allowed"
+                            disabled={pendingPublishIds.has(menu.id)}
                             title="Publish Menu"
                             aria-label="Publish Menu"
                           >
-                            Not published
+                            {pendingPublishIds.has(menu.id)
+                              ? "Updating…"
+                              : "Not published"}
                           </button>
                           <span className="pointer-events-none absolute -top-8 right-0 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-gray-200 opacity-0 group-hover/tooltip:opacity-100 transition-opacity">
                             Publish menu

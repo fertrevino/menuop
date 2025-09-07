@@ -236,6 +236,10 @@ export function useUserMenus() {
   const [menus, setMenus] = useState<(Menu & { items_count?: number })[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Track menus currently being published/unpublished for UI feedback
+  const [pendingPublishIds, setPendingPublishIds] = useState<Set<string>>(
+    new Set()
+  );
 
   useEffect(() => {
     if (user) {
@@ -270,8 +274,19 @@ export function useUserMenus() {
   };
 
   const togglePublishMenu = async (menuId: string, publish: boolean) => {
+    // Optimistic update with rollback on failure
+    const previous = menus.find((m) => m.id === menuId);
+    const prevPublished = previous?.is_published;
     try {
       setError(null);
+      // Mark as pending and optimistically update UI
+      setPendingPublishIds((prev) => new Set(prev).add(menuId));
+      setMenus((prev) =>
+        prev.map((menu) =>
+          menu.id === menuId ? { ...menu, is_published: publish } : menu
+        )
+      );
+
       const updatedMenu = publish
         ? await MenuService.publishMenu(menuId)
         : await MenuService.unpublishMenu(menuId);
@@ -282,10 +297,24 @@ export function useUserMenus() {
         );
       }
     } catch (err) {
+      // Rollback optimistic change
+      if (prevPublished !== undefined) {
+        setMenus((prev) =>
+          prev.map((menu) =>
+            menu.id === menuId ? { ...menu, is_published: prevPublished } : menu
+          )
+        );
+      }
       setError(
         err instanceof Error ? err.message : "Failed to update menu status"
       );
       throw err;
+    } finally {
+      setPendingPublishIds((prev) => {
+        const next = new Set(prev);
+        next.delete(menuId);
+        return next;
+      });
     }
   };
 
@@ -296,6 +325,7 @@ export function useUserMenus() {
     loadMenus,
     deleteMenu,
     togglePublishMenu,
+    pendingPublishIds,
     clearError: () => setError(null),
   };
 }
