@@ -1223,7 +1223,7 @@ export default function Home() {
               </div>
               <button
                 onClick={handleGetStarted}
-                className="w-full bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300"
+                className="w-full bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300 cursor-pointer"
               >
                 Start Premium Trial
               </button>
@@ -1251,7 +1251,10 @@ export default function Home() {
             Join thousands of restaurants already using Menuop to create
             beautiful digital menus.
           </p>
-          <button className="bg-white text-[#1F8349] hover:bg-gray-50 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 cursor-pointer">
+          <button
+            onClick={handleGetStarted}
+            className="bg-white text-[#1F8349] hover:bg-gray-50 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105 cursor-pointer"
+          >
             Start Your Free Trial
           </button>
         </div>
