@@ -61,22 +61,46 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
   };
 
   const handleGoogleSignIn = async () => {
+    console.log("SignIn Debug - Starting Google Sign In");
     setLoading(true);
     setError(null);
-    const { error } = await signInWithGoogle();
-    if (error) {
-      setError(error.message);
+
+    try {
+      const { error } = await signInWithGoogle();
+      console.log("SignIn Debug - Google Sign In Response:", {
+        error: error?.message,
+      });
+
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error("SignIn Debug - Google Sign In Error:", err);
+      setError("An unexpected error occurred");
       setLoading(false);
     }
     // Note: For OAuth, we don't reset loading here because the user will be redirected
   };
 
   const handleFacebookSignIn = async () => {
+    console.log("SignIn Debug - Starting Facebook Sign In");
     setLoading(true);
     setError(null);
-    const { error } = await signInWithFacebook();
-    if (error) {
-      setError(error.message);
+
+    try {
+      const { error } = await signInWithFacebook();
+      console.log("SignIn Debug - Facebook Sign In Response:", {
+        error: error?.message,
+      });
+
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error("SignIn Debug - Facebook Sign In Error:", err);
+      setError("An unexpected error occurred");
       setLoading(false);
     }
     // Note: For OAuth, we don't reset loading here because the user will be redirected
