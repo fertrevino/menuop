@@ -12,13 +12,21 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       const forwardedHost = request.headers.get("x-forwarded-host"); // original origin before load balancer
-      const isLocalEnv = process.env.NODE_ENV === "development";
-      if (isLocalEnv) {
-        // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
+      const forwardedProto = request.headers.get("x-forwarded-proto"); // original protocol
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+      if (baseUrl) {
+        // If we have a configured site URL, use it
+        return NextResponse.redirect(`${baseUrl}${next}`);
+      } else if (process.env.NODE_ENV === "development") {
+        // In development, use the original origin
         return NextResponse.redirect(`${origin}${next}`);
       } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`);
+        // In production with a load balancer, use the forwarded host
+        const protocol = forwardedProto || "https";
+        return NextResponse.redirect(`${protocol}://${forwardedHost}${next}`);
       } else {
+        // Fallback to the original origin
         return NextResponse.redirect(`${origin}${next}`);
       }
     }

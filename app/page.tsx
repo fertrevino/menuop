@@ -557,9 +557,9 @@ export default function Home() {
             </h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Choose from 18+ professionally designed themes that match your
-              restaurant&apos;s personality. From elegant French bistros to
-              vibrant Mexican cantinas, we have the perfect look for your
-              business.
+              restaurant&apos;s unique style. Our diverse collection features
+              designs inspired by cuisines and cultures from around the world,
+              ensuring the perfect look for your business.
             </p>
           </div>
 
@@ -653,21 +653,21 @@ export default function Home() {
               <div className="bg-gradient-to-br from-[#8b4513] to-[#cd853f] p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:-translate-y-1 border-2 border-transparent hover:border-[#8b4513]/50">
                 <div className="bg-[#fdf6e3] p-4 rounded-lg mb-4">
                   <div className="text-[#8b4513] font-bold text-lg mb-2">
-                    Nonna&apos;s Kitchen
+                    Traditional Style
                   </div>
                   <div className="text-[#3c2414] text-sm space-y-1">
                     <div className="flex justify-between">
-                      <span>Margherita Pizza</span>
+                      <span>Signature Dish</span>
                       <span className="text-[#dc143c] font-semibold">$16</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Pasta Carbonara</span>
+                      <span>House Special</span>
                       <span className="text-[#dc143c] font-semibold">$14</span>
                     </div>
                   </div>
                 </div>
                 <h3 className="text-white font-semibold text-center">
-                  Italian Trattoria
+                  Classic Elegance
                 </h3>
               </div>
             </div>
@@ -677,25 +677,21 @@ export default function Home() {
               <div className="bg-gradient-to-br from-[#2d5016] to-[#4a7c59] p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:-translate-y-1 border-2 border-transparent hover:border-[#2d5016]/50">
                 <div className="bg-[#f7f5f3] p-4 rounded-lg mb-4">
                   <div className="text-[#2d5016] font-bold text-lg mb-2">
-                    Zen Garden
+                    Modern Style
                   </div>
                   <div className="text-[#1a1a1a] text-sm space-y-1">
                     <div className="flex justify-between">
-                      <span>Salmon Sashimi</span>
-                      <span className="text-[#d4af37] font-semibold">
-                        ¥1800
-                      </span>
+                      <span>Fresh Catch</span>
+                      <span className="text-[#d4af37] font-semibold">$18</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Miso Ramen</span>
-                      <span className="text-[#d4af37] font-semibold">
-                        ¥1200
-                      </span>
+                      <span>Chef&apos;s Special</span>
+                      <span className="text-[#d4af37] font-semibold">$12</span>
                     </div>
                   </div>
                 </div>
                 <h3 className="text-white font-semibold text-center">
-                  Japanese Zen
+                  Contemporary Design
                 </h3>
               </div>
             </div>
@@ -703,8 +699,9 @@ export default function Home() {
 
           <div className="text-center mt-12">
             <p className="text-gray-300 mb-6">
-              + 16 more themes including Mexican Cantina, French Bistro, Korean
-              Modern, Spanish Tapas, and Nordic Minimalist
+              + 16 more themes with diverse styles ranging from contemporary to
+              traditional, featuring designs inspired by international cuisines
+              and modern dining trends
             </p>
             <button
               onClick={handleGetStarted}
