@@ -25,6 +25,18 @@ export default function EditMenu({ params }: EditMenuProps) {
   const router = useRouter();
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<"content" | "theme">("content");
+  const [isDeveloperMode, setIsDeveloperMode] = useState(false);
+  const [jsonInput, setJsonInput] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [importMessage, setImportMessage] = useState<
+    | {
+        type: "success" | "error";
+        content: string;
+      }
+    | null
+  >(null);
+  const [cachedJson, setCachedJson] = useState("");
+  const [copied, setCopied] = useState(false);
 
   // Unwrap the params Promise using React.use()
   const { id } = use(params);
@@ -70,6 +82,193 @@ export default function EditMenu({ params }: EditMenuProps) {
   const handleThemeChange = (newTheme: MenuThemeConfig) => {
     updateMenuField("theme_config", newTheme);
   };
+
+  // Developer Mode types and helpers
+  interface DevMenuData {
+    name: string;
+    restaurant_name: string;
+    description?: string;
+    currency?: string;
+    sections: {
+      name: string;
+      description?: string;
+      items: {
+        name: string;
+        description?: string;
+        price: number;
+        image_url?: string;
+        is_available?: boolean;
+      }[];
+    }[];
+  }
+
+  const loadFromCurrentMenu = () => {
+    if (!menuFormData) return;
+    const data: DevMenuData = {
+      name: menuFormData.name,
+      restaurant_name: menuFormData.restaurant_name,
+      description: menuFormData.description,
+      currency: menuFormData.currency || "USD",
+      sections: menuFormData.sections.map((s) => ({
+        name: s.name,
+        description: s.description,
+        items: s.items.map((i) => ({
+          name: i.name,
+          description: i.description,
+          price: i.price,
+          image_url: i.image_url,
+          is_available: i.is_available ?? true,
+        })),
+      })),
+    };
+    const json = JSON.stringify(data, null, 2);
+    setJsonInput(json);
+    setCachedJson(json);
+  };
+
+  // Precompute JSON when the visual form changes to keep Dev Mode toggle instant
+  useEffect(() => {
+    if (!menuFormData) return;
+    const generate = () => {
+      try {
+        const data: DevMenuData = {
+          name: menuFormData.name,
+          restaurant_name: menuFormData.restaurant_name,
+          description: menuFormData.description,
+          currency: menuFormData.currency || "USD",
+          sections: menuFormData.sections.map((s) => ({
+            name: s.name,
+            description: s.description,
+            items: s.items.map((i) => ({
+              name: i.name,
+              description: i.description,
+              price: i.price,
+              image_url: i.image_url,
+              is_available: i.is_available ?? true,
+            })),
+          })),
+        };
+        setCachedJson(JSON.stringify(data, null, 2));
+      } catch (e) {
+        // noop: keep previous cache on error
+      }
+    };
+
+    // Prefer requestIdleCallback to avoid blocking the UI
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      (window as any).requestIdleCallback(generate, { timeout: 200 });
+    } else {
+      // Fallback: schedule after paint
+      setTimeout(generate, 0);
+    }
+  }, [menuFormData]);
+
+  const handleJsonUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!jsonInput.trim()) {
+      setImportMessage({ type: "error", content: "Please enter JSON data" });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setImportMessage(null);
+
+    try {
+      const data: DevMenuData = JSON.parse(jsonInput);
+
+      if (!data.name || !data.restaurant_name || !data.sections) {
+        throw new Error(
+          "Invalid menu structure. Required fields: name, restaurant_name, sections"
+        );
+      }
+
+      // Build payload for existing PUT endpoint, preserving current theme_config
+      const payload = {
+        name: data.name,
+        restaurant_name: data.restaurant_name,
+        description: data.description ?? undefined,
+        currency: data.currency || "USD",
+        sections: data.sections.map((s) => ({
+          name: s.name,
+          description: s.description ?? undefined,
+          items: s.items.map((i) => ({
+            name: i.name,
+            description: i.description ?? undefined,
+            price: i.price,
+            image_url: i.image_url ?? undefined,
+            is_available: i.is_available ?? true,
+          })),
+        })),
+        theme_config: menuFormData.theme_config || null,
+      };
+
+      const response = await fetch(`/api/menus/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setImportMessage({
+          type: "success",
+          content: `Menu "${result.menu.name}" updated successfully!`,
+        });
+        // Optionally reload current form data from result by navigating back or staying
+        // For now, switch back to visual builder after a short delay
+        setTimeout(() => {
+          setIsDeveloperMode(false);
+          setImportMessage(null);
+        }, 1500);
+      } else {
+        setImportMessage({
+          type: "error",
+          content: result.error || "Failed to update menu",
+        });
+      }
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        setImportMessage({
+          type: "error",
+          content: "Invalid JSON format. Please check your syntax.",
+        });
+      } else {
+        setImportMessage({
+          type: "error",
+          content:
+            error instanceof Error ? error.message : "An unexpected error occurred",
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const copyJsonToClipboard = async () => {
+    if (!jsonInput) return;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(jsonInput);
+      } else {
+        // Fallback for older browsers
+        const ta = document.createElement("textarea");
+        ta.value = jsonInput;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    } catch (e) {
+      // No-op on failure; user can still manually select and copy
+    }
+  };
+
 
   const handleCancel = () => {
     if (hasUnsavedChanges) {
@@ -122,7 +321,7 @@ export default function EditMenu({ params }: EditMenuProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-gradient-to-r from-gray-900/95 to-gray-800/95 backdrop-blur-sm border-b border-gray-700/50">
+  <nav className="sticky top-0 z-50 bg-gradient-to-r from-gray-900/95 to-gray-800/95 backdrop-blur-sm border-b border-gray-700/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex-1 flex items-center space-x-2">
@@ -159,33 +358,78 @@ export default function EditMenu({ params }: EditMenuProps) {
                 />
               </svg>
               <h1 className="text-xl font-bold text-white">Edit Menu</h1>
-              {hasUnsavedChanges && (
-                <span className="text-yellow-400 text-sm">
-                  • Unsaved changes
-                </span>
+              {!isDeveloperMode && hasUnsavedChanges && (
+                <span className="text-yellow-400 text-sm">• Unsaved changes</span>
               )}
             </div>
             <div className="flex items-center space-x-4">
+              {/* Keep Reset/Save visible; disable in Dev Mode to reduce confusion */}
               <button
                 onClick={resetForm}
-                className="text-gray-300 hover:text-white px-4 py-2 rounded-lg transition-colors"
+                disabled={isDeveloperMode}
+                title={isDeveloperMode ? "Disabled in Dev Mode. Use Apply JSON Update instead." : undefined}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  isDeveloperMode
+                    ? "text-gray-500 cursor-not-allowed"
+                    : "text-gray-300 hover:text-white"
+                }`}
               >
                 Reset
               </button>
               <button
                 onClick={handleSaveMenu}
-                disabled={saving}
-                className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 disabled:opacity-50 cursor-pointer"
+                disabled={saving || isDeveloperMode}
+                title={isDeveloperMode ? "Disabled in Dev Mode. Use Apply JSON Update instead." : undefined}
+                className={`px-6 py-2 rounded-lg font-semibold transition-all duration-300 cursor-pointer bg-gradient-to-r ${
+                  saving || isDeveloperMode
+                    ? "from-gray-600 to-gray-700 opacity-50 cursor-not-allowed"
+                    : "from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white"
+                }`}
               >
                 {saving ? "Saving..." : "Save Changes"}
               </button>
+
+              {/* Dev Mode Toggle at the end */}
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => {
+                    const next = !isDeveloperMode;
+                    setIsDeveloperMode(next);
+                    setImportMessage(null);
+                    if (next) {
+                      // Use cached JSON for instant toggle; fallback to building immediately
+                      if (cachedJson) {
+                        setJsonInput(cachedJson);
+                      } else {
+                        loadFromCurrentMenu();
+                      }
+                    }
+                  }}
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer ${
+                    isDeveloperMode ? "bg-[#1F8349]" : "bg-gray-600"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                      isDeveloperMode ? "translate-x-5" : "translate-x-0.5"
+                    }`}
+                  />
+                </button>
+                <span
+                  className={`text-xs font-medium ${
+                    isDeveloperMode ? "text-[#1F8349]" : "text-gray-400"
+                  }`}
+                >
+                  Dev Mode
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </nav>
 
       {/* Error Display */}
-      {error && (
+      {error && !isDeveloperMode && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
           <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg flex justify-between items-center">
             <span>{error}</span>
@@ -199,6 +443,154 @@ export default function EditMenu({ params }: EditMenuProps) {
         </div>
       )}
 
+      {isDeveloperMode ? (
+        /* Developer Mode Interface */
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-xl border border-gray-700/50 p-8">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-white mb-4">🚀 Developer Mode - JSON Update</h2>
+              <p className="text-gray-300 mb-4">
+                Update this menu by editing/importing JSON. Perfect for extending menus quickly as a developer.
+              </p>
+
+              <div className="bg-yellow-900/20 border border-yellow-700/50 rounded-lg p-4 mb-6">
+                <div className="flex items-start">
+                  <svg
+                    className="w-5 h-5 text-yellow-400 mt-0.5 mr-2 flex-shrink-0"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <div>
+                    <h3 className="text-yellow-400 font-medium mb-1">Heads up</h3>
+                    <p className="text-yellow-200 text-sm">
+                      When you apply a JSON update, the menu sections and items will be replaced by the provided data. Theme is preserved.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <form onSubmit={handleJsonUpdate} className="space-y-6">
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label htmlFor="json-input" className="block text-sm font-medium text-gray-300">
+                    Menu JSON Data
+                  </label>
+                  <button
+                    type="button"
+                    onClick={copyJsonToClipboard}
+                    disabled={!jsonInput}
+                    className={`text-sm px-2 py-1 rounded transition-colors ${
+                      jsonInput
+                        ? "text-[#1F8349] hover:text-[#2ea358] cursor-pointer"
+                        : "text-gray-500 cursor-not-allowed"
+                    }`}
+                    aria-label="Copy JSON"
+                    title={copied ? "Copied!" : "Copy JSON"}
+                  >
+                    {copied ? "Copied" : "Copy"}
+                  </button>
+                </div>
+                <textarea
+                  id="json-input"
+                  value={jsonInput}
+                  onChange={(e) => setJsonInput(e.target.value)}
+                  className="w-full h-96 bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-[#1F8349] transition-colors resize-none"
+                  placeholder="Paste your JSON menu data here..."
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              {importMessage && (
+                <div
+                  className={`p-4 rounded-lg border ${
+                    importMessage.type === "success"
+                      ? "bg-green-900/20 border-green-700/50 text-green-300"
+                      : "bg-red-900/20 border-red-700/50 text-red-300"
+                  }`}
+                >
+                  <div className="flex items-start">
+                    <svg
+                      className={`w-5 h-5 mt-0.5 mr-2 flex-shrink-0 ${
+                        importMessage.type === "success" ? "text-green-400" : "text-red-400"
+                      }`}
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      {importMessage.type === "success" ? (
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      ) : (
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
+                      )}
+                    </svg>
+                    <span className="text-sm">{importMessage.content}</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex space-x-4">
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !jsonInput.trim()}
+                  className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  {isSubmitting ? "Updating Menu..." : "Apply JSON Update"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsDeveloperMode(false)}
+                  className="border border-gray-600 hover:border-[#1F8349] bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 hover:text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300"
+                >
+                  Switch to Visual Builder
+                </button>
+              </div>
+
+              {/* JSON Structure Documentation */}
+              <div className="mt-12 pt-8 border-t border-gray-700">
+                <h3 className="text-lg font-semibold text-white mb-4">Required JSON Structure</h3>
+                <div className="bg-gray-900 rounded-lg p-4">
+                  <pre className="text-sm text-gray-300 overflow-x-auto">{`{
+  "name": "Menu Name (required)",
+  "restaurant_name": "Restaurant Name (required)",
+  "description": "Optional description",
+  "currency": "USD",
+  "sections": [
+    {
+      "name": "Section Name (required)",
+      "description": "Optional section description",
+      "items": [
+        {
+          "name": "Item Name (required)",
+          "description": "Optional item description",
+          "price": 12.99,
+          "image_url": "Optional image URL",
+          "is_available": true
+        }
+      ]
+    }
+  ]
+}`}</pre>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar */}
@@ -638,6 +1030,7 @@ export default function EditMenu({ params }: EditMenuProps) {
           </div>
         </div>
       </div>
+  )}
     </div>
   );
 }
