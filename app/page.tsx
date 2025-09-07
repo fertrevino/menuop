@@ -1008,11 +1008,237 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Pricing Section */}
       <section
         id="pricing"
-        className="py-20 bg-gradient-to-br from-[#1F8349] via-[#2ea358] to-[#1F8349] relative overflow-hidden"
+        className="py-20 bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 relative overflow-hidden"
       >
+        {/* Background accents */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-[#1F8349]/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#1F8349]/3 rounded-full blur-3xl"></div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            Simple, Transparent Pricing
+          </h2>
+          <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
+            Start for free and upgrade when you need more features. No hidden
+            fees, cancel anytime.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Free Plan */}
+            <div className="relative bg-gradient-to-br from-gray-700 to-gray-800 p-8 rounded-xl shadow-lg border border-gray-600/50 hover:border-[#1F8349]/50 transition-all duration-300 hover:transform hover:-translate-y-1 flex flex-col justify-between">
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-4">Free</h3>
+                <div className="text-3xl font-bold text-white mb-6">$0</div>
+                <ul className="text-left space-y-4 mb-8">
+                  <li className="flex items-center text-gray-300">
+                    <svg
+                      className="w-5 h-5 text-[#1F8349] mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    1 menu included
+                  </li>
+                  <li className="flex items-center text-gray-300">
+                    <svg
+                      className="w-5 h-5 text-[#1F8349] mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Basic themes
+                  </li>
+                  <li className="flex items-center text-gray-300">
+                    <svg
+                      className="w-5 h-5 text-[#1F8349] mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    QR code generation
+                  </li>
+                  <li className="flex items-center text-gray-300">
+                    <svg
+                      className="w-5 h-5 text-[#1F8349] mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Basic analytics
+                  </li>
+                  <li className="flex items-center text-gray-300">
+                    <svg
+                      className="w-5 h-5 text-gray-500 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                    <span className="text-gray-500">AI image generation</span>
+                  </li>
+                </ul>
+              </div>
+              <button
+                onClick={handleGetStarted}
+                className="w-full bg-gray-600 hover:bg-gray-500 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300"
+              >
+                Get Started Free
+              </button>
+            </div>
+
+            {/* Premium Plan */}
+            <div className="relative bg-gradient-to-br from-gray-700 to-gray-800 p-8 rounded-xl shadow-lg border border-gray-600/50 hover:border-[#1F8349]/50 transition-all duration-300 hover:transform hover:-translate-y-1 flex flex-col justify-between">
+              <div>
+                <div className="absolute -top-4 -right-4">
+                  <div className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg">
+                    Popular
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-4">Premium</h3>
+                <div className="text-3xl font-bold text-white mb-6">
+                  $39
+                  <span className="text-lg font-normal text-gray-300">
+                    /month
+                  </span>
+                </div>
+                <ul className="text-left space-y-4 mb-8">
+                  <li className="flex items-center text-gray-300">
+                    <svg
+                      className="w-5 h-5 text-[#1F8349] mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Unlimited menus
+                  </li>
+                  <li className="flex items-center text-gray-300">
+                    <svg
+                      className="w-5 h-5 text-[#1F8349] mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    All premium themes
+                  </li>
+                  <li className="flex items-center text-gray-300">
+                    <svg
+                      className="w-5 h-5 text-[#1F8349] mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Advanced analytics
+                  </li>
+                  <li className="flex items-center text-gray-300">
+                    <svg
+                      className="w-5 h-5 text-[#1F8349] mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    AI image generation
+                  </li>
+                  <li className="flex items-center text-gray-300">
+                    <svg
+                      className="w-5 h-5 text-[#1F8349] mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Priority support
+                  </li>
+                </ul>
+              </div>
+              <button
+                onClick={handleGetStarted}
+                className="w-full bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300"
+              >
+                Start Premium Trial
+              </button>
+            </div>
+          </div>
+
+          <p className="text-gray-400 mt-8 text-sm">
+            All plans include secure hosting, automatic QR code generation, and
+            mobile-optimized menus.
+          </p>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-br from-[#1F8349] via-[#2ea358] to-[#1F8349] relative overflow-hidden">
         {/* Background accents */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 right-0 w-80 h-80 bg-white/3 rounded-full blur-3xl"></div>
