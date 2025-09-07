@@ -1,37 +1,37 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
+function getBaseUrl(request: Request, origin: string): string {
+  // Priority order:
+  // 1. Configured NEXT_PUBLIC_SITE_URL
+  // 2. Forwarded host from load balancer (production)
+  // 3. Original request origin
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (baseUrl) return baseUrl;
+
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  if (forwardedHost) {
+    const protocol = request.headers.get("x-forwarded-proto") || "https";
+    return `${protocol}://${forwardedHost}`;
+  }
+
+  return origin;
+}
+
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  // if "next" is in param, use it as the redirect URL
   const next = searchParams.get("next") ?? "/dashboard";
+  const baseUrl = getBaseUrl(request, origin);
 
-  if (code) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      const forwardedHost = request.headers.get("x-forwarded-host"); // original origin before load balancer
-      const forwardedProto = request.headers.get("x-forwarded-proto"); // original protocol
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
-
-      if (baseUrl) {
-        // If we have a configured site URL, use it
-        return NextResponse.redirect(`${baseUrl}${next}`);
-      } else if (process.env.NODE_ENV === "development") {
-        // In development, use the original origin
-        return NextResponse.redirect(`${origin}${next}`);
-      } else if (forwardedHost) {
-        // In production with a load balancer, use the forwarded host
-        const protocol = forwardedProto || "https";
-        return NextResponse.redirect(`${protocol}://${forwardedHost}${next}`);
-      } else {
-        // Fallback to the original origin
-        return NextResponse.redirect(`${origin}${next}`);
-      }
-    }
+  if (!code) {
+    return NextResponse.redirect(`${baseUrl}/auth/auth-code-error`);
   }
 
-  // return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+  const supabase = await createClient();
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+  return NextResponse.redirect(
+    `${baseUrl}${error ? "/auth/auth-code-error" : next}`
+  );
 }
