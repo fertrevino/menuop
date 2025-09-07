@@ -359,15 +359,35 @@ export default function ViewMenus() {
                           {menu.restaurant_name}
                         </p>
                       </div>
-                      <div
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          menu.is_published
-                            ? "bg-green-500/20 text-green-400"
-                            : "bg-yellow-500/20 text-yellow-400"
-                        }`}
-                      >
-                        {menu.is_published ? "Published" : "Draft"}
-                      </div>
+                      {menu.is_published ? (
+                        <div className="relative group/tooltip">
+                          <button
+                            onClick={() => handleTogglePublish(menu.id, menu.is_published)}
+                            className="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500/50"
+                            title="Unpublish Menu"
+                            aria-label="Unpublish Menu"
+                          >
+                            Published
+                          </button>
+                          <span className="pointer-events-none absolute -top-8 right-0 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-gray-200 opacity-0 group-hover/tooltip:opacity-100 transition-opacity">
+                            Unpublish menu
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="relative group/tooltip">
+                          <button
+                            onClick={() => handleTogglePublish(menu.id, menu.is_published)}
+                            className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
+                            title="Publish Menu"
+                            aria-label="Publish Menu"
+                          >
+                            Not published
+                          </button>
+                          <span className="pointer-events-none absolute -top-8 right-0 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-gray-200 opacity-0 group-hover/tooltip:opacity-100 transition-opacity">
+                            Publish menu
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     <div className="flex items-center justify-between text-sm text-gray-400">
@@ -383,31 +403,33 @@ export default function ViewMenus() {
                     <div className="px-6 py-3 flex items-center justify-between">
                       {/* Left Actions */}
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleViewMenu(menu.id)}
-                          className="text-gray-300 hover:text-sky-400 flex items-center gap-2 transition-colors px-2 py-1 rounded-md hover:bg-gray-600/30 cursor-pointer"
-                        >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                        {menu.is_published && (
+                          <button
+                            onClick={() => handleViewMenu(menu.id)}
+                            className="text-gray-300 hover:text-sky-400 flex items-center gap-2 transition-colors px-2 py-1 rounded-md hover:bg-gray-600/30 cursor-pointer"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                            />
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                            />
-                          </svg>
-                          <span className="text-sm font-medium">View</span>
-                        </button>
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                              />
+                            </svg>
+                            <span className="text-sm font-medium">View</span>
+                          </button>
+                        )}
 
                         <button
                           onClick={() => handleEditMenu(menu.id)}
@@ -432,42 +454,14 @@ export default function ViewMenus() {
 
                       {/* Right Actions */}
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => setSelectedMenuForQR(menu.id)}
-                          className="text-gray-300 hover:text-violet-400 transition-colors p-1.5 rounded-md hover:bg-gray-600/30 cursor-pointer"
-                          title="Generate QR Code"
-                        >
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                        {/* QR Button + Helper Text */}
+                        <div className="relative group/tooltip">
+                          <button
+                            onClick={() => setSelectedMenuForQR(menu.id)}
+                            className="text-gray-300 hover:text-violet-400 transition-colors p-1.5 rounded-md hover:bg-gray-600/30 cursor-pointer"
+                            title="Generate QR Code"
+                            aria-label="Generate QR Code"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
-                            />
-                          </svg>
-                        </button>
-
-                        <button
-                          onClick={() =>
-                            handleTogglePublish(menu.id, menu.is_published)
-                          }
-                          className={`transition-colors p-1.5 rounded-md hover:bg-gray-600/30 cursor-pointer ${
-                            menu.is_published
-                              ? "text-amber-400 hover:text-amber-300"
-                              : "text-gray-300 hover:text-emerald-400"
-                          }`}
-                          title={
-                            menu.is_published
-                              ? "Unpublish Menu"
-                              : "Publish Menu"
-                          }
-                        >
-                          {menu.is_published ? (
                             <svg
                               className="w-5 h-5"
                               fill="none"
@@ -478,10 +472,26 @@ export default function ViewMenus() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth="2"
-                                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
                               />
                             </svg>
-                          ) : (
+                          </button>
+                          <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-gray-200 opacity-0 group-hover/tooltip:opacity-100 transition-opacity">
+                            Generate QR
+                          </span>
+                        </div>
+
+                        {/* Publish/Unpublish Button + Helper Text */}
+                        {/* Publish/unpublish is handled by the status chip; avoid duplicate action button */}
+
+                        {/* Delete Button + Helper Text */}
+                        <div className="relative group/tooltip">
+                          <button
+                            onClick={() => handleDeleteMenu(menu.id)}
+                            className="text-gray-300 hover:text-rose-400 transition-colors p-1.5 rounded-md hover:bg-gray-600/30 cursor-pointer"
+                            title="Delete Menu"
+                            aria-label="Delete Menu"
+                          >
                             <svg
                               className="w-5 h-5"
                               fill="none"
@@ -492,31 +502,14 @@ export default function ViewMenus() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth="2"
-                                d="M5 13l4 4L19 7"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                               />
                             </svg>
-                          )}
-                        </button>
-
-                        <button
-                          onClick={() => handleDeleteMenu(menu.id)}
-                          className="text-gray-300 hover:text-rose-400 transition-colors p-1.5 rounded-md hover:bg-gray-600/30 cursor-pointer"
-                          title="Delete Menu"
-                        >
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
-                        </button>
+                          </button>
+                          <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-gray-200 opacity-0 group-hover/tooltip:opacity-100 transition-opacity">
+                            Delete
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
