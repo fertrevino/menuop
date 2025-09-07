@@ -1,0 +1,151 @@
+{
+  "name": "Speisekarte",
+  "restaurant_name": "Gasthaus Zum Löwen",
+  "description": "",
+  "currency": "GBP",
+  "sections": [
+    {
+      "name": "Salate",
+      "description": "",
+      "items": [
+        {
+          "name": "Grüner Salat",
+          "description": "",
+          "price": 4,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "Italienischer Salat",
+          "description": "Mit Tomaten, Gurken, Schinken, Käse, Schinken",
+          "price": 7.5,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "Gemischter Salat",
+          "description": "mit Tomaten, Gurken, Mais, Karotten und Zwiebeln",
+          "price": 5,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "Thunfisch Salat",
+          "description": "Gemischter Salat mit Thunfisch",
+          "price": 7.3,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "Spezial Salat",
+          "description": "mit Tomaten, Gurken, Schinken, Käse, Karotten, Eier und Zwiebeln",
+          "price": 7.5,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "Pizzahaus Salat",
+          "description": "mit Tomaten, Gurken, Zwiebeln, Artischocken, Schrimps und Oliven",
+          "price": 7.5,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "BauernSalat",
+          "description": "mit Tomaten, Gurken, Zwiebeln, Peperoni, Oliven, Weichkäse, Essig-Öl",
+          "price": 7.5,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "Mozarella Salat",
+          "description": "mit Pizzabrot, Tomaten, Mozarella, Oliven, Basilikum und Olivenöl",
+          "price": 8.5,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "Tomatensalat",
+          "description": "mit Tomaten, Zwiebeln, Weichkäse und Oliven",
+          "price": 6.5,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "Gurkensalat",
+          "description": "mit Tomaten, Zwiebeln, Weichkäse und Oliven",
+          "price": 5,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "Nizza Salat",
+          "description": "mit Tomaten, Gurken, Sardellen, Oliven, Eier, Artischocken und Zwiebeln",
+          "price": 7.5,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "Chef Salat",
+          "description": "mit Tomaten, Gurken, Zwiebeln, Artischocken, Oliven, Paprika, Mais, Eiern und Schrimps",
+          "price": 8,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "Salat Hawai",
+          "description": "mit gemischter Salat mit Ananas",
+          "price": 7,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "Münzenberger Salat",
+          "description": "mit Tomaten, Gurken, Zwiebeln, Paprika, Karotten, Schrimps und Artischocken",
+          "price": 8,
+          "image_url": "",
+          "is_available": true
+        }
+      ]
+    },
+    {
+      "name": "Pizzabrot",
+      "description": "",
+      "items": [
+        {
+          "name": "Pizzabrot mit Oregano",
+          "description": "",
+          "price": 3.5,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "Pizzabrot mit Knoblauch",
+          "description": "",
+          "price": 3.5,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "Pizzabrot mit Tomatensauce",
+          "description": "",
+          "price": 3.5,
+          "image_url": "",
+          "is_available": true
+        },
+        {
+          "name": "Pizzabrot mit Kräuterbutter",
+          "description": "",
+          "price": 3.5,
+          "image_url": "",
+          "is_available": true
+        }
+      ]
+    },
+    {
+      "name": "Desserts",
+      "description": "",
+      "items": []
+    }
+  ]
+}
