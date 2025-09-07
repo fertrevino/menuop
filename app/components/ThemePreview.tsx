@@ -47,7 +47,6 @@ export default function ThemePreview({
   const padding =
     PADDING_MAP[theme.spacing.padding as keyof typeof PADDING_MAP] || "p-6";
   const sectionCorners = CORNER_MAP[theme.corners.sections] || "rounded-xl";
-  const itemCorners = CORNER_MAP[theme.corners.items] || "rounded-lg";
   const headingSize = FONT_SIZE_MAP[theme.fonts.headingSize] || "text-2xl";
   const bodySize = FONT_SIZE_MAP[theme.fonts.bodySize] || "text-base";
 

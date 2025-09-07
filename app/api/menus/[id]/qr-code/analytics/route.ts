@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { QRCodeService, QRCodeAnalyticsSummary } from "@/lib/services/qrCode";
+import { QRCodeService } from "@/lib/services/qrCode";
 
 const qrCodeService = new QRCodeService();
 

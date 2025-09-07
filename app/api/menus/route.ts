@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { MenuFormData } from "@/lib/types/menu";
 
-export async function GET(request: NextRequest) {
+type ItemsCountRow = {
+  menu_id: string;
+  items: Array<{ id: string }> | null;
+};
+
+export async function GET(_request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -38,7 +43,7 @@ export async function GET(request: NextRequest) {
     const countsMap = new Map<string, number>();
     if (countsData) {
       // countsData is an array where each row has menu_id and nested items
-      for (const row of countsData as any[]) {
+      for (const row of countsData as ItemsCountRow[]) {
         const menuId = row.menu_id as string;
         const itemsCount = Array.isArray(row.items) ? row.items.length : 0;
         countsMap.set(menuId, (countsMap.get(menuId) || 0) + itemsCount);
@@ -51,7 +56,7 @@ export async function GET(request: NextRequest) {
     }));
 
     return NextResponse.json({ menus: menusWithCounts });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

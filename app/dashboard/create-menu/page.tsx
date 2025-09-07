@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useMenu } from "@/hooks/useMenu";
 import ImageInput from "@/app/components/ImageInput";
-import { getBestImageRecommendation } from "@/lib/services/imageRecommendation";
 import {
   CURRENCY_OPTIONS,
   POPULAR_CURRENCIES,
@@ -87,10 +86,6 @@ export default function CreateMenu() {
       if (!confirmed) return;
     }
     router.push("/dashboard");
-  };
-
-  const resetForm = () => {
-    // Reset form logic can be added here if needed
   };
 
   const handleSaveMenu = async () => {

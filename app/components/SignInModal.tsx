@@ -53,7 +53,7 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
           router.push("/dashboard");
         }
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred");
     } finally {
       setLoading(false);
@@ -70,7 +70,7 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
         setError(error.message);
         setLoading(false);
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred");
       setLoading(false);
     }
@@ -87,7 +87,7 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
         setError(error.message);
         setLoading(false);
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred");
       setLoading(false);
     }

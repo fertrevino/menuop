@@ -7,7 +7,7 @@ import SubscriptionPlans from "@/app/components/SubscriptionPlans";
 import { CurrentSubscription } from "@/app/components/CurrentSubscription";
 
 export default function Settings() {
-  const { user, loading, signOut } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   // Profile settings
@@ -103,7 +103,7 @@ export default function Settings() {
       alert("Profile updated successfully!");
       // Update initial data to match current data after successful save
       setInitialProfileData({ ...profileData });
-    } catch (error) {
+    } catch {
       alert("Error updating profile. Please try again.");
     } finally {
       setIsLoading(false);
@@ -118,7 +118,7 @@ export default function Settings() {
       alert("Notification preferences updated!");
       // Update initial notifications to match current notifications after successful save
       setInitialNotifications({ ...notifications });
-    } catch (error) {
+    } catch {
       alert("Error updating preferences. Please try again.");
     } finally {
       setIsLoading(false);
@@ -133,7 +133,7 @@ export default function Settings() {
       alert("Menu preferences updated!");
       // Update initial preferences to match current preferences after successful save
       setInitialMenuPreferences({ ...menuPreferences });
-    } catch (error) {
+    } catch {
       alert("Error updating preferences. Please try again.");
     } finally {
       setIsLoading(false);
@@ -156,7 +156,7 @@ export default function Settings() {
           alert(
             "Account deletion feature will be implemented soon. Please contact support for account deletion requests."
           );
-        } catch (error) {
+        } catch {
           alert("Error deleting account. Please contact support.");
         }
       }

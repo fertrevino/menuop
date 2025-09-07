@@ -14,7 +14,6 @@ export default function ViewMenus() {
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const {
     menus,
     loading: menusLoading,
@@ -385,7 +384,7 @@ export default function ViewMenus() {
                       {/* Left Actions */}
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={(e) => handleViewMenu(menu.id)}
+                          onClick={() => handleViewMenu(menu.id)}
                           className="text-gray-300 hover:text-sky-400 flex items-center gap-2 transition-colors px-2 py-1 rounded-md hover:bg-gray-600/30 cursor-pointer"
                         >
                           <svg
@@ -411,7 +410,7 @@ export default function ViewMenus() {
                         </button>
 
                         <button
-                          onClick={(e) => handleEditMenu(menu.id)}
+                          onClick={() => handleEditMenu(menu.id)}
                           className="text-gray-300 hover:text-indigo-400 flex items-center gap-2 transition-colors px-2 py-1 rounded-md hover:bg-gray-600/30 cursor-pointer"
                         >
                           <svg
@@ -434,7 +433,7 @@ export default function ViewMenus() {
                       {/* Right Actions */}
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={(e) => setSelectedMenuForQR(menu.id)}
+                          onClick={() => setSelectedMenuForQR(menu.id)}
                           className="text-gray-300 hover:text-violet-400 transition-colors p-1.5 rounded-md hover:bg-gray-600/30 cursor-pointer"
                           title="Generate QR Code"
                         >
@@ -454,7 +453,7 @@ export default function ViewMenus() {
                         </button>
 
                         <button
-                          onClick={(e) =>
+                          onClick={() =>
                             handleTogglePublish(menu.id, menu.is_published)
                           }
                           className={`transition-colors p-1.5 rounded-md hover:bg-gray-600/30 cursor-pointer ${
@@ -500,7 +499,7 @@ export default function ViewMenus() {
                         </button>
 
                         <button
-                          onClick={(e) => handleDeleteMenu(menu.id)}
+                          onClick={() => handleDeleteMenu(menu.id)}
                           className="text-gray-300 hover:text-rose-400 transition-colors p-1.5 rounded-md hover:bg-gray-600/30 cursor-pointer"
                           title="Delete Menu"
                         >

@@ -26,7 +26,7 @@ export async function PATCH(
       { error: "Forbidden: Menu restoration is not allowed for users" },
       { status: 403 }
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

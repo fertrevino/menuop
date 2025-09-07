@@ -36,7 +36,6 @@ export default function QRCodeManager({
 
   const [qrCode, setQrCode] = useState<QRCodeData | null>(null);
   const [showDesignPanel, setShowDesignPanel] = useState(false);
-  const [activeTab, setActiveTab] = useState<"design" | "analytics">("design");
   const [designConfig, setDesignConfig] = useState<QRCodeOptions>({
     foregroundColor: "#000000",
     backgroundColor: "#FFFFFF",

@@ -2,28 +2,8 @@
 
 import { useSubscriptionData } from "@/hooks/useSubscriptionData";
 
-interface Price {
-  id: string;
-  currency: string;
-  unitAmount: number;
-  formattedPrice: string;
-  interval: string;
-  intervalCount: number;
-}
-
 interface MarketingFeature {
   name: string;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  image?: string;
-  active: boolean;
-  price: Price | null;
-  metadata: Record<string, string>;
-  marketing_features?: MarketingFeature[];
 }
 
 export default function SubscriptionPlans() {
