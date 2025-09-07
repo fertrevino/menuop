@@ -362,7 +362,9 @@ export default function ViewMenus() {
                       {menu.is_published ? (
                         <div className="relative group/tooltip">
                           <button
-                            onClick={() => handleTogglePublish(menu.id, menu.is_published)}
+                            onClick={() =>
+                              handleTogglePublish(menu.id, menu.is_published)
+                            }
                             className="px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500/50"
                             title="Unpublish Menu"
                             aria-label="Unpublish Menu"
@@ -376,7 +378,9 @@ export default function ViewMenus() {
                       ) : (
                         <div className="relative group/tooltip">
                           <button
-                            onClick={() => handleTogglePublish(menu.id, menu.is_published)}
+                            onClick={() =>
+                              handleTogglePublish(menu.id, menu.is_published)
+                            }
                             className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
                             title="Publish Menu"
                             aria-label="Publish Menu"
