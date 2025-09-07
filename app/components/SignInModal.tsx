@@ -61,22 +61,16 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
   };
 
   const handleGoogleSignIn = async () => {
-    console.log("SignIn Debug - Starting Google Sign In");
     setLoading(true);
     setError(null);
 
     try {
       const { error } = await signInWithGoogle();
-      console.log("SignIn Debug - Google Sign In Response:", {
-        error: error?.message,
-      });
-
       if (error) {
         setError(error.message);
         setLoading(false);
       }
     } catch (err) {
-      console.error("SignIn Debug - Google Sign In Error:", err);
       setError("An unexpected error occurred");
       setLoading(false);
     }
@@ -84,22 +78,16 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
   };
 
   const handleFacebookSignIn = async () => {
-    console.log("SignIn Debug - Starting Facebook Sign In");
     setLoading(true);
     setError(null);
 
     try {
       const { error } = await signInWithFacebook();
-      console.log("SignIn Debug - Facebook Sign In Response:", {
-        error: error?.message,
-      });
-
       if (error) {
         setError(error.message);
         setLoading(false);
       }
     } catch (err) {
-      console.error("SignIn Debug - Facebook Sign In Error:", err);
       setError("An unexpected error occurred");
       setLoading(false);
     }

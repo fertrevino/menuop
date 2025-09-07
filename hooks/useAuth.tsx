@@ -73,48 +73,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
-    console.log("Auth Debug - Starting Google OAuth:", {
-      origin: window.location.origin,
-      redirectUrl: `${window.location.origin}/auth/callback?next=/dashboard`,
-      hostname: window.location.hostname,
-      protocol: window.location.protocol,
-    });
-
-    const { error, data } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
       },
     });
-
-    console.log("Auth Debug - Google OAuth Result:", {
-      error: error?.message,
-      provider: data?.provider,
-      url: data?.url,
-    });
-
     return { error };
   };
 
   const signInWithFacebook = async () => {
-    console.log("Auth Debug - Starting Facebook OAuth:", {
-      origin: window.location.origin,
-      redirectUrl: `${window.location.origin}/auth/callback?next=/dashboard`,
-    });
-
-    const { error, data } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "facebook",
       options: {
         redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
       },
     });
-
-    console.log("Auth Debug - Facebook OAuth Result:", {
-      error: error?.message,
-      provider: data?.provider,
-      url: data?.url,
-    });
-
     return { error };
   };
 
