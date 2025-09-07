@@ -26,6 +26,11 @@ export interface MenuSectionWithItems extends MenuSection {
   items: MenuItem[];
 }
 
+// Lightweight summary type with optional aggregated counts for list views
+export type MenuWithCounts = Menu & {
+  items_count?: number;
+};
+
 // Types for form data used in the UI
 export interface MenuFormData {
   name: string;

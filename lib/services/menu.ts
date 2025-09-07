@@ -32,9 +32,11 @@ export class MenuService {
     return result.menu;
   }
 
-  static async getUserMenus(): Promise<Menu[]> {
+  static async getUserMenus(): Promise<(Menu & { items_count?: number })[]> {
     const response = await fetch("/api/menus");
-    const result = await this.handleResponse<{ menus: Menu[] }>(response);
+    const result = await this.handleResponse<{
+      menus: (Menu & { items_count?: number })[];
+    }>(response);
     return result.menus;
   }
 

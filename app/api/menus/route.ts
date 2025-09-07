@@ -25,7 +25,32 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ menus });
+    // Compute items_count per menu with a single grouped query
+    const { data: countsData, error: countsError } = await supabase
+      .from("menu_sections")
+      .select(`menu_id, items:menu_items(id)`);
+
+    if (countsError) {
+      return NextResponse.json({ error: countsError.message }, { status: 500 });
+    }
+
+    // Build a map of menu_id -> items count
+    const countsMap = new Map<string, number>();
+    if (countsData) {
+      // countsData is an array where each row has menu_id and nested items
+      for (const row of countsData as any[]) {
+        const menuId = row.menu_id as string;
+        const itemsCount = Array.isArray(row.items) ? row.items.length : 0;
+        countsMap.set(menuId, (countsMap.get(menuId) || 0) + itemsCount);
+      }
+    }
+
+    const menusWithCounts = menus.map((m) => ({
+      ...m,
+      items_count: countsMap.get(m.id) || 0,
+    }));
+
+    return NextResponse.json({ menus: menusWithCounts });
   } catch (error) {
     return NextResponse.json(
       { error: "Internal server error" },

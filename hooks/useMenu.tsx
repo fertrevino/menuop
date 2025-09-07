@@ -233,7 +233,7 @@ export function useMenu(menuId?: string) {
 // Hook for managing user's menu list
 export function useUserMenus() {
   const { user } = useAuth();
-  const [menus, setMenus] = useState<Menu[]>([]);
+  const [menus, setMenus] = useState<(Menu & { items_count?: number })[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

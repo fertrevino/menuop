@@ -65,11 +65,9 @@ export default function ViewMenus() {
     window.open(`/menu/${menuId}`, "_blank");
   };
 
-  const calculateItemCount = () => {
-    // This is a placeholder since we don't have sections data in the menu list
-    // In a real implementation, you might want to add this to the database query
-    return 0;
-  };
+  // items_count is provided by the API (computed server-side). Fallback to 0 if missing.
+  const getItemCount = (menu: { items_count?: number }) =>
+    menu.items_count ?? 0;
 
   const filteredAndSortedMenus = useMemo(() => {
     let result = [...menus];
@@ -374,7 +372,7 @@ export default function ViewMenus() {
                     </div>
 
                     <div className="flex items-center justify-between text-sm text-gray-400">
-                      <span>{calculateItemCount()} items</span>
+                      <span>{getItemCount(menu)} items</span>
                       <span>
                         Created {new Date(menu.created_at).toLocaleDateString()}
                       </span>
