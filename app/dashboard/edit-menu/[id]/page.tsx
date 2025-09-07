@@ -616,7 +616,7 @@ export default function EditMenu({ params }: EditMenuProps) {
                     className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
                       activeTab === "content"
                         ? "text-white bg-[#1F8349]"
-                        : "text-gray-300 hover:text-white hover:bg-gray-700"
+                        : "text-gray-300 hover:text-white hover:bg-gray-700 cursor-pointer"
                     }`}
                   >
                     Content
@@ -626,7 +626,7 @@ export default function EditMenu({ params }: EditMenuProps) {
                     className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
                       activeTab === "theme"
                         ? "text-white bg-[#1F8349]"
-                        : "text-gray-300 hover:text-white hover:bg-gray-700"
+                        : "text-gray-300 hover:text-white hover:bg-gray-700 cursor-pointer"
                     }`}
                   >
                     Theme
