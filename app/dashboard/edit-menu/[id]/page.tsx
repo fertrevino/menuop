@@ -557,7 +557,7 @@ export default function EditMenu({ params }: EditMenuProps) {
                 <button
                   type="submit"
                   disabled={isSubmitting || !jsonInput.trim()}
-                  className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+                  className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer"
                 >
                   {isSubmitting ? "Updating Menu..." : "Apply JSON Update"}
                 </button>
