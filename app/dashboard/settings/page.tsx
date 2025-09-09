@@ -48,13 +48,11 @@ export default function Settings() {
   const [initialMenuPreferences, setInitialMenuPreferences] = useState({
     defaultCurrency: "USD",
     timeFormat: "12h",
-    theme: "dark",
   });
 
   const [menuPreferences, setMenuPreferences] = useState({
     defaultCurrency: "USD",
     timeFormat: "12h",
-    theme: "dark",
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -654,26 +652,6 @@ export default function Settings() {
                     >
                       <option value="12h">12-hour (2:30 PM)</option>
                       <option value="24h">24-hour (14:30)</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Theme
-                    </label>
-                    <select
-                      value={menuPreferences.theme}
-                      onChange={(e) =>
-                        setMenuPreferences({
-                          ...menuPreferences,
-                          theme: e.target.value,
-                        })
-                      }
-                      className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
-                    >
-                      <option value="dark">Dark</option>
-                      <option value="light">Light</option>
-                      <option value="auto">Auto (System)</option>
                     </select>
                   </div>
                 </div>
