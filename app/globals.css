@@ -28,3 +28,33 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* --- Mobile tap / press feedback (no hover devices) --- */
+@keyframes tap-blink {
+  0% {
+    filter: brightness(1);
+  }
+  45% {
+    filter: brightness(0.65);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+/* Apply only on devices that don't support hover (touch) */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  [role="button"],
+  a.button-like {
+    position: relative; /* so pseudo overlays (future) align */
+    -webkit-tap-highlight-color: transparent;
+    transition: filter 120ms ease, transform 120ms ease;
+  }
+  button:active,
+  [role="button"]:active,
+  a.button-like:active {
+    animation: tap-blink 180ms ease-out;
+    transform: scale(0.97);
+  }
+}
