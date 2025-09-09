@@ -313,10 +313,15 @@ export default function CreateMenu() {
                 </svg>
                 Create New Menu
               </h1>
+              {!isDeveloperMode && hasUnsavedChanges && (
+                <span className="ml-3 text-yellow-400 text-sm">
+                  • Unsaved changes
+                </span>
+              )}
             </div>
 
             {/* Right side elements */}
-            <div className="flex items-center justify-end flex-1 space-x-4">
+            <div className="flex items-center space-x-4">
               {!isDeveloperMode && (
                 <button
                   onClick={handleSaveMenu}
@@ -350,13 +355,6 @@ export default function CreateMenu() {
                   Dev Mode
                 </span>
               </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              {hasUnsavedChanges && !isDeveloperMode && (
-                <span className="text-yellow-400 text-sm">
-                  • Unsaved changes
-                </span>
-              )}
             </div>
           </div>
         </div>
