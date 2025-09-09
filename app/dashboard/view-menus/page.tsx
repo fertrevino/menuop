@@ -352,9 +352,18 @@ export default function ViewMenus() {
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">
-                        <h3 className="text-xl font-semibold text-white mb-1 truncate">
-                          {menu.name}
-                        </h3>
+                        <div className="relative group/tooltip">
+                          <button
+                            onClick={() => handleEditMenu(menu.id)}
+                            className="text-left w-full text-xl font-semibold text-white mb-1 truncate focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1F8349] hover:text-[#2ea358] cursor-pointer"
+                            aria-label={`Edit menu ${menu.name}`}
+                          >
+                            {menu.name}
+                          </button>
+                          <span className="pointer-events-none absolute -top-8 left-0 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-gray-200 opacity-0 group-hover/tooltip:opacity-100 group-focus-within/tooltip:opacity-100 transition-opacity">
+                            Edit menu
+                          </span>
+                        </div>
                         <p className="text-gray-400 text-sm truncate">
                           {menu.restaurant_name}
                         </p>
@@ -441,25 +450,7 @@ export default function ViewMenus() {
                           </button>
                         )}
 
-                        <button
-                          onClick={() => handleEditMenu(menu.id)}
-                          className="text-gray-300 hover:text-indigo-400 flex items-center gap-2 transition-colors px-2 py-1 rounded-md hover:bg-gray-600/30 cursor-pointer"
-                        >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                            />
-                          </svg>
-                          <span className="text-sm font-medium">Edit</span>
-                        </button>
+                        {/* Edit action removed; menu name is now clickable to edit */}
                       </div>
 
                       {/* Right Actions */}
