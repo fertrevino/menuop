@@ -77,9 +77,8 @@ export default function Settings() {
       try {
         const { profile, settings } = await getAllSettings(user.id);
         const mergedProfile = {
-          fullName:
-            (profile?.full_name || user.user_metadata?.full_name) ?? "",
-            email: user.email || "",
+          fullName: (profile?.full_name || user.user_metadata?.full_name) ?? "",
+          email: user.email || "",
           phone: profile?.phone || user.user_metadata?.phone || "",
           businessName:
             profile?.business_name || user.user_metadata?.business_name || "",
