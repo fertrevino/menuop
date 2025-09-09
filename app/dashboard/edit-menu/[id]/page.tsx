@@ -861,8 +861,21 @@ export default function EditMenu({ params }: EditMenuProps) {
                     />
                     <button
                       onClick={() => addMenuItem(currentSectionIndex)}
-                      className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-4 py-2 rounded-lg font-semibold transition-all duration-300 cursor-pointer"
+                      className="inline-flex items-center gap-2 text-gray-400 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/40 active:scale-[.97]"
                     >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M12 5v14m7-7H5"
+                        />
+                      </svg>
                       Add Item
                     </button>
                   </div>
@@ -961,14 +974,28 @@ export default function EditMenu({ params }: EditMenuProps) {
                                 placeholder="0.00"
                               />
                             </div>
-                            <div className="flex items-end">
+                            <div className="flex items-center justify-end pt-6">
                               <button
+                                aria-label="Delete item"
                                 onClick={() =>
                                   deleteMenuItem(currentSectionIndex, itemIndex)
                                 }
-                                className="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded transition-colors"
+                                className="inline-flex items-center gap-2 text-red-500 hover:text-red-700 active:text-red-800 px-2 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500/25 active:scale-[.97] cursor-pointer"
                               >
-                                Delete
+                                <svg
+                                  className="w-6 h-6"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V5a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                  />
+                                </svg>
+                                <span>Delete</span>
                               </button>
                             </div>
                           </div>

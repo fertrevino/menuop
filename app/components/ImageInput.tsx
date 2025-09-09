@@ -32,7 +32,7 @@ function CameraCapture({
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
         await videoRef.current.play();
-  } else {
+      } else {
       }
 
       setIsInitialized(true);
@@ -77,7 +77,6 @@ function CameraCapture({
 
     // Force reconnection of video stream
     if (streamRef.current && videoRef.current) {
-
       // Clear current source first
       videoRef.current.srcObject = null;
 
@@ -90,8 +89,7 @@ function CameraCapture({
       // Ensure video plays
       try {
         await videoRef.current.play();
-      } catch (error) {
-      }
+      } catch (error) {}
     } else {
       // Try a few more times with delays
       for (let i = 0; i < 5; i++) {
@@ -220,6 +218,93 @@ interface ImageInputProps {
   itemName?: string;
   className?: string;
 }
+
+// Icon components (outline, consistent with settings page aesthetic)
+const CameraIcon = ({ className = "w-6 h-6" }) => (
+  <svg
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.8}
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M3 9.5A2.5 2.5 0 015.5 7h1.382c.46 0 .9-.21 1.184-.57l.868-1.09A1.5 1.5 0 0110.382 5h3.236c.46 0 .9.21 1.184.57l.868 1.09c.284.36.724.57 1.184.57H18.5A2.5 2.5 0 0121 9.5v7A2.5 2.5 0 0118.5 19h-13A2.5 2.5 0 013 16.5v-7z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 15.5a3 3 0 100-6 3 3 0 000 6z"
+    />
+  </svg>
+);
+
+const UploadIcon = ({ className = "w-6 h-6" }) => (
+  <svg
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.8}
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M7 17a4 4 0 01-.88-7.903A5 5 0 0115.9 7.6 4.5 4.5 0 0117 16.9M12 12v7m0-7l-3 3m3-3l3 3"
+    />
+  </svg>
+);
+
+const SparkleIcon = ({ className = "w-6 h-6" }) => (
+  <svg
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.8}
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 3l1.4 3.6a2 2 0 001 1l3.6 1.4-3.6 1.4a2 2 0 00-1 1L12 15l-1.4-3.6a2 2 0 00-1-1L6 9.999l3.6-1.4a2 2 0 001-1L12 3zM19 17l.7 1.8.3.7.7.3L23 20l-1.3-.8-.7-.3-.3-.7L19 17zM5 17l.7 1.8.3.7.7.3L9 20l-1.3-.8-.7-.3-.3-.7L5 17z"
+    />
+  </svg>
+);
+
+const EyeIcon = ({ className = "w-4 h-4" }) => (
+  <svg
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.8}
+    viewBox="0 0 24 24"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+    />
+  </svg>
+);
+
+const CheckIcon = ({ className = "w-4 h-4" }) => (
+  <svg
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.8}
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+  </svg>
+);
 
 export default function ImageInput({
   value,
@@ -384,6 +469,14 @@ export default function ImageInput({
     fileInputRef.current?.click();
   };
 
+  // Reusable button style helpers (lightweight utility without external deps)
+  const baseBtn =
+    "inline-flex items-center gap-1 rounded-lg font-medium text-xs tracking-wide transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/40 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[.97] cursor-pointer";
+  const neutralBtn = "text-gray-400 hover:text-white";
+
+  const sizeSm = "px-3 py-2"; // adjusted for larger icon
+  const sizeMd = "px-4 py-2";
+
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Hidden file input */}
@@ -396,32 +489,51 @@ export default function ImageInput({
       />
 
       {/* Action Buttons */}
-      <div className="flex space-x-2">
+      <div className="flex flex-wrap gap-3">
         <button
           type="button"
           onClick={() => setShowCamera(true)}
           disabled={isUploading}
-          className="text-xs bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white px-3 py-1 rounded-md transition-colors"
+          className={`${baseBtn} ${neutralBtn} ${sizeSm}`}
         >
-          📷 Camera
+          <CameraIcon />
+          <span>Camera</span>
         </button>
-
         <button
           type="button"
           onClick={triggerFileUpload}
           disabled={isUploading}
-          className="text-xs bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-3 py-1 rounded-md transition-colors"
+          className={`${baseBtn} ${neutralBtn} ${sizeSm}`}
         >
-          {isUploading ? "Uploading..." : "📁 Upload"}
+          {isUploading ? (
+            <span className="flex items-center gap-1">
+              <span className="inline-block w-3 h-3 border-2 border-current/40 border-t-current rounded-full animate-spin" />
+              <span>Uploading...</span>
+            </span>
+          ) : (
+            <>
+              <UploadIcon />
+              <span>Upload</span>
+            </>
+          )}
         </button>
-
         <button
           type="button"
           onClick={handleAIGeneration}
           disabled={isGenerating}
-          className="text-xs bg-[#1F8349] hover:bg-[#176e3e] disabled:bg-gray-600 text-white px-3 py-1 rounded-md transition-colors"
+          className={`${baseBtn} ${neutralBtn} ${sizeSm}`}
         >
-          {isGenerating ? "..." : "✨ Auto-generate"}
+          {isGenerating ? (
+            <span className="flex items-center gap-1">
+              <span className="inline-block w-3 h-3 border-2 border-current/40 border-t-current rounded-full animate-spin" />
+              <span>Generating...</span>
+            </span>
+          ) : (
+            <>
+              <SparkleIcon />
+              <span>Auto Generate</span>
+            </>
+          )}
         </button>
       </div>
 
@@ -521,7 +633,7 @@ export default function ImageInput({
                         }}
                       >
                         <div
-                          className="flex gap-2"
+                          className="flex flex-col gap-2"
                           style={{ pointerEvents: "auto" }}
                         >
                           <button
@@ -529,18 +641,20 @@ export default function ImageInput({
                               e.stopPropagation();
                               handleImagePreview(suggestion);
                             }}
-                            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md transition-colors"
+                            className={`${baseBtn} ${neutralBtn} ${sizeSm}`}
                           >
-                            👁️ Preview
+                            <EyeIcon />
+                            <span className="font-normal">Preview</span>
                           </button>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               handleAIImageSelect(suggestion.url);
                             }}
-                            className="px-3 py-1 bg-[#1F8349] hover:bg-[#176e3e] text-white text-sm rounded-md transition-colors"
+                            className={`${baseBtn} ${neutralBtn} ${sizeSm}`}
                           >
-                            ✓ Select
+                            <CheckIcon />
+                            <span className="font-normal">Select</span>
                           </button>
                         </div>
                       </div>
@@ -598,13 +712,13 @@ export default function ImageInput({
               <div className="flex justify-center gap-4">
                 <button
                   onClick={closePreview}
-                  className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg"
+                  className={`${baseBtn} ${neutralBtn} ${sizeMd}`}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => handleAIImageSelect(previewImage.url)}
-                  className="px-6 py-2 bg-[#1F8349] hover:bg-[#176e3e] text-white rounded-lg font-medium"
+                  className={`${baseBtn} ${neutralBtn} ${sizeMd}`}
                 >
                   ✓ Use This Image
                 </button>
