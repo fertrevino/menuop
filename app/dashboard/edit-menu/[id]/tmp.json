@@ -1,151 +1,559 @@
 {
-  "name": "Speisekarte",
-  "restaurant_name": "Gasthaus Zum Löwen",
-  "description": "",
-  "currency": "GBP",
-  "sections": [
-    {
-      "name": "Salate",
-      "description": "",
-      "items": [
-        {
-          "name": "Grüner Salat",
-          "description": "",
-          "price": 4,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "Italienischer Salat",
-          "description": "Mit Tomaten, Gurken, Schinken, Käse, Schinken",
-          "price": 7.5,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "Gemischter Salat",
-          "description": "mit Tomaten, Gurken, Mais, Karotten und Zwiebeln",
-          "price": 5,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "Thunfisch Salat",
-          "description": "Gemischter Salat mit Thunfisch",
-          "price": 7.3,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "Spezial Salat",
-          "description": "mit Tomaten, Gurken, Schinken, Käse, Karotten, Eier und Zwiebeln",
-          "price": 7.5,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "Pizzahaus Salat",
-          "description": "mit Tomaten, Gurken, Zwiebeln, Artischocken, Schrimps und Oliven",
-          "price": 7.5,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "BauernSalat",
-          "description": "mit Tomaten, Gurken, Zwiebeln, Peperoni, Oliven, Weichkäse, Essig-Öl",
-          "price": 7.5,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "Mozarella Salat",
-          "description": "mit Pizzabrot, Tomaten, Mozarella, Oliven, Basilikum und Olivenöl",
-          "price": 8.5,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "Tomatensalat",
-          "description": "mit Tomaten, Zwiebeln, Weichkäse und Oliven",
-          "price": 6.5,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "Gurkensalat",
-          "description": "mit Tomaten, Zwiebeln, Weichkäse und Oliven",
-          "price": 5,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "Nizza Salat",
-          "description": "mit Tomaten, Gurken, Sardellen, Oliven, Eier, Artischocken und Zwiebeln",
-          "price": 7.5,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "Chef Salat",
-          "description": "mit Tomaten, Gurken, Zwiebeln, Artischocken, Oliven, Paprika, Mais, Eiern und Schrimps",
-          "price": 8,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "Salat Hawai",
-          "description": "mit gemischter Salat mit Ananas",
-          "price": 7,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "Münzenberger Salat",
-          "description": "mit Tomaten, Gurken, Zwiebeln, Paprika, Karotten, Schrimps und Artischocken",
-          "price": 8,
-          "image_url": "",
-          "is_available": true
-        }
-      ]
-    },
-    {
-      "name": "Pizzabrot",
-      "description": "",
-      "items": [
-        {
-          "name": "Pizzabrot mit Oregano",
-          "description": "",
-          "price": 3.5,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "Pizzabrot mit Knoblauch",
-          "description": "",
-          "price": 3.5,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "Pizzabrot mit Tomatensauce",
-          "description": "",
-          "price": 3.5,
-          "image_url": "",
-          "is_available": true
-        },
-        {
-          "name": "Pizzabrot mit Kräuterbutter",
-          "description": "",
-          "price": 3.5,
-          "image_url": "",
-          "is_available": true
-        }
-      ]
-    },
-    {
-      "name": "Desserts",
-      "description": "",
-      "items": []
-    }
-  ]
+"name": "Pizza & Pizzabrot Menu",
+"restaurant\_name": "Gasthaus Zum Löwen",
+"description": "",
+"currency": "EUR",
+"sections": \[
+{
+"name": "Pizzabrot",
+"description": "Fladenbrot options",
+"items": \[
+{
+"name": "Pizzabrot mit Oregano",
+"description": "",
+"price": 3.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Pizzabrot mit Knoblauch",
+"description": "",
+"price": 3.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Pizzabrot mit Tomatensauce",
+"description": "",
+"price": 3.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Pizzabrot mit Kräuterbutter",
+"description": "",
+"price": 3.5,
+"image\_url": "",
+"is\_available": true
+}
+]
+},
+{
+"name": "Pizza",
+"description": "Alle Pizzen mit Tomaten und Käse. Größen: groß (Ø30cm) und Familie (40x60cm).",
+"items": \[
+{
+"name": "Margherita",
+"description": "mit Tomaten und Käse — Familie: €16.00",
+"price": 5.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Salami",
+"description": "mit Salami — Familie: €17.50",
+"price": 6.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Schinken",
+"description": "mit Schinken — Familie: €17.50",
+"price": 6.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Champignons",
+"description": "mit Champignons — Familie: €17.50",
+"price": 6.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Spinat",
+"description": "mit Spiegelei — Familie: €19.00",
+"price": 7,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Zwiebeln & Knoblauch",
+"description": "mit Zwiebeln und Knoblauch — Familie: €18.00",
+"price": 7,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Pizza Rom",
+"description": "mit frischen Pilzen, Schinken — Familie: €19.00",
+"price": 7.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Mozzarella",
+"description": "mit frischen Tomaten und Basilikum — Familie: €20.50",
+"price": 7.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Broccoli",
+"description": "mit Mozzarella — Familie: €19.50",
+"price": 7.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Hawai",
+"description": "mit Ananas und Schinken — Familie: €19.50",
+"price": 7.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Boss",
+"description": "mit Bolognese, Schinken, frischen Pilzen und Eier — Familie: €21.00",
+"price": 8,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Gorgonzola",
+"description": "mit Schinken, frischen Pilzen, Knoblauch und Gorgonzolakäse — Familie: €21.00",
+"price": 8,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Pizza Haus",
+"description": "mit frischen Pilzen, Paprika, Mais und Zwiebeln — Familie: €21.00",
+"price": 8,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Pizza Tonno",
+"description": "mit Thunfisch und Zwiebeln — Familie: €21.00",
+"price": 8,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Romana",
+"description": "mit Paprika, Eier, Zwiebeln, Schinken, Oliven und frischen Pilzen — Familie: €21.50",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Toscana",
+"description": "mit Schinken, Salami, Peperoniwurst, frischen Pilzen und Zwiebeln — Familie: €22.00",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Teufel",
+"description": "mit scharfen Peperoni, Salami, Peperoniwurst, Knoblauch und Paprika — Familie: €22.00",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Calzone",
+"description": "mit frischen Pilzen, Schinken, Salami, Peperoniwurst und Paprika — Familie: nicht verfügbar",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Vier Jahreszeiten",
+"description": "mit Paprika, frischen Pilzen, Schinken und Salami — Familie: €21.00",
+"price": 8,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Vier Käsesorten",
+"description": "Vier Sorten Käse — Familie: €22.00",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Capricciosa",
+"description": "mit Paprika, Schinken, Salami, frischen Pilzen, Artischocken, Zwiebeln, Oliven und Kapern — Familie: €23.00",
+"price": 9,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Marinara",
+"description": "mit Meeresfrüchten und Knoblauch — Familie: €22.00",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Pizza Sanem",
+"description": "mit Drehspießfleisch, Zwiebeln und Knoblauch — Familie: €21.00",
+"price": 8,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Vegetaria",
+"description": "mit frischen Pilzen, Paprika, Broccoli, Zwiebeln, Artischocken und Oliven — Familie: €22.00",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Pizza mit Lachs",
+"description": "mit Lachs, Schrimps und Knoblauch — Familie: €22.00",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+}
+]
+},
+{
+"name": "Nudelgerichte – Tortellini",
+"description": "Pasta-Gerichte mit Tortellini",
+"items": \[
+{
+"name": "Tortellini alla Panna",
+"description": "mit Schinken und Sahnesauce",
+"price": 8.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Tortellini Bolognese",
+"description": "mit Hackfleischsauce",
+"price": 7.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Tortellini alla Chef",
+"description": "mit Pilzen, Erbsen, Schinken und Hackfleischsauce",
+"price": 8.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Tortellini Napoli",
+"description": "mit Basilikum und Tomatensauce",
+"price": 7.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Tortellini 4 Käse",
+"description": "mit vier verschiedenen Käsesorten und Sahnesauce",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+}
+]
+},
+{
+"name": "Nudelgerichte – Spaghetti",
+"description": "Spaghetti-Variationen",
+"items": \[
+{
+"name": "Spaghetti Bolognese",
+"description": "mit Hackfleischsauce",
+"price": 7.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Spaghetti Carbonara",
+"description": "mit Schinken, Ei und Sahnesauce",
+"price": 8.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Spaghetti Aglio e Olio",
+"description": "mit Oliven, Knoblauch, Olivenöl und scharf",
+"price": 8.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Spaghetti Marinara",
+"description": "mit Meeresfrüchten, Tomatensauce und Knoblauch",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Spaghetti Spezial",
+"description": "mit Schrimps, Zwiebeln, Knoblauch und frischem Paprika",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+}
+]
+},
+{
+"name": "Nudelgerichte – Rigatoni",
+"description": "",
+"items": \[
+{
+"name": "Rigatoni Napoli",
+"description": "mit Tomatensauce und Basilikum",
+"price": 6.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Rigatoni alla Chef",
+"description": "mit Pilzen, Schinken, Erbsen und Hackfleischsauce",
+"price": 8.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Rigatoni Gorgonzola",
+"description": "mit Gorgonzolakäse und Sahnesauce",
+"price": 8.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Rigatoni Vier Käsesorten",
+"description": "",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+}
+]
+},
+{
+"name": "Nudelgerichte – Gnocchi",
+"description": "",
+"items": \[
+{
+"name": "Gnocchi Napoli",
+"description": "mit Tomatensauce und Basilikum",
+"price": 7.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Gnocchi Bolognese",
+"description": "mit Hackfleisch- und Sahnesauce",
+"price": 7.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Gnocchi Gorgonzola",
+"description": "mit Gorgonzolakäse und Sahnesauce",
+"price": 8.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Gnocchi Vier Käsesorten",
+"description": "",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+}
+]
+},
+{
+"name": "Nudelgerichte – Tagliatelle",
+"description": "",
+"items": \[
+{
+"name": "Tagliatelle Napoli",
+"description": "mit Tomatensauce",
+"price": 7.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Tagliatelle Bolognese",
+"description": "mit Hackfleischsauce",
+"price": 7.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Tagliatelle Schrimps",
+"description": "mit Schrimps, Spinat und Tomaten-Sahnesauce",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Tagliatelle Vier Käsesorten",
+"description": "",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+}
+]
+},
+{
+"name": "Überbackene Teigwaren",
+"description": "Baked pasta dishes",
+"items": \[
+{
+"name": "Lasagne",
+"description": "mit Hackfleischsauce",
+"price": 8.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Combinazione",
+"description": "mit Hackfleischsauce",
+"price": 8.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Tagliatelle Bolognese (überbacken)",
+"description": "mit Hackfleischsauce",
+"price": 8.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Rigatoni Mozzarella",
+"description": "mit Tomatensauce, Basilikum und Mozzarella",
+"price": 8.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Tortellini Forno",
+"description": "mit Hackfleischsauce",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Spaghetti Bolognese (überbacken)",
+"description": "mit Hackfleischsauce",
+"price": 8.0,
+"image\_url": "",
+"is\_available": true
+}
+]
+},
+{
+"name": "Salate",
+"description": "Alle Salate mit hausgemachtem Dressing oder Essig-Öl",
+"items": \[
+{
+"name": "Grüner Salat",
+"description": "",
+"price": 4.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Gemischter Salat",
+"description": "mit Tomaten, Gurken, Karotten, Mais und Zwiebeln",
+"price": 6.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Italienischer Salat",
+"description": "mit Tomaten, Gurken, Schinken, Käse, Karotten, Eier und Zwiebeln",
+"price": 7.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Spezial Salat",
+"description": "mit Tomaten, Gurken, Zwiebeln, Schinken, Peperoni, Mais, Weichkäse und Paprika",
+"price": 8.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Pizzahaus Salat",
+"description": "mit Tomaten, Gurken, Zwiebeln, Artischocken, Schrimps und Oliven",
+"price": 7.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Bauernsalat",
+"description": "mit Tomaten, Gurken, Zwiebeln, Peperoni, Oliven, Weichkäse, Essig-Öl",
+"price": 8.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Mozzarella Salat",
+"description": "mit Pizzabrot, Tomaten, Mozzarella, Oliven, Basilikum und Olivenöl",
+"price": 9.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Thunfisch Salat",
+"description": "gemischter Salat mit Thunfisch",
+"price": 7.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Tomaten Salat",
+"description": "mit Tomaten, Zwiebeln, Weichkäse und Oliven",
+"price": 7.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Gurken Salat",
+"description": "",
+"price": 5.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Nizza Salat",
+"description": "mit Tomaten, Gurken, Sardellen, Oliven, Eier, Artischocken und Zwiebeln",
+"price": 7.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Chef Salat",
+"description": "mit Tomaten, Gurken, Zwiebeln, Artischocken, Oliven, Paprika, Mais, Eiern und Schrimps",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Salat Hawai",
+"description": "mit gemischter Salat, Ananas, Hähnchen",
+"price": 8.0,
+"image\_url": "",
+"is\_available": true
+},
+{
+"name": "Münzenberger Salat",
+"description": "mit Tomaten, Gurken, Zwiebeln, Paprika, Karotten, Schrimps und Artischocken",
+"price": 8.5,
+"image\_url": "",
+"is\_available": true
+}
+]
+}
+]
 }

@@ -888,120 +888,173 @@ export default function EditMenu({ params }: EditMenuProps) {
                   </div>
 
                   <div className="space-y-4">
+                    {/* Top insertion zone */}
+                    {currentSection.items.length > 0 && (
+                      <div className="relative flex items-center my-2 group">
+                        <div className="flex-1 h-px bg-gray-600 opacity-0 scale-x-50 group-hover:opacity-100 group-hover:scale-x-100 group-focus-within:opacity-100 group-focus-within:scale-x-100 transition-all duration-300 ease-out origin-center" />
+                        <button
+                          onClick={() => addMenuItem(currentSectionIndex, -1)}
+                          aria-label="Add item at top"
+                          className="mx-2 p-1 text-[#1F8349] hover:text-white transition-all duration-200 ease-out opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-[#1F8349]/40 rounded transform scale-75 group-hover:scale-100 will-change-transform cursor-pointer"
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 4v16m8-8H4"
+                            />
+                          </svg>
+                        </button>
+                        <div className="flex-1 h-px bg-gray-600 opacity-0 scale-x-50 group-hover:opacity-100 group-hover:scale-x-100 group-focus-within:opacity-100 group-focus-within:scale-x-100 transition-all duration-300 ease-out origin-center" />
+                      </div>
+                    )}
                     {currentSection.items.map((item, itemIndex) => (
-                      <div
-                        key={itemIndex}
-                        className="bg-gray-700 p-4 rounded-lg border border-gray-600"
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                          <div className="md:col-span-2">
+                      <div key={itemIndex} className="space-y-2">
+                        <div className="bg-gray-700 p-4 rounded-lg border border-gray-600">
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div className="md:col-span-2">
+                              <label className="block text-sm font-medium text-gray-300 mb-1">
+                                Item Name
+                              </label>
+                              <input
+                                type="text"
+                                value={item.name}
+                                onChange={(e) =>
+                                  updateMenuItem(
+                                    currentSectionIndex,
+                                    itemIndex,
+                                    "name",
+                                    e.target.value
+                                  )
+                                }
+                                className="w-full bg-gray-600 text-white border border-gray-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
+                                placeholder="Item name"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-300 mb-1">
+                                Price (
+                                {getCurrencySymbol(
+                                  menuFormData.currency || "USD"
+                                )}
+                                )
+                              </label>
+                              <input
+                                type="number"
+                                step="0.01"
+                                value={item.price}
+                                onChange={(e) =>
+                                  updateMenuItem(
+                                    currentSectionIndex,
+                                    itemIndex,
+                                    "price",
+                                    parseFloat(e.target.value) || 0
+                                  )
+                                }
+                                className="w-full bg-gray-600 text-white border border-gray-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
+                                placeholder="0.00"
+                              />
+                            </div>
+                            <div className="flex items-end">
+                              <button
+                                onClick={() =>
+                                  deleteMenuItem(currentSectionIndex, itemIndex)
+                                }
+                                className="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded transition-colors"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                          <div className="mt-4">
                             <label className="block text-sm font-medium text-gray-300 mb-1">
-                              Item Name
+                              Description
                             </label>
-                            <input
-                              type="text"
-                              value={item.name}
+                            <textarea
+                              value={item.description || ""}
                               onChange={(e) =>
                                 updateMenuItem(
                                   currentSectionIndex,
                                   itemIndex,
-                                  "name",
+                                  "description",
                                   e.target.value
                                 )
                               }
                               className="w-full bg-gray-600 text-white border border-gray-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
-                              placeholder="Item name"
+                              placeholder="Item description"
+                              rows={2}
                             />
                           </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">
-                              Price (
-                              {getCurrencySymbol(
-                                menuFormData.currency || "USD"
-                              )}
+                          <ImageInput
+                            value={item.image_url}
+                            onChange={(url) =>
+                              updateMenuItem(
+                                currentSectionIndex,
+                                itemIndex,
+                                "image_url",
+                                url
                               )
-                            </label>
+                            }
+                            itemName={item.name}
+                            className="mt-4"
+                          />
+                          <div className="mt-4 flex items-center">
                             <input
-                              type="number"
-                              step="0.01"
-                              value={item.price}
+                              type="checkbox"
+                              id={`available-${itemIndex}`}
+                              checked={item.is_available ?? true}
                               onChange={(e) =>
                                 updateMenuItem(
                                   currentSectionIndex,
                                   itemIndex,
-                                  "price",
-                                  parseFloat(e.target.value) || 0
+                                  "is_available",
+                                  e.target.checked
                                 )
                               }
-                              className="w-full bg-gray-600 text-white border border-gray-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
-                              placeholder="0.00"
+                              className="mr-2"
                             />
+                            <label
+                              htmlFor={`available-${itemIndex}`}
+                              className="text-sm text-gray-300"
+                            >
+                              Available for ordering
+                            </label>
                           </div>
-                          <div className="flex items-end">
+                        </div>
+                        {/* Separator with add button (between items) */}
+                        {itemIndex < currentSection.items.length - 1 && (
+                          <div className="relative flex items-center group">
+                            <div className="flex-1 h-px bg-gray-600 opacity-0 scale-x-50 group-hover:opacity-100 group-hover:scale-x-100 group-focus-within:opacity-100 group-focus-within:scale-x-100 transition-all duration-300 ease-out origin-center" />
                             <button
                               onClick={() =>
-                                deleteMenuItem(currentSectionIndex, itemIndex)
+                                addMenuItem(currentSectionIndex, itemIndex)
                               }
-                              className="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded transition-colors"
+                              aria-label="Add item here"
+                              className="mx-2 p-1 text-[#1F8349] hover:text-white transition-all duration-200 ease-out opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-[#1F8349]/40 rounded transform scale-75 group-hover:scale-100 will-change-transform cursor-pointer"
                             >
-                              Delete
+                              <svg
+                                className="w-5 h-5"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.2"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M12 4v16m8-8H4"
+                                />
+                              </svg>
                             </button>
+                            <div className="flex-1 h-px bg-gray-600 opacity-0 scale-x-50 group-hover:opacity-100 group-hover:scale-x-100 group-focus-within:opacity-100 group-focus-within:scale-x-100 transition-all duration-300 ease-out origin-center" />
                           </div>
-                        </div>
-                        <div className="mt-4">
-                          <label className="block text-sm font-medium text-gray-300 mb-1">
-                            Description
-                          </label>
-                          <textarea
-                            value={item.description || ""}
-                            onChange={(e) =>
-                              updateMenuItem(
-                                currentSectionIndex,
-                                itemIndex,
-                                "description",
-                                e.target.value
-                              )
-                            }
-                            className="w-full bg-gray-600 text-white border border-gray-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
-                            placeholder="Item description"
-                            rows={2}
-                          />
-                        </div>
-                        <ImageInput
-                          value={item.image_url}
-                          onChange={(url) =>
-                            updateMenuItem(
-                              currentSectionIndex,
-                              itemIndex,
-                              "image_url",
-                              url
-                            )
-                          }
-                          itemName={item.name}
-                          className="mt-4"
-                        />
-                        <div className="mt-4 flex items-center">
-                          <input
-                            type="checkbox"
-                            id={`available-${itemIndex}`}
-                            checked={item.is_available ?? true}
-                            onChange={(e) =>
-                              updateMenuItem(
-                                currentSectionIndex,
-                                itemIndex,
-                                "is_available",
-                                e.target.checked
-                              )
-                            }
-                            className="mr-2"
-                          />
-                          <label
-                            htmlFor={`available-${itemIndex}`}
-                            className="text-sm text-gray-300"
-                          >
-                            Available for ordering
-                          </label>
-                        </div>
+                        )}
                       </div>
                     ))}
 
@@ -1031,6 +1084,31 @@ export default function EditMenu({ params }: EditMenuProps) {
                         >
                           Add Your First Item
                         </button>
+                      </div>
+                    )}
+                    {currentSection.items.length > 0 && (
+                      <div className="relative flex items-center mt-6 group">
+                        <div className="flex-1 h-px bg-gray-600 opacity-0 scale-x-50 group-hover:opacity-100 group-hover:scale-x-100 group-focus-within:opacity-100 group-focus-within:scale-x-100 transition-all duration-300 ease-out origin-center" />
+                        <button
+                          onClick={() => addMenuItem(currentSectionIndex)}
+                          aria-label="Add item at bottom"
+                          className="mx-2 p-1.5 text-[#1F8349] hover:text-white transition-all duration-200 ease-out opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-[#1F8349]/40 rounded transform scale-75 group-hover:scale-100 will-change-transform cursor-pointer"
+                        >
+                          <svg
+                            className="w-6 h-6"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.2"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 4v16m8-8H4"
+                            />
+                          </svg>
+                        </button>
+                        <div className="flex-1 h-px bg-gray-600 opacity-0 scale-x-50 group-hover:opacity-100 group-hover:scale-x-100 group-focus-within:opacity-100 group-focus-within:scale-x-100 transition-all duration-300 ease-out origin-center" />
                       </div>
                     )}
                   </div>
