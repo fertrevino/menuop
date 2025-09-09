@@ -117,25 +117,28 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
 
         {/* Modal */}
         <div className="relative bg-gradient-to-br from-gray-800/95 via-gray-900/95 to-gray-800/95 backdrop-blur-xl rounded-2xl shadow-2xl w-full max-w-md border border-gray-600/30 transform transition-all duration-300 scale-100 hover:scale-[1.02] z-10">
-          {/* Close button with modern design */}
-          <button
-            onClick={handleClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-all duration-200 hover:bg-gray-700/50 rounded-lg p-2 group cursor-pointer"
-          >
-            <svg
-              className="w-5 h-5 group-hover:rotate-90 transition-transform duration-200"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          {/* Close button wrapper (absolute inside modal to avoid mobile Safari fixed issues) */}
+          <div className="absolute top-2 right-2 md:top-4 md:right-4 z-20">
+            <button
+              onClick={handleClose}
+              aria-label="Close sign in modal"
+              className="text-gray-400 hover:text-white transition-colors duration-200 rounded-lg p-2 group cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1F8349]/60 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 hover:bg-gray-700/60 focus-visible:bg-gray-700/60 active:bg-gray-700/70"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-          </button>
+              <svg
+                className="w-5 h-5 group-hover:rotate-90 transition-transform duration-200"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </button>
+          </div>
 
           {/* Modal content */}
           <div className="p-8">
