@@ -8,6 +8,7 @@ import { useMenu } from "@/hooks/useMenu";
 import ImageInput from "@/app/components/ImageInput";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import ThemePreview from "@/app/components/ThemePreview";
+import { ConfirmDialog } from "@/app/components/ui/confirm-dialog";
 import { MenuThemeConfig, THEME_PRESETS } from "@/lib/types/theme";
 import {
   CURRENCY_OPTIONS,
@@ -45,6 +46,8 @@ export default function CreateMenu() {
     type: "success" | "error";
     content: string;
   } | null>(null);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+  const [pendingNav, setPendingNav] = useState<null | string>(null);
 
   const {
     menuFormData,
@@ -85,10 +88,9 @@ export default function CreateMenu() {
 
   const handleBackNavigation = () => {
     if (hasUnsavedChanges) {
-      const confirmed = window.confirm(
-        "You have unsaved changes. Are you sure you want to leave without saving?"
-      );
-      if (!confirmed) return;
+      setPendingNav("/dashboard");
+      setShowUnsavedDialog(true);
+      return;
     }
     router.push("/dashboard");
   };
@@ -359,6 +361,23 @@ export default function CreateMenu() {
           </div>
         </div>
       </nav>
+      {/* Unsaved Changes Confirm Dialog */}
+      <ConfirmDialog
+        open={showUnsavedDialog}
+        title="Leave without saving?"
+        description="You have unsaved changes. If you leave now, those changes will be lost."
+        confirmText="Discard Changes"
+        cancelText="Stay"
+        variant="danger"
+        onCancel={() => {
+          setShowUnsavedDialog(false);
+          setPendingNav(null);
+        }}
+        onConfirm={() => {
+          setShowUnsavedDialog(false);
+          if (pendingNav) router.push(pendingNav);
+        }}
+      />
 
       {/* Error Display */}
       {error && !isDeveloperMode && (

@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, use } from "react";
 import { toast } from "sonner";
+import { ConfirmDialog } from "@/app/components/ui/confirm-dialog";
 import { useMenu } from "@/hooks/useMenu";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import ThemePreview from "@/app/components/ThemePreview";
@@ -35,6 +36,8 @@ export default function EditMenu({ params }: EditMenuProps) {
   } | null>(null);
   const [cachedJson, setCachedJson] = useState("");
   const [copied, setCopied] = useState(false);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+  const [pendingNav, setPendingNav] = useState<string | null>(null);
 
   // Unwrap the params Promise using React.use()
   const { id } = use(params);
@@ -70,6 +73,29 @@ export default function EditMenu({ params }: EditMenuProps) {
       router.push("/");
     }
   }, [user, loading, router]);
+
+  // Warn user before closing tab with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue =
+          "You have unsaved changes. Are you sure you want to leave?";
+        return e.returnValue;
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [hasUnsavedChanges]);
+
+  const handleBackNavigation = () => {
+    if (hasUnsavedChanges) {
+      setPendingNav("/dashboard");
+      setShowUnsavedDialog(true);
+      return;
+    }
+    router.push("/dashboard");
+  };
 
   const handleSaveMenu = async () => {
     if (!menuFormData.name.trim() || !menuFormData.restaurant_name.trim()) {
@@ -333,7 +359,7 @@ export default function EditMenu({ params }: EditMenuProps) {
           <div className="flex justify-between items-center h-16">
             <div className="flex-1 flex items-center space-x-2">
               <button
-                onClick={() => router.push("/dashboard")}
+                onClick={handleBackNavigation}
                 className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-gray-700/50 cursor-pointer"
               >
                 <svg
@@ -444,6 +470,24 @@ export default function EditMenu({ params }: EditMenuProps) {
           </div>
         </div>
       </nav>
+
+      {/* Unsaved Changes Confirm Dialog */}
+      <ConfirmDialog
+        open={showUnsavedDialog}
+        title="Leave without saving?"
+        description="You have unsaved changes. If you leave now, those changes will be lost."
+        confirmText="Discard Changes"
+        cancelText="Stay"
+        variant="danger"
+        onCancel={() => {
+          setShowUnsavedDialog(false);
+          setPendingNav(null);
+        }}
+        onConfirm={() => {
+          setShowUnsavedDialog(false);
+          if (pendingNav) router.push(pendingNav);
+        }}
+      />
 
       {/* Persistent Error Banner (modern) */}
       {error && !isDeveloperMode && (
