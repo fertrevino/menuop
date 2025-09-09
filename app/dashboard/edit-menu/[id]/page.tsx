@@ -861,7 +861,7 @@ export default function EditMenu({ params }: EditMenuProps) {
                     />
                     <button
                       onClick={() => addMenuItem(currentSectionIndex)}
-                      className="inline-flex items-center gap-2 text-gray-400 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/40 active:scale-[.97]"
+                      className="inline-flex items-center gap-2 text-gray-400 hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/40 active:scale-[.97]"
                     >
                       <svg
                         className="w-4 h-4"
