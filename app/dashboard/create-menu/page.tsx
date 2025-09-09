@@ -314,7 +314,7 @@ export default function CreateMenu() {
                     setIsDeveloperMode(!isDeveloperMode);
                     setImportMessage(null);
                   }}
-                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer ${
                     isDeveloperMode ? "bg-[#1F8349]" : "bg-gray-600"
                   }`}
                 >
