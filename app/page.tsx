@@ -649,7 +649,7 @@ export default function Home() {
           {/* Featured Theme Previews */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Italian Trattoria Theme */}
-            <div className="group cursor-pointer">
+            <div className="group">
               <div className="bg-gradient-to-br from-[#8b4513] to-[#cd853f] p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:-translate-y-1 border-2 border-transparent hover:border-[#8b4513]/50">
                 <div className="bg-[#fdf6e3] p-4 rounded-lg mb-4">
                   <div className="text-[#8b4513] font-bold text-lg mb-2">
@@ -673,7 +673,7 @@ export default function Home() {
             </div>
 
             {/* Japanese Zen Theme */}
-            <div className="group cursor-pointer">
+            <div className="group">
               <div className="bg-gradient-to-br from-[#2d5016] to-[#4a7c59] p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:-translate-y-1 border-2 border-transparent hover:border-[#2d5016]/50">
                 <div className="bg-[#f7f5f3] p-4 rounded-lg mb-4">
                   <div className="text-[#2d5016] font-bold text-lg mb-2">
