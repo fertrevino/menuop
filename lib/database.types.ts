@@ -248,6 +248,79 @@ export type Database = {
           }
         ];
       };
+      user_profiles: {
+        Row: {
+          user_id: string;
+          full_name: string | null;
+          phone: string | null;
+          business_name: string | null;
+          business_type: string | null;
+          website: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          full_name?: string | null;
+          phone?: string | null;
+          business_name?: string | null;
+          business_type?: string | null;
+          website?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          full_name?: string | null;
+          phone?: string | null;
+          business_name?: string | null;
+          business_type?: string | null;
+          website?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "user_profiles_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      user_settings: {
+        Row: {
+          user_id: string;
+          notifications: Json;
+          menu_preferences: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          notifications?: Json;
+          menu_preferences?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          notifications?: Json;
+          menu_preferences?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "user_settings_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;

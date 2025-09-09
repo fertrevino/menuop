@@ -5,12 +5,18 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import SubscriptionPlans from "@/app/components/SubscriptionPlans";
 import { CurrentSubscription } from "@/app/components/CurrentSubscription";
+import {
+  getAllSettings,
+  upsertUserProfile,
+  upsertNotifications,
+  upsertMenuPreferences,
+} from "@/lib/services/settings";
 
 export default function Settings() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  // Profile settings
+  // Profile settings (camelCase for UI)
   const [initialProfileData, setInitialProfileData] = useState({
     fullName: "",
     email: "",
@@ -19,7 +25,6 @@ export default function Settings() {
     businessType: "",
     website: "",
   });
-
   const [profileData, setProfileData] = useState({
     fullName: "",
     email: "",
@@ -64,21 +69,64 @@ export default function Settings() {
     }
   }, [user, loading, router]);
 
+  const [initialFetched, setInitialFetched] = useState(false);
   useEffect(() => {
-    if (user) {
-      // Load user data
-      const userData = {
-        fullName: user.user_metadata?.full_name || "",
-        email: user.email || "",
-        phone: user.user_metadata?.phone || "",
-        businessName: user.user_metadata?.business_name || "",
-        businessType: user.user_metadata?.business_type || "",
-        website: user.user_metadata?.website || "",
-      };
-      setInitialProfileData(userData);
-      setProfileData(userData);
-    }
-  }, [user]);
+    const load = async () => {
+      if (!user || initialFetched) return;
+      setIsLoading(true);
+      try {
+        const { profile, settings } = await getAllSettings(user.id);
+        const mergedProfile = {
+          fullName:
+            (profile?.full_name || user.user_metadata?.full_name) ?? "",
+            email: user.email || "",
+          phone: profile?.phone || user.user_metadata?.phone || "",
+          businessName:
+            profile?.business_name || user.user_metadata?.business_name || "",
+          businessType:
+            profile?.business_type || user.user_metadata?.business_type || "",
+          website: profile?.website || user.user_metadata?.website || "",
+        };
+        setInitialProfileData(mergedProfile);
+        setProfileData(mergedProfile);
+        const notif = settings?.notifications as
+          | {
+              email_updates: boolean;
+              menu_analytics: boolean;
+              new_features: boolean;
+              marketing_emails: boolean;
+            }
+          | undefined;
+        if (notif) {
+          const mapped = {
+            emailUpdates: notif.email_updates,
+            menuAnalytics: notif.menu_analytics,
+            newFeatures: notif.new_features,
+            marketingEmails: notif.marketing_emails,
+          };
+          setInitialNotifications(mapped);
+          setNotifications(mapped);
+        }
+        const menuPrefs = settings?.menu_preferences as
+          | { default_currency: string; time_format: "12h" | "24h" }
+          | undefined;
+        if (menuPrefs) {
+          const mappedPrefs = {
+            defaultCurrency: menuPrefs.default_currency,
+            timeFormat: menuPrefs.time_format,
+          };
+          setInitialMenuPreferences(mappedPrefs);
+          setMenuPreferences(mappedPrefs);
+        }
+      } catch (e) {
+        console.error("Error loading settings", e);
+      } finally {
+        setIsLoading(false);
+        setInitialFetched(true);
+      }
+    };
+    load();
+  }, [user, initialFetched]);
 
   // Function to check for unsaved changes
   const hasUnsavedChanges = () => {
@@ -94,14 +142,20 @@ export default function Settings() {
   };
 
   const handleSaveProfile = async () => {
+    if (!user) return;
     setIsLoading(true);
     try {
-      // TODO: Implement actual profile update with Supabase
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await upsertUserProfile(user.id, {
+        full_name: profileData.fullName,
+        phone: profileData.phone,
+        business_name: profileData.businessName,
+        business_type: profileData.businessType,
+        website: profileData.website,
+      });
       alert("Profile updated successfully!");
-      // Update initial data to match current data after successful save
       setInitialProfileData({ ...profileData });
-    } catch {
+    } catch (error) {
+      console.error(error);
       alert("Error updating profile. Please try again.");
     } finally {
       setIsLoading(false);
@@ -109,14 +163,19 @@ export default function Settings() {
   };
 
   const handleSaveNotifications = async () => {
+    if (!user) return;
     setIsLoading(true);
     try {
-      // TODO: Implement actual notification preferences update
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await upsertNotifications(user.id, {
+        email_updates: notifications.emailUpdates,
+        menu_analytics: notifications.menuAnalytics,
+        new_features: notifications.newFeatures,
+        marketing_emails: notifications.marketingEmails,
+      });
       alert("Notification preferences updated!");
-      // Update initial notifications to match current notifications after successful save
       setInitialNotifications({ ...notifications });
-    } catch {
+    } catch (error) {
+      console.error(error);
       alert("Error updating preferences. Please try again.");
     } finally {
       setIsLoading(false);
@@ -124,14 +183,17 @@ export default function Settings() {
   };
 
   const handleSaveMenuPreferences = async () => {
+    if (!user) return;
     setIsLoading(true);
     try {
-      // TODO: Implement actual menu preferences update
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await upsertMenuPreferences(user.id, {
+        default_currency: menuPreferences.defaultCurrency,
+        time_format: menuPreferences.timeFormat as "12h" | "24h",
+      });
       alert("Menu preferences updated!");
-      // Update initial preferences to match current preferences after successful save
       setInitialMenuPreferences({ ...menuPreferences });
-    } catch {
+    } catch (error) {
+      console.error(error);
       alert("Error updating preferences. Please try again.");
     } finally {
       setIsLoading(false);
@@ -161,7 +223,7 @@ export default function Settings() {
     }
   };
 
-  if (loading) {
+  if (loading || !initialFetched) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 flex items-center justify-center">
         <div className="text-white text-xl">Loading...</div>
