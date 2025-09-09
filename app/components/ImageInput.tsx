@@ -6,6 +6,7 @@ import {
   getImageRecommendations,
   ImageSuggestion,
 } from "@/lib/services/imageRecommendation";
+import { createClient as createSupabaseClient } from "@/lib/supabase/client";
 
 // Simple Camera Capture Component
 function CameraCapture({
@@ -23,28 +24,19 @@ function CameraCapture({
 
   const startCamera = async () => {
     try {
-      console.log("📹 Starting camera...");
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment" },
       });
-
-      console.log("📹 Got media stream");
       streamRef.current = mediaStream;
 
       if (videoRef.current) {
-        console.log("📹 Video element exists, connecting stream");
         videoRef.current.srcObject = mediaStream;
-        console.log("📹 Stream assigned to video, attempting play");
         await videoRef.current.play();
-        console.log("📹 Video is playing");
-      } else {
-        console.log("📹 No video element found!");
+  } else {
       }
 
       setIsInitialized(true);
-      console.log("📹 Camera initialized");
     } catch (error) {
-      console.error("Camera error:", error);
       alert("Failed to access camera");
       onClose();
     }
@@ -78,8 +70,6 @@ function CameraCapture({
   };
 
   const retake = async () => {
-    console.log("🔄 Retake requested");
-    console.log("🔄 Stream before retake:", !!streamRef.current);
     setCapturedPhoto(null);
 
     // Wait for React to re-render and mount the video element
@@ -87,7 +77,6 @@ function CameraCapture({
 
     // Force reconnection of video stream
     if (streamRef.current && videoRef.current) {
-      console.log("🔄 Stream exists, reconnecting video");
 
       // Clear current source first
       videoRef.current.srcObject = null;
@@ -101,30 +90,20 @@ function CameraCapture({
       // Ensure video plays
       try {
         await videoRef.current.play();
-        console.log("🔄 Video reconnected and playing");
       } catch (error) {
-        console.error("🔄 Error playing video:", error);
       }
     } else {
-      console.log("🔄 No video element after waiting, retrying...");
-      console.log("🔄 streamRef.current:", streamRef.current);
-      console.log("🔄 videoRef.current:", videoRef.current);
-
       // Try a few more times with delays
       for (let i = 0; i < 5; i++) {
         await new Promise((resolve) => setTimeout(resolve, 200));
         if (videoRef.current) {
-          console.log(`🔄 Video element found on attempt ${i + 1}`);
           if (streamRef.current) {
             videoRef.current.srcObject = streamRef.current;
             await videoRef.current.play();
-            console.log("🔄 Video reconnected and playing");
             return;
           }
         }
       }
-
-      console.log("🔄 Could not reconnect, reinitializing camera");
       setIsInitialized(false);
       await startCamera();
     }
@@ -181,11 +160,6 @@ function CameraCapture({
                     autoPlay
                     playsInline
                     muted
-                    onLoadedMetadata={() =>
-                      console.log("📹 Video metadata loaded")
-                    }
-                    onPlay={() => console.log("📹 Video started playing")}
-                    onPause={() => console.log("📹 Video paused")}
                   />
                   <div className="flex justify-center gap-4 mt-4">
                     <button
@@ -193,26 +167,6 @@ function CameraCapture({
                       className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg"
                     >
                       Cancel
-                    </button>
-                    <button
-                      onClick={() => {
-                        console.log("🔍 Debug - Stream:", !!streamRef.current);
-                        console.log(
-                          "🔍 Debug - Video src:",
-                          videoRef.current?.srcObject
-                        );
-                        console.log(
-                          "🔍 Debug - Video paused:",
-                          videoRef.current?.paused
-                        );
-                        console.log(
-                          "🔍 Debug - Video ready state:",
-                          videoRef.current?.readyState
-                        );
-                      }}
-                      className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs"
-                    >
-                      Debug
                     </button>
                     <button
                       onClick={takePhoto}
@@ -282,7 +236,45 @@ export default function ImageInput({
   const [previewImage, setPreviewImage] = useState<ImageSuggestion | null>(
     null
   );
+  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const supabase = createSupabaseClient();
+
+  function dataUrlToBlob(dataUrl: string): Blob {
+    const [header, base64] = dataUrl.split(",");
+    const mimeMatch = /data:(.*?);base64/.exec(header || "");
+    const mime = mimeMatch?.[1] || "image/jpeg";
+    const binary = atob(base64);
+    const len = binary.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+    return new Blob([bytes], { type: mime });
+  }
+
+  async function uploadToStorage(blob: Blob, preferredExt?: string) {
+    const bucket = "menu-images"; // expects an existing public bucket with upload policy for authenticated users
+    const extFromType = blob.type.split("/")[1] || "jpg";
+    const ext = (preferredExt || extFromType || "jpg").toLowerCase();
+    const filePath = `items/${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2)}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from(bucket)
+      .upload(filePath, blob, {
+        cacheControl: "3600",
+        contentType: blob.type || "application/octet-stream",
+        upsert: false,
+      });
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
+    return data.publicUrl as string;
+  }
 
   const handleAIGeneration = async () => {
     setIsGenerating(true);
@@ -291,12 +283,9 @@ export default function ImageInput({
     try {
       // Use the itemName if available, otherwise fallback to generic food image
       const searchTerm = itemName && itemName.trim() ? itemName : "food image";
-      console.log("🎨 Generating AI images for:", searchTerm);
       const suggestions = await getImageRecommendations(searchTerm);
-      console.log("🖼️ Received suggestions:", suggestions);
       setAiImages(suggestions);
     } catch (error) {
-      console.error("Error generating AI images:", error);
       alert("Failed to generate AI images. Please try again.");
       setShowAIImages(false);
     } finally {
@@ -304,11 +293,31 @@ export default function ImageInput({
     }
   };
 
-  const handleAIImageSelect = (imageDataUrl: string) => {
-    onChange(imageDataUrl);
-    setShowAIImages(false);
-    setAiImages([]);
-    setPreviewImage(null);
+  const handleAIImageSelect = async (imageUrl: string) => {
+    try {
+      setIsUploading(true);
+
+      // If the AI returned a base64 data URL, upload it to storage first
+      if (imageUrl.startsWith("data:image/")) {
+        const blob = dataUrlToBlob(imageUrl);
+        const publicUrl = await uploadToStorage(blob);
+        onChange(publicUrl);
+      } else {
+        // Otherwise, it's already a URL we can use directly
+        onChange(imageUrl);
+      }
+
+      // Close suggestions/preview after successful selection
+      setShowAIImages(false);
+      setAiImages([]);
+      setPreviewImage(null);
+    } catch (err) {
+      alert(
+        "Failed to store the generated image. Please try again or choose another image."
+      );
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleImagePreview = (suggestion: ImageSuggestion) => {
@@ -320,11 +329,27 @@ export default function ImageInput({
   };
 
   const handleCameraCapture = (dataUrl: string) => {
-    onChange(dataUrl);
-    setShowCamera(false);
+    // Convert to Blob and upload to storage
+    (async () => {
+      try {
+        setIsUploading(true);
+        const blob = dataUrlToBlob(dataUrl);
+        const publicUrl = await uploadToStorage(blob, "jpg");
+        onChange(publicUrl);
+      } catch (err) {
+        alert(
+          "Failed to upload photo. Please try again or choose a smaller image."
+        );
+      } finally {
+        setIsUploading(false);
+        setShowCamera(false);
+      }
+    })();
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -341,16 +366,18 @@ export default function ImageInput({
       return;
     }
 
-    // Convert to base64 data URL
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const dataUrl = e.target?.result as string;
-      onChange(dataUrl);
-    };
-    reader.onerror = () => {
-      alert("Error reading file. Please try again.");
-    };
-    reader.readAsDataURL(file);
+    // Upload to Supabase Storage to avoid embedding large base64 strings in the menu payload
+    try {
+      setIsUploading(true);
+      const publicUrl = await uploadToStorage(file);
+      onChange(publicUrl);
+    } catch (err) {
+      alert("Failed to upload image. Please try again.");
+    } finally {
+      setIsUploading(false);
+      // Reset the input so the same file can be selected again if needed
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   const triggerFileUpload = () => {
@@ -373,6 +400,7 @@ export default function ImageInput({
         <button
           type="button"
           onClick={() => setShowCamera(true)}
+          disabled={isUploading}
           className="text-xs bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white px-3 py-1 rounded-md transition-colors"
         >
           📷 Camera
@@ -381,9 +409,10 @@ export default function ImageInput({
         <button
           type="button"
           onClick={triggerFileUpload}
+          disabled={isUploading}
           className="text-xs bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-3 py-1 rounded-md transition-colors"
         >
-          📁 Upload
+          {isUploading ? "Uploading..." : "📁 Upload"}
         </button>
 
         <button
@@ -469,16 +498,9 @@ export default function ImageInput({
                           position: "relative",
                         }}
                         onLoad={(e) => {
-                          console.log(
-                            `✅ Image ${index + 1} loaded successfully`
-                          );
                           e.currentTarget.style.opacity = "1";
                         }}
                         onError={(e) => {
-                          console.error(
-                            `❌ Image ${index + 1} failed to load:`,
-                            suggestion.url
-                          );
                           const target = e.currentTarget as HTMLImageElement;
                           target.style.backgroundColor = "#ef4444";
                           target.style.color = "white";
