@@ -24,20 +24,52 @@ function CameraCapture({
 
   const startCamera = async () => {
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-      });
+      // Prefer rear camera; add ideal as fallback for better browser compatibility
+      const constraints: MediaStreamConstraints = {
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+        audio: false,
+      };
+
+      let mediaStream: MediaStream;
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (err) {
+        // Retry with simpler constraint if first attempt fails (some Android browsers)
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false,
+        });
+      }
+
       streamRef.current = mediaStream;
 
       if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-        await videoRef.current.play();
-      } else {
+        const videoEl = videoRef.current;
+        videoEl.srcObject = mediaStream;
+        // Ensure playsinline to avoid iOS full-screen takeover
+        videoEl.setAttribute("playsinline", "true");
+        // Wait for metadata for correct dimensions on iOS Safari
+        const playPromise = new Promise<void>((resolve) => {
+          videoEl.onloadedmetadata = () => {
+            videoEl
+              .play()
+              .then(() => resolve())
+              .catch(() => resolve());
+          };
+        });
+        await playPromise;
       }
 
       setIsInitialized(true);
     } catch (error) {
-      alert("Failed to access camera");
+      console.error("Camera init error", error);
+      alert(
+        "Camera not available. On some mobile browsers this feature may be blocked. Try using the Upload option instead."
+      );
       onClose();
     }
   };
@@ -323,6 +355,12 @@ export default function ImageInput({
   );
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Simple mobile detection for fallback (getUserMedia issues on older iOS / embedded browsers)
+  const isMobile =
+    typeof window !== "undefined" &&
+    /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   const supabase = createSupabaseClient();
 
@@ -487,12 +525,29 @@ export default function ImageInput({
         onChange={handleFileUpload}
         className="hidden"
       />
+      {/* Mobile camera fallback: directly opens camera UI on many devices */}
+      <input
+        ref={cameraFileInputRef}
+        type="file"
+        accept="image/*"
+        // @ts-ignore capture isn't in older TS DOM lib versions
+        capture="environment"
+        onChange={handleFileUpload}
+        className="hidden"
+      />
 
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-3">
         <button
           type="button"
-          onClick={() => setShowCamera(true)}
+          onClick={() => {
+            if (isMobile) {
+              // Use native capture for better reliability
+              cameraFileInputRef.current?.click();
+            } else {
+              setShowCamera(true);
+            }
+          }}
           disabled={isUploading}
           className={`${baseBtn} ${neutralBtn} ${sizeSm}`}
         >
