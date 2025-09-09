@@ -624,7 +624,7 @@ export default function CreateMenu() {
                   <h3 className="text-lg font-semibold text-white">Sections</h3>
                   <button
                     onClick={addSection}
-                    className="text-[#1F8349] hover:text-[#2ea358] transition-colors"
+                    className="text-[#1F8349] hover:text-[#2ea358] transition-colors cursor-pointer"
                   >
                     <svg
                       className="w-5 h-5"
