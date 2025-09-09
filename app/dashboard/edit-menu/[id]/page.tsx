@@ -961,15 +961,26 @@ export default function EditMenu({ params }: EditMenuProps) {
                               <input
                                 type="number"
                                 step="0.01"
-                                value={item.price}
-                                onChange={(e) =>
+                                value={item.price < 0 ? "" : item.price}
+                                onChange={(e) => {
+                                  const raw = e.target.value;
+                                  if (raw === "") {
+                                    updateMenuItem(
+                                      currentSectionIndex,
+                                      itemIndex,
+                                      "price",
+                                      -1
+                                    );
+                                    return;
+                                  }
+                                  const num = parseFloat(raw);
                                   updateMenuItem(
                                     currentSectionIndex,
                                     itemIndex,
                                     "price",
-                                    parseFloat(e.target.value) || 0
-                                  )
-                                }
+                                    isNaN(num) ? -1 : num
+                                  );
+                                }}
                                 className="w-full bg-gray-600 text-white border border-gray-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
                                 placeholder="0.00"
                               />

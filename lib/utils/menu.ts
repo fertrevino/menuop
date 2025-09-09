@@ -37,7 +37,8 @@ export const menuUtils = {
   createEmptyItem: (): MenuItemFormData => ({
     name: "",
     description: "",
-    price: 0,
+    // Use -1 sentinel so input field can be cleared ("" shows) before entering a real price
+    price: -1,
     is_available: true,
   }),
 
@@ -73,6 +74,7 @@ export const menuUtils = {
           );
         }
 
+        // Treat sentinel -1 and 0 or negative as invalid when validating for save
         if (item.price <= 0) {
           errors.push(
             `Section "${section.name}" - Item "${item.name}": Price must be greater than 0`
