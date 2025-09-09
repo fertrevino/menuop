@@ -352,17 +352,14 @@ export default function ViewMenus() {
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">
-                        <div className="relative group/tooltip">
+                        <div className="relative">
                           <button
                             onClick={() => handleEditMenu(menu.id)}
                             className="text-left w-full text-xl font-semibold text-white mb-1 truncate focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1F8349] hover:text-[#2ea358] cursor-pointer"
-                            aria-label={`Edit menu ${menu.name}`}
+                            aria-label={menu.name}
                           >
                             {menu.name}
                           </button>
-                          <span className="pointer-events-none absolute -top-8 left-0 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-gray-200 opacity-0 group-hover/tooltip:opacity-100 group-focus-within/tooltip:opacity-100 transition-opacity">
-                            Edit menu
-                          </span>
                         </div>
                         <p className="text-gray-400 text-sm truncate">
                           {menu.restaurant_name}
