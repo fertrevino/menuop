@@ -123,17 +123,32 @@ export function useMenu(menuId?: string) {
     }));
   }, []);
 
-  const addMenuItem = useCallback((sectionIndex: number) => {
-    const newItem = menuUtils.createEmptyItem();
-    setMenuFormData((prev) => ({
-      ...prev,
-      sections: prev.sections.map((section, index) =>
-        index === sectionIndex
-          ? { ...section, items: [...section.items, newItem] }
-          : section
-      ),
-    }));
-  }, []);
+  // Add a menu item; if insertAfterIndex provided, insert after that item, otherwise append to end
+  const addMenuItem = useCallback(
+    (sectionIndex: number, insertAfterIndex?: number) => {
+      const newItem = menuUtils.createEmptyItem();
+      setMenuFormData((prev) => ({
+        ...prev,
+        sections: prev.sections.map((section, index) => {
+          if (index !== sectionIndex) return section;
+          const items = [...section.items];
+          if (insertAfterIndex === -1) {
+            items.unshift(newItem); // insert at start
+          } else if (
+            insertAfterIndex === undefined ||
+            insertAfterIndex < -1 ||
+            insertAfterIndex >= items.length
+          ) {
+            items.push(newItem); // append
+          } else {
+            items.splice(insertAfterIndex + 1, 0, newItem); // insert after specified index
+          }
+          return { ...section, items };
+        }),
+      }));
+    },
+    []
+  );
 
   const updateMenuItem = useCallback(
     (
