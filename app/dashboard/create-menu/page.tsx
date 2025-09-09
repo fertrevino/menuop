@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useMenu } from "@/hooks/useMenu";
 import ImageInput from "@/app/components/ImageInput";
+import ThemeSelector from "@/app/components/ThemeSelector";
+import ThemePreview from "@/app/components/ThemePreview";
+import { MenuThemeConfig, THEME_PRESETS } from "@/lib/types/theme";
 import {
   CURRENCY_OPTIONS,
   POPULAR_CURRENCIES,
@@ -33,6 +36,7 @@ export default function CreateMenu() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState<"content" | "theme">("content");
   const [isDeveloperMode, setIsDeveloperMode] = useState(false);
   const [jsonInput, setJsonInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -103,6 +107,10 @@ export default function CreateMenu() {
     } catch (error) {
       // Error is already handled by the hook
     }
+  };
+
+  const handleThemeChange = (newTheme: MenuThemeConfig) => {
+    updateMenuField("theme_config", newTheme);
   };
 
   const handleJsonImport = async (e: React.FormEvent) => {
@@ -533,165 +541,207 @@ export default function CreateMenu() {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Sidebar */}
             <div className="lg:col-span-1 space-y-6">
-              {/* Basic Info */}
-              <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
-                <h3 className="text-lg font-semibold text-white mb-4">
-                  Menu Details
-                </h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Restaurant Name
-                    </label>
-                    <input
-                      type="text"
-                      value={menuFormData.restaurant_name}
-                      onChange={(e) =>
-                        updateMenuField("restaurant_name", e.target.value)
-                      }
-                      className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
-                      placeholder="Enter restaurant name"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Menu Name
-                    </label>
-                    <input
-                      type="text"
-                      value={menuFormData.name}
-                      onChange={(e) => updateMenuField("name", e.target.value)}
-                      className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
-                      placeholder="Enter menu name"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Description (Optional)
-                    </label>
-                    <textarea
-                      value={menuFormData.description || ""}
-                      onChange={(e) =>
-                        updateMenuField("description", e.target.value)
-                      }
-                      className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
-                      placeholder="Enter menu description"
-                      rows={3}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Currency
-                    </label>
-                    <select
-                      value={menuFormData.currency || "USD"}
-                      onChange={(e) =>
-                        updateMenuField("currency", e.target.value)
-                      }
-                      className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
-                    >
-                      <optgroup label="Popular Currencies">
-                        {POPULAR_CURRENCIES.map((code) => {
-                          const currency = CURRENCY_OPTIONS.find(
-                            (c) => c.code === code
-                          );
-                          return currency ? (
-                            <option key={code} value={code}>
-                              {currency.code} ({currency.symbol}) -{" "}
-                              {currency.name}
-                            </option>
-                          ) : null;
-                        })}
-                      </optgroup>
-                      <optgroup label="All Currencies">
-                        {CURRENCY_OPTIONS.filter(
-                          (c) => !POPULAR_CURRENCIES.includes(c.code)
-                        ).map((currency) => (
-                          <option key={currency.code} value={currency.code}>
-                            {currency.code} ({currency.symbol}) -{" "}
-                            {currency.name}
-                          </option>
-                        ))}
-                      </optgroup>
-                    </select>
-                  </div>
+              {/* Tab Navigation */}
+              <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+                <div className="flex">
+                  <button
+                    onClick={() => setActiveTab("content")}
+                    className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+                      activeTab === "content"
+                        ? "text-white bg-[#1F8349]"
+                        : "text-gray-300 hover:text-white hover:bg-gray-700 cursor-pointer"
+                    }`}
+                  >
+                    Content
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("theme")}
+                    className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+                      activeTab === "theme"
+                        ? "text-white bg-[#1F8349]"
+                        : "text-gray-300 hover:text-white hover:bg-gray-700 cursor-pointer"
+                    }`}
+                  >
+                    Theme
+                  </button>
                 </div>
               </div>
 
-              {/* Sections */}
-              <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold text-white">Sections</h3>
-                  <button
-                    onClick={addSection}
-                    className="text-[#1F8349] hover:text-[#2ea358] transition-colors cursor-pointer"
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                      ></path>
-                    </svg>
-                  </button>
-                </div>
-                <div className="space-y-2">
-                  {menuFormData.sections.map((section, index) => (
-                    <div
-                      key={index}
-                      className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${
-                        currentSectionIndex === index
-                          ? "bg-[#1F8349]/20 border border-[#1F8349]/50"
-                          : "bg-gray-700 hover:bg-gray-600"
-                      }`}
-                      onClick={() => setCurrentSectionIndex(index)}
-                    >
-                      <span className="text-white font-medium">
-                        {section.name}
-                      </span>
-                      {menuFormData.sections.length > 1 && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteSection(index);
-                            if (currentSectionIndex >= index) {
-                              setCurrentSectionIndex(
-                                Math.max(0, currentSectionIndex - 1)
-                              );
-                            }
-                          }}
-                          className="text-red-400 hover:text-red-300 transition-colors"
+              {activeTab === "content" && (
+                <>
+                  {/* Basic Info */}
+                  <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
+                    <h3 className="text-lg font-semibold text-white mb-4">
+                      Menu Details
+                    </h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Restaurant Name
+                        </label>
+                        <input
+                          type="text"
+                          value={menuFormData.restaurant_name}
+                          onChange={(e) =>
+                            updateMenuField("restaurant_name", e.target.value)
+                          }
+                          className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
+                          placeholder="Enter restaurant name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Menu Name
+                        </label>
+                        <input
+                          type="text"
+                          value={menuFormData.name}
+                          onChange={(e) =>
+                            updateMenuField("name", e.target.value)
+                          }
+                          className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
+                          placeholder="Enter menu name"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Description (Optional)
+                        </label>
+                        <textarea
+                          value={menuFormData.description || ""}
+                          onChange={(e) =>
+                            updateMenuField("description", e.target.value)
+                          }
+                          className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
+                          placeholder="Enter menu description"
+                          rows={3}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Currency
+                        </label>
+                        <select
+                          value={menuFormData.currency || "USD"}
+                          onChange={(e) =>
+                            updateMenuField("currency", e.target.value)
+                          }
+                          className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1F8349]"
                         >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            ></path>
-                          </svg>
-                        </button>
-                      )}
+                          <optgroup label="Popular Currencies">
+                            {POPULAR_CURRENCIES.map((code) => {
+                              const currency = CURRENCY_OPTIONS.find(
+                                (c) => c.code === code
+                              );
+                              return currency ? (
+                                <option key={code} value={code}>
+                                  {currency.code} ({currency.symbol}) -{" "}
+                                  {currency.name}
+                                </option>
+                              ) : null;
+                            })}
+                          </optgroup>
+                          <optgroup label="All Currencies">
+                            {CURRENCY_OPTIONS.filter(
+                              (c) => !POPULAR_CURRENCIES.includes(c.code)
+                            ).map((currency) => (
+                              <option key={currency.code} value={currency.code}>
+                                {currency.code} ({currency.symbol}) -{" "}
+                                {currency.name}
+                              </option>
+                            ))}
+                          </optgroup>
+                        </select>
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
+
+                  {/* Sections */}
+                  <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-semibold text-white">
+                        Sections
+                      </h3>
+                      <button
+                        onClick={addSection}
+                        className="text-[#1F8349] hover:text-[#2ea358] transition-colors cursor-pointer"
+                      >
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      {menuFormData.sections.map((section, index) => (
+                        <div
+                          key={index}
+                          className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${
+                            currentSectionIndex === index
+                              ? "bg-[#1F8349]/20 border border-[#1F8349]/50"
+                              : "bg-gray-700 hover:bg-gray-600"
+                          }`}
+                          onClick={() => setCurrentSectionIndex(index)}
+                        >
+                          <span className="text-white font-medium">
+                            {section.name}
+                          </span>
+                          {menuFormData.sections.length > 1 && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteSection(index);
+                                if (currentSectionIndex >= index) {
+                                  setCurrentSectionIndex(
+                                    Math.max(0, currentSectionIndex - 1)
+                                  );
+                                }
+                              }}
+                              className="text-red-400 hover:text-red-300 transition-colors"
+                            >
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                ></path>
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {activeTab === "theme" && (
+                <ThemePreview
+                  theme={menuFormData.theme_config || THEME_PRESETS[0].config}
+                  restaurantName={menuFormData.restaurant_name}
+                  menuName={menuFormData.name}
+                />
+              )}
             </div>
 
             {/* Main Content */}
             <div className="lg:col-span-3">
-              {currentSection && (
+              {activeTab === "content" && currentSection && (
                 <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
                   <div className="flex justify-between items-center mb-6">
                     <input
@@ -796,12 +846,10 @@ export default function CreateMenu() {
                               <input
                                 type="number"
                                 step="0.01"
-                                // Allow user to clear the initial 0 by using a sentinel (-1) to represent an empty editing state
                                 value={item.price < 0 ? "" : item.price}
                                 onChange={(e) => {
                                   const raw = e.target.value;
                                   if (raw === "") {
-                                    // Set sentinel so input stays empty instead of reverting to 0
                                     updateMenuItem(
                                       currentSectionIndex,
                                       itemIndex,
@@ -988,6 +1036,17 @@ export default function CreateMenu() {
                       </div>
                     )}
                   </div>
+                </div>
+              )}
+
+              {activeTab === "theme" && (
+                <div className="space-y-6">
+                  <ThemeSelector
+                    currentTheme={
+                      menuFormData.theme_config || THEME_PRESETS[0].config
+                    }
+                    onThemeChange={handleThemeChange}
+                  />
                 </div>
               )}
             </div>
