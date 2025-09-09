@@ -34,7 +34,7 @@ export class MenuService {
     const supabase = createSupabaseClient();
     const bucket = "menu-images";
 
-  // Auth is handled upstream; no verbose logging here
+    // Auth is handled upstream; no verbose logging here
 
     const dataUrlToBlob = (dataUrl: string): Blob => {
       const [header, base64] = dataUrl.split(",");
@@ -54,7 +54,7 @@ export class MenuService {
         .toString(36)
         .slice(2)}.${ext}`;
 
-  // minimal path generation; no verbose logging
+      // minimal path generation; no verbose logging
 
       const { error: uploadError } = await supabase.storage
         .from(bucket)
@@ -63,7 +63,7 @@ export class MenuService {
           contentType: blob.type || "application/octet-stream",
           upsert: false,
         });
-  if (uploadError) throw uploadError;
+      if (uploadError) throw uploadError;
       const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
       return data.publicUrl as string;
     };
