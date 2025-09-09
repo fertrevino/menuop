@@ -3,6 +3,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, use } from "react";
+import { toast } from "sonner";
 import { useMenu } from "@/hooks/useMenu";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import ThemePreview from "@/app/components/ThemePreview";
@@ -57,6 +58,13 @@ export default function EditMenu({ params }: EditMenuProps) {
     clearError,
   } = useMenu(id);
 
+  // Surface errors via toast instead of only a top banner
+  useEffect(() => {
+    if (error) {
+      toast.error("Menu error", { description: error });
+    }
+  }, [error]);
+
   useEffect(() => {
     if (!loading && !user) {
       router.push("/");
@@ -65,14 +73,23 @@ export default function EditMenu({ params }: EditMenuProps) {
 
   const handleSaveMenu = async () => {
     if (!menuFormData.name.trim() || !menuFormData.restaurant_name.trim()) {
-      alert("Please fill in both menu name and restaurant name");
+      toast.error("Missing required fields", {
+        description: "Fill in both menu name and restaurant name.",
+      });
       return;
     }
 
-    const result = await saveMenu();
-    if (result) {
-      // Menu saved successfully
-      console.log("Menu saved:", result);
+    try {
+      const result = await saveMenu();
+      if (result) {
+        toast.success("Menu updated", {
+          description: "Your changes have been saved.",
+        });
+      }
+    } catch (e) {
+      toast.error("Failed to save menu", {
+        description: "Please review changes and try again.",
+      });
     }
   };
 
@@ -428,17 +445,51 @@ export default function EditMenu({ params }: EditMenuProps) {
         </div>
       </nav>
 
-      {/* Error Display */}
+      {/* Persistent Error Banner (modern) */}
       {error && !isDeveloperMode && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-          <div className="bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg flex justify-between items-center">
-            <span>{error}</span>
-            <button
-              onClick={clearError}
-              className="text-red-300 hover:text-red-100"
-            >
-              ×
-            </button>
+          <div className="relative overflow-hidden rounded-lg border border-red-600/40 bg-gradient-to-br from-red-900/40 via-red-900/30 to-red-800/30 backdrop-blur-sm px-4 py-3 text-sm text-red-200 shadow-md">
+            <div className="flex items-start gap-3 pr-6">
+              <svg
+                className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 9v4m0 4h.01M4.93 19h14.14c1.54 0 2.5-1.67 1.73-3L13.73 5c-.77-1.33-2.69-1.33-3.46 0L3.2 16c-.77 1.33.19 3 1.73 3z"
+                />
+              </svg>
+              <div className="flex-1 leading-relaxed">
+                <p className="font-medium text-red-300">Problem saving menu</p>
+                <p className="mt-0.5 text-red-200/90">{error}</p>
+                <p className="mt-2 text-xs text-red-300/70">
+                  Fix the issue above and click{" "}
+                  <span className="font-semibold">Save Changes</span> again.
+                </p>
+              </div>
+              <button
+                onClick={clearError}
+                aria-label="Dismiss error"
+                className="absolute top-2 right-2 rounded p-1 text-red-300/70 hover:text-red-100 hover:bg-red-800/40 transition-colors"
+              >
+                <svg
+                  className="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 6L6 18" />
+                  <path d="M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       )}

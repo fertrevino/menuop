@@ -3,6 +3,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import SubscriptionPlans from "@/app/components/SubscriptionPlans";
 import { CurrentSubscription } from "@/app/components/CurrentSubscription";
 import {
@@ -151,11 +152,15 @@ export default function Settings() {
         business_type: profileData.businessType,
         website: profileData.website,
       });
-      alert("Profile updated successfully!");
+      toast.success("Profile updated", {
+        description: "Your profile information was saved.",
+      });
       setInitialProfileData({ ...profileData });
     } catch (error) {
       console.error(error);
-      alert("Error updating profile. Please try again.");
+      toast.error("Error updating profile", {
+        description: "Please try again in a moment.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -171,11 +176,15 @@ export default function Settings() {
         new_features: notifications.newFeatures,
         marketing_emails: notifications.marketingEmails,
       });
-      alert("Notification preferences updated!");
+      toast.success("Notifications updated", {
+        description: "Your notification preferences were saved.",
+      });
       setInitialNotifications({ ...notifications });
     } catch (error) {
       console.error(error);
-      alert("Error updating preferences. Please try again.");
+      toast.error("Error updating notifications", {
+        description: "Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -189,11 +198,15 @@ export default function Settings() {
         default_currency: menuPreferences.defaultCurrency,
         time_format: menuPreferences.timeFormat as "12h" | "24h",
       });
-      alert("Menu preferences updated!");
+      toast.success("Menu preferences updated", {
+        description: "Your menu defaults were saved.",
+      });
       setInitialMenuPreferences({ ...menuPreferences });
     } catch (error) {
       console.error(error);
-      alert("Error updating preferences. Please try again.");
+      toast.error("Error updating menu preferences", {
+        description: "Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -212,11 +225,13 @@ export default function Settings() {
       ) {
         try {
           // TODO: Implement actual account deletion
-          alert(
-            "Account deletion feature will be implemented soon. Please contact support for account deletion requests."
-          );
+          toast.warning("Account deletion not yet available", {
+            description: "Please contact support to proceed.",
+          });
         } catch {
-          alert("Error deleting account. Please contact support.");
+          toast.error("Error deleting account", {
+            description: "Contact support for assistance.",
+          });
         }
       }
     }
@@ -733,9 +748,9 @@ export default function Settings() {
                   <button
                     onClick={() => {
                       // TODO: Implement password reset
-                      alert(
-                        "Password reset feature will be implemented soon. Please contact support for password changes."
-                      );
+                      toast.info("Password reset coming soon", {
+                        description: "Contact support to change password now.",
+                      });
                     }}
                     className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
                   >

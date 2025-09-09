@@ -3,6 +3,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useMenu } from "@/hooks/useMenu";
 import ImageInput from "@/app/components/ImageInput";
 import ThemeSelector from "@/app/components/ThemeSelector";
@@ -94,18 +95,25 @@ export default function CreateMenu() {
 
   const handleSaveMenu = async () => {
     if (!menuFormData.name.trim() || !menuFormData.restaurant_name.trim()) {
-      alert("Please fill in both menu name and restaurant name");
+      toast.error("Please fill in both menu name and restaurant name", {
+        description: "Both fields are required before saving.",
+      });
       return;
     }
 
     try {
       const savedMenu = await saveMenu();
       if (savedMenu) {
-        alert("Menu saved successfully!");
+        toast.success("Menu saved", {
+          description: "Your menu is now up to date.",
+        });
         router.push("/dashboard");
       }
     } catch (error) {
       // Error is already handled by the hook
+      toast.error("Failed to save menu", {
+        description: "Please review the form and try again.",
+      });
     }
   };
 
