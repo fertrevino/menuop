@@ -530,7 +530,6 @@ export default function ImageInput({
         ref={cameraFileInputRef}
         type="file"
         accept="image/*"
-        // @ts-ignore capture isn't in older TS DOM lib versions
         capture="environment"
         onChange={handleFileUpload}
         className="hidden"

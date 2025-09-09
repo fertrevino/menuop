@@ -98,14 +98,21 @@ export const menuUtils = {
 
     const totalSections = menuData.sections.length;
 
-    const averagePrice =
-      menuData.sections.reduce((total, section) => {
-        const sectionTotal = section.items.reduce(
-          (sum, item) => sum + item.price,
-          0
-        );
-        return total + sectionTotal;
-      }, 0) / Math.max(totalItems, 1);
+    // Compute average only over items with a valid positive price (exclude sentinel -1 / zero)
+    let pricedItemCount = 0;
+    const totalPositivePrice = menuData.sections.reduce((total, section) => {
+      const sectionTotal = section.items.reduce((sum, item) => {
+        if (item.price > 0) {
+          pricedItemCount += 1;
+          return sum + item.price;
+        }
+        return sum;
+      }, 0);
+      return total + sectionTotal;
+    }, 0);
+    const averagePrice = pricedItemCount
+      ? totalPositivePrice / pricedItemCount
+      : 0;
 
     const priceRange = menuData.sections.reduce(
       (range, section) => {
