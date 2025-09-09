@@ -558,8 +558,8 @@ export default function Home() {
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Choose from 18+ professionally designed themes that match your
               restaurant&apos;s unique style. Our diverse collection features
-              designs inspired by cuisines and cultures from around the world,
-              ensuring the perfect look for your business.
+              designs inspired by modern designs from around the world, ensuring
+              the perfect look for your business.
             </p>
           </div>
 
@@ -700,8 +700,7 @@ export default function Home() {
           <div className="text-center mt-12">
             <p className="text-gray-300 mb-6">
               + 16 more themes with diverse styles ranging from contemporary to
-              traditional, featuring designs inspired by international cuisines
-              and modern dining trends
+              traditional, featuring designs inspired by modern dining trends
             </p>
             <button
               onClick={handleGetStarted}
