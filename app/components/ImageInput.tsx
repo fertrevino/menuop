@@ -166,7 +166,11 @@ function CameraCapture({
           <h3 className="text-lg font-medium text-white">
             {capturedPhoto ? "Photo Preview" : "Take Photo"}
           </h3>
-          <button onClick={close} className="text-gray-400 hover:text-white">
+          <button
+            onClick={close}
+            className="text-gray-400 hover:text-white cursor-pointer"
+            aria-label="Close camera"
+          >
             ✕
           </button>
         </div>
@@ -628,7 +632,8 @@ export default function ImageInput({
                 setShowAIImages(false);
                 setAiImages([]);
               }}
-              className="text-gray-400 hover:text-white"
+              className="text-gray-400 hover:text-white cursor-pointer"
+              aria-label="Close AI images"
             >
               ✕
             </button>
@@ -747,7 +752,8 @@ export default function ImageInput({
               <h3 className="text-lg font-medium text-white">Image Preview</h3>
               <button
                 onClick={closePreview}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-400 hover:text-white cursor-pointer"
+                aria-label="Close image preview"
               >
                 ✕
               </button>
