@@ -18,24 +18,37 @@ export function useMenu(menuId?: string) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load menu data if menuId is provided
+  // Load menu data once per menuId (avoid resetting form when the same user object identity changes, e.g. on tab visibility changes)
   useEffect(() => {
-    if (menuId && user) {
+    if (menuId && user && !menu) {
       loadMenu(menuId);
     }
-  }, [menuId, user]);
+  }, [menuId, user, menu]);
 
-  const loadMenu = async (id: string) => {
+  const loadMenu = async (id: string, options?: { force?: boolean }) => {
     try {
       setLoading(true);
       setError(null);
       const menuData = await MenuService.getMenuById(id);
 
       if (menuData) {
-        setMenu(menuData);
-        const formData = menuUtils.convertMenuToFormData(menuData);
-        setMenuFormData(formData);
-        setOriginalFormData(menuUtils.cloneMenuData(formData));
+        // If we already have a menu loaded and not forcing, avoid clobbering unsaved changes
+        const sameMenu = menu && menu.id === menuData.id;
+        if (!sameMenu || options?.force) {
+          setMenu(menuData);
+          const formData = menuUtils.convertMenuToFormData(menuData);
+            // Preserve user edits if not forcing and there are unsaved changes
+          if (sameMenu && !options?.force) {
+            // merge only immutable / server-updated fields (e.g. timestamps) without overwriting user edits
+            setMenuFormData((prev) => ({
+              ...prev,
+              // keep prev values; could selectively merge if needed
+            }));
+          } else {
+            setMenuFormData(formData);
+            setOriginalFormData(menuUtils.cloneMenuData(formData));
+          }
+        }
       } else {
         setError("Menu not found");
       }
