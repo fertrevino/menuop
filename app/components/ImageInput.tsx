@@ -641,11 +641,49 @@ export default function ImageInput({
 
           <div className="p-4">
             {isGenerating ? (
-              <div className="flex justify-center items-center py-8">
-                <div className="animate-spin w-8 h-8 border-2 border-gray-600 border-t-[#1F8349] rounded-full"></div>
-                <span className="ml-3 text-gray-300">
-                  Generating AI images...
-                </span>
+              <div
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+                aria-busy="true"
+                aria-live="polite"
+              >
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="relative overflow-hidden rounded-lg border-2 border-gray-600"
+                    style={{ minHeight: "128px" }}
+                  >
+                    {/* Main image area skeleton */}
+                    <div
+                      className="w-full h-32 bg-gray-700 animate-pulse"
+                      style={{ animationDuration: "0.75s" }}
+                    />
+                    {/* Simulated caption bar */}
+                    <div className="absolute inset-0 flex items-end p-2">
+                      <div
+                        className="h-3 w-2/3 bg-gray-600/70 rounded animate-pulse"
+                        style={{
+                          animationDuration: "0.75s",
+                          animationDelay: "0.15s",
+                        }}
+                      />
+                    </div>
+                    {/* Optional subtle shimmer overlay for extra feedback */}
+                    <div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0"
+                      style={{
+                        background:
+                          "linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.08) 40%, rgba(255,255,255,0.14) 50%, rgba(255,255,255,0.08) 60%, transparent 100%)",
+                        backgroundSize: "200% 100%",
+                        animation: "skeleton-shimmer 1.2s linear infinite",
+                        mixBlendMode: "overlay",
+                      }}
+                    />
+                    <span className="sr-only">
+                      Loading image placeholder {i + 1}
+                    </span>
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
