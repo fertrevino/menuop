@@ -3,6 +3,7 @@ import { useAuth } from "./useAuth";
 import { MenuService } from "../lib/services/menu";
 import { menuUtils } from "../lib/utils/menu";
 import { Menu, MenuFormData, MenuWithSections } from "../lib/types/menu";
+import { buildTemplateMenu } from "../lib/templates/menuTemplates";
 
 export function useMenu(menuId?: string) {
   const { user } = useAuth();
@@ -204,6 +205,25 @@ export function useMenu(menuId?: string) {
     setError(null);
   }, [menu]);
 
+  // Replace entire form with provided data (used for quick-start templates)
+  const hydrateForm = useCallback((formData: MenuFormData) => {
+    setMenuFormData(formData);
+    // Keep originalFormData as previous state so unsavedChanges reflects new data
+    // Alternatively, if we want template application NOT to count as unsaved yet, uncomment next line:
+    // setOriginalFormData(menuUtils.cloneMenuData(formData));
+  }, []);
+
+  // Apply a predefined template locally without persisting yet
+  const applyTemplate = useCallback(
+    (templateId: string, options?: { currency?: string }) => {
+      const tpl = buildTemplateMenu(templateId, options?.currency);
+      if (!tpl) return false;
+      hydrateForm(tpl);
+      return true;
+    },
+    [hydrateForm]
+  );
+
   const hasUnsavedChanges = menuUtils.hasUnsavedChanges(
     originalFormData,
     menuFormData
@@ -239,6 +259,8 @@ export function useMenu(menuId?: string) {
     addMenuItem,
     updateMenuItem,
     deleteMenuItem,
+    hydrateForm,
+    applyTemplate,
 
     // Utilities
     clearError: () => setError(null),

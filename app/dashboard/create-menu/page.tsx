@@ -8,6 +8,7 @@ import { useMenu } from "@/hooks/useMenu";
 import ImageInput from "@/app/components/ImageInput";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import ThemePreview from "@/app/components/ThemePreview";
+import { TemplateSelectionModal } from "@/app/components/TemplateSelectionModal";
 import { ConfirmDialog } from "@/app/components/ui/confirm-dialog";
 import { MenuThemeConfig, THEME_PRESETS } from "@/lib/types/theme";
 import {
@@ -48,6 +49,7 @@ export default function CreateMenu() {
   } | null>(null);
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
   const [pendingNav, setPendingNav] = useState<null | string>(null);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
 
   const {
     menuFormData,
@@ -63,6 +65,8 @@ export default function CreateMenu() {
     updateMenuItem,
     deleteMenuItem,
     clearError,
+    // @ts-ignore added in hook
+    hydrateForm,
   } = useMenu();
 
   useEffect(() => {
@@ -117,6 +121,10 @@ export default function CreateMenu() {
         description: "Please review the form and try again.",
       });
     }
+  };
+
+  const handleQuickStart = () => {
+    setShowTemplateModal(true);
   };
 
   const handleThemeChange = (newTheme: MenuThemeConfig) => {
@@ -331,6 +339,7 @@ export default function CreateMenu() {
                   {saving ? "Saving..." : "Save Menu"}
                 </button>
               )}
+              {/* Quick Start button moved to sidebar */}
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => {
@@ -594,6 +603,8 @@ export default function CreateMenu() {
 
               {activeTab === "content" && (
                 <>
+                  {/* Starter Templates (placeholder removed; single button now at bottom) */}
+
                   {/* Basic Info */}
                   <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
                     <h3 className="text-lg font-semibold text-white mb-4">
@@ -752,6 +763,34 @@ export default function CreateMenu() {
                       ))}
                     </div>
                   </div>
+
+                  {/* Starter Templates single action button */}
+                  {!isDeveloperMode && (
+                    <div className="mt-3">
+                      <button
+                        onClick={handleQuickStart}
+                        disabled={isSubmitting}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white text-sm font-semibold shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1F8349]/40 cursor-pointer"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 6v12m6-6H6"
+                          />
+                        </svg>
+                        <span>
+                          {isSubmitting ? "Loading..." : "Starter Templates"}
+                        </span>
+                      </button>
+                    </div>
+                  )}
                 </>
               )}
 
@@ -1078,6 +1117,17 @@ export default function CreateMenu() {
           </div>
         </div>
       )}
+      <TemplateSelectionModal
+        open={showTemplateModal}
+        onClose={() => setShowTemplateModal(false)}
+        defaultCurrency={menuFormData.currency || "USD"}
+        onApply={(data) => {
+          hydrateForm(data);
+          toast.success("Template loaded", {
+            description: "Customize and save when ready.",
+          });
+        }}
+      />
     </div>
   );
 }
