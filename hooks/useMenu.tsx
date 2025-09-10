@@ -37,7 +37,7 @@ export function useMenu(menuId?: string) {
         if (!sameMenu || options?.force) {
           setMenu(menuData);
           const formData = menuUtils.convertMenuToFormData(menuData);
-            // Preserve user edits if not forcing and there are unsaved changes
+          // Preserve user edits if not forcing and there are unsaved changes
           if (sameMenu && !options?.force) {
             // merge only immutable / server-updated fields (e.g. timestamps) without overwriting user edits
             setMenuFormData((prev) => ({
