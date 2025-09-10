@@ -736,34 +736,6 @@ export default function Settings() {
 
             {activeTab === "account" && (
               <div className="space-y-6">
-                {/* Password Change */}
-                <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
-                  <h3 className="text-2xl font-bold text-white mb-4">
-                    Change Password
-                  </h3>
-                  <p className="text-gray-400 mb-6">
-                    To change your password, you&apos;ll need to reset it using
-                    your email address.
-                  </p>
-                  <button
-                    onClick={() => {
-                      // Dispatch a custom event that the SignInModal can listen for to open in forgot password mode
-                      window.dispatchEvent(
-                        new CustomEvent("open-auth-modal", {
-                          detail: { mode: "forgot-password" },
-                        })
-                      );
-                      toast.info("Check your email", {
-                        description:
-                          "If the email exists, you'll receive reset instructions.",
-                      });
-                    }}
-                    className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
-                  >
-                    Reset Password
-                  </button>
-                </div>
-
                 {/* Account Stats */}
                 <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
                   <h3 className="text-2xl font-bold text-white mb-4">
