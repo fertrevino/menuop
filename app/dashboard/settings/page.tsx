@@ -747,9 +747,15 @@ export default function Settings() {
                   </p>
                   <button
                     onClick={() => {
-                      // TODO: Implement password reset
-                      toast.info("Password reset coming soon", {
-                        description: "Contact support to change password now.",
+                      // Dispatch a custom event that the SignInModal can listen for to open in forgot password mode
+                      window.dispatchEvent(
+                        new CustomEvent("open-auth-modal", {
+                          detail: { mode: "forgot-password" },
+                        })
+                      );
+                      toast.info("Check your email", {
+                        description:
+                          "If the email exists, you'll receive reset instructions.",
                       });
                     }}
                     className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
