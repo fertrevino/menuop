@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
 
           return NextResponse.json({
             imageUrl,
-            alt: `AI-generated image of ${dishName}`,
+            alt: dishName,
             prompt,
             source: "gemini-generated",
           });
@@ -93,37 +93,43 @@ function createFoodImagePrompt(
   description?: string,
   style: string = "professional"
 ): string {
-  // Base prompt for high-quality food photography
-  let prompt = `A high-resolution, studio-lit professional food photograph of ${dishName}`;
+  const baseDesc = description?.trim()
+    ? `${dishName} – ${description.trim()}`
+    : dishName;
 
-  // Add description if provided
-  if (description && description.trim()) {
-    prompt += `. ${description}`;
-  }
-
-  // Style-specific additions
   const stylePrompts = {
     professional:
-      "shot in a professional restaurant kitchen setting with perfect lighting, shallow depth of field, and appetizing presentation",
+      "restaurant menu style, balanced lighting, appetizing, subtle depth of field",
     rustic:
-      "presented in a rustic, homestyle setting with natural lighting and cozy atmosphere",
-    elegant:
-      "elegantly plated in fine dining style with sophisticated presentation and dramatic lighting",
-    casual:
-      "in a casual, everyday setting with natural lighting and approachable presentation",
-    modern:
-      "with modern minimalist plating and clean, contemporary presentation",
-  };
+      "rustic homestyle setting, warm natural light, wooden surface, authentic",
+    elegant: "fine dining plating, refined minimal garnish, soft side lighting",
+    casual: "casual everyday presentation, natural daylight, approachable",
+    modern: "modern minimalist plating, clean background, contemporary styling",
+    minimalist: "minimalist composition, neutral background, simple styling",
+    simple: "simple straightforward plating, neutral backdrop",
+    artistic:
+      "creative plating, vibrant but tasteful colors, slight overhead angle",
+    realistic: "true-to-life look, natural colors, natural light",
+  } as const;
 
   const selectedStyle =
-    stylePrompts[style as keyof typeof stylePrompts] ||
+    stylePrompts[(style as keyof typeof stylePrompts) || "professional"] ||
     stylePrompts.professional;
-  prompt += `, ${selectedStyle}`;
 
-  // Add technical photography details for better results
-  prompt += `. The image should be captured with a macro lens, emphasizing textures and details of the food. Perfect focus on the dish with beautiful bokeh in the background. Colors should be vibrant and appetizing. The composition should be centered and well-balanced. Ultra-sharp detail, professional food styling, mouthwatering presentation. 4K quality, restaurant-grade photography.`;
+  const variability = [
+    "soft shadows",
+    "45-degree angle",
+    "slight overhead angle",
+    "natural color grading",
+    "balanced composition",
+    "gentle depth of field",
+  ];
+  const picked = variability.sort(() => 0.5 - Math.random()).slice(0, 2);
 
-  return prompt;
+  // Aim for less over-produced look (avoid always ultra-high resolution phrasing)
+  return `Square 1:1 food photograph of ${baseDesc}. Style focus: ${selectedStyle}. Include ${picked.join(
+    " and "
+  )}. Realistic portion size, no text, no watermark, natural appealing lighting.`;
 }
 
 export async function GET() {

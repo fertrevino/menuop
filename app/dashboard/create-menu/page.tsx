@@ -989,6 +989,7 @@ export default function CreateMenu() {
                               )
                             }
                             itemName={item.name}
+                            itemDescription={item.description}
                             className="mt-4"
                           />
                           <div className="mt-4 flex items-center">

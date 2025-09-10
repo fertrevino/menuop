@@ -1135,6 +1135,7 @@ export default function EditMenu({ params }: EditMenuProps) {
                               )
                             }
                             itemName={item.name}
+                            itemDescription={item.description}
                             className="mt-4"
                           />
                           <div className="mt-4 flex items-center">

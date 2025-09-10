@@ -249,6 +249,7 @@ interface ImageInputProps {
   required?: boolean;
   itemName?: string;
   className?: string;
+  itemDescription?: string; // (used only for AI prompt, not displayed)
 }
 
 // Icon components (outline, consistent with settings page aesthetic)
@@ -345,6 +346,7 @@ export default function ImageInput({
   required = false,
   itemName,
   className = "",
+  itemDescription,
 }: ImageInputProps) {
   const [showAIImages, setShowAIImages] = useState(false);
   const [aiImages, setAiImages] = useState<ImageSuggestion[]>([]);
@@ -406,7 +408,15 @@ export default function ImageInput({
     try {
       // Use the itemName if available, otherwise fallback to generic food image
       const searchTerm = itemName && itemName.trim() ? itemName : "food image";
-      const suggestions = await getImageRecommendations(searchTerm);
+      const suggestions = await getImageRecommendations(
+        searchTerm,
+        itemDescription || undefined,
+        {
+          maxResults: 4,
+          useAI: true,
+          style: "casual",
+        }
+      );
       setAiImages(suggestions);
     } catch (error) {
       alert("Failed to generate AI images. Please try again.");
@@ -713,9 +723,6 @@ export default function ImageInput({
                         </div>
                       </div>
                     </div>
-                    <p className="mt-2 text-sm text-gray-400 text-center truncate">
-                      {suggestion.alt}
-                    </p>
                   </div>
                 ))}
               </div>
@@ -758,11 +765,7 @@ export default function ImageInput({
                   }}
                 />
               </div>
-
-              <p className="text-sm text-gray-300 text-center mb-4">
-                {previewImage.alt}
-              </p>
-
+              {/* Removed visible alt/description text per requirement to only show images */}
               <div className="flex justify-center gap-4">
                 <button
                   onClick={closePreview}
