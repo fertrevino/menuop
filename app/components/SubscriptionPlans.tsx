@@ -221,49 +221,78 @@ export default function SubscriptionPlans() {
                   )}
                 </div>
               ) : (
-                <button
-                  className="w-full bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50"
-                  onClick={async () => {
-                    try {
-                      if (!plan.price?.id) {
-                        return;
-                      }
+                (() => {
+                  const rawMeta = plan.metadata?.is_free_plan;
+                  const metaSaysFree =
+                    rawMeta === true ||
+                    rawMeta === "true" ||
+                    rawMeta === "1" ||
+                    rawMeta === 1;
+                  const priceIndicatesFree =
+                    !plan.price || plan.price.unitAmount === 0;
+                  const isFreePlan = metaSaysFree || priceIndicatesFree;
 
-                      const response = await fetch(
-                        "/api/stripe/create-checkout-session",
-                        {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify({
-                            priceId: plan.price.id,
-                          }),
-                        }
-                      );
-
-                      const data = await response.json();
-                      if (data.url) {
-                        window.location.href = data.url;
-                      } else {
-                        throw new Error(
-                          data.error || "Failed to create checkout session"
-                        );
+                  return (
+                    <button
+                      className={`w-full cursor-pointer bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed ${
+                        isFreePlan ? "pointer-events-none" : ""
+                      }`}
+                      disabled={loading || isFreePlan}
+                      aria-disabled={isFreePlan || loading}
+                      title={
+                        isFreePlan
+                          ? "Free plan is automatically available"
+                          : undefined
                       }
-                    } catch (error) {
-                      alert(
-                        "Failed to start checkout process. Please try again."
-                      );
-                    }
-                  }}
-                  disabled={loading}
-                >
-                  {loading
-                    ? "Loading..."
-                    : currentSubscription
-                    ? "Change Plan"
-                    : "Select Plan"}
-                </button>
+                      onClick={
+                        isFreePlan
+                          ? undefined
+                          : async () => {
+                              try {
+                                if (!plan.price?.id) {
+                                  return;
+                                }
+
+                                const response = await fetch(
+                                  "/api/stripe/create-checkout-session",
+                                  {
+                                    method: "POST",
+                                    headers: {
+                                      "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify({
+                                      priceId: plan.price.id,
+                                    }),
+                                  }
+                                );
+
+                                const data = await response.json();
+                                if (data.url) {
+                                  window.location.href = data.url;
+                                } else {
+                                  throw new Error(
+                                    data.error ||
+                                      "Failed to create checkout session"
+                                  );
+                                }
+                              } catch (error) {
+                                alert(
+                                  "Failed to start checkout process. Please try again."
+                                );
+                              }
+                            }
+                      }
+                    >
+                      {isFreePlan
+                        ? "Free Plan"
+                        : loading
+                        ? "Loading..."
+                        : currentSubscription
+                        ? "Change Plan"
+                        : "Select Plan"}
+                    </button>
+                  );
+                })()
               )}
             </div>
           ))}
