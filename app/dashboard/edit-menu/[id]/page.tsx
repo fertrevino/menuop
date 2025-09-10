@@ -10,6 +10,7 @@ import ThemeSelector from "@/app/components/ThemeSelector";
 import ThemePreview from "@/app/components/ThemePreview";
 import ImageInput from "@/app/components/ImageInput";
 import { MenuThemeConfig, THEME_PRESETS } from "@/lib/types/theme";
+import { MenuService } from "@/lib/services/menu";
 import {
   CURRENCY_OPTIONS,
   POPULAR_CURRENCIES,
@@ -38,6 +39,8 @@ export default function EditMenu({ params }: EditMenuProps) {
   const [copied, setCopied] = useState(false);
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
   const [pendingNav, setPendingNav] = useState<string | null>(null);
+  const [publishing, setPublishing] = useState(false);
+  const [localPublished, setLocalPublished] = useState<boolean | null>(null);
 
   // Unwrap the params Promise using React.use()
   const { id } = use(params);
@@ -50,6 +53,7 @@ export default function EditMenu({ params }: EditMenuProps) {
     error,
     hasUnsavedChanges,
     saveMenu,
+    loadMenu,
     updateMenuField,
     addSection,
     updateSection,
@@ -104,7 +108,6 @@ export default function EditMenu({ params }: EditMenuProps) {
       });
       return;
     }
-
     try {
       const result = await saveMenu();
       if (result) {
@@ -118,6 +121,62 @@ export default function EditMenu({ params }: EditMenuProps) {
       });
     }
   };
+
+  // Sync localPublished when menu loads/changes
+  useEffect(() => {
+    if (menu) setLocalPublished(menu.is_published);
+  }, [menu?.is_published]);
+
+  const handleTogglePublish = async () => {
+    if (!menu || localPublished === null) return;
+    // Optionally save unsaved changes first
+    if (hasUnsavedChanges) {
+      const proceed = window.confirm(
+        "You have unsaved changes. Save them before changing publish status?"
+      );
+      if (proceed) {
+        const saved = await saveMenu();
+        if (!saved) return;
+      } else {
+        return; // user cancelled
+      }
+    }
+    const target = !localPublished;
+    setPublishing(true);
+    // Optimistic UI update
+    setLocalPublished(target);
+    try {
+      if (target) {
+        const updated = await MenuService.publishMenu(menu.id);
+        setLocalPublished(updated.is_published);
+        toast.success("Menu published", {
+          description: "Your menu is now live.",
+        });
+      } else {
+        const updated = await MenuService.unpublishMenu(menu.id);
+        setLocalPublished(updated.is_published);
+        toast.info("Menu unpublished", {
+          description: "This menu is no longer publicly accessible.",
+        });
+      }
+    } catch (e) {
+      // Rollback optimistic state
+      setLocalPublished(!target);
+      toast.error("Publish action failed", {
+        description:
+          e instanceof Error ? e.message : "Could not update publish status",
+      });
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  const handleViewLiveMenu = () => {
+    if (!menu?.id || !localPublished) return;
+    const slugPart = (menu as any).slug ? `?s=${(menu as any).slug}` : "";
+    window.open(`/menu/${menu.id}${slugPart}`, "_blank");
+  };
+  // (Removed view live usage; keeping function not needed anymore)
 
   const handleThemeChange = (newTheme: MenuThemeConfig) => {
     updateMenuField("theme_config", newTheme);
@@ -818,33 +877,90 @@ export default function EditMenu({ params }: EditMenuProps) {
                     </div>
                   </div>
 
-                  {/* Menu Status */}
+                  {/* Status / Metadata (without published line) */}
                   <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
                     <h3 className="text-lg font-semibold text-white mb-4">
                       Status
                     </h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-gray-300">Published</span>
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            menu.is_published
-                              ? "bg-green-500/20 text-green-400"
-                              : "bg-yellow-500/20 text-yellow-400"
-                          }`}
-                        >
-                          {menu.is_published ? "Yes" : "No"}
-                        </span>
-                      </div>
+                    <div className="space-y-3 text-sm">
+                      {localPublished !== null && (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={handleTogglePublish}
+                            disabled={publishing}
+                            role="switch"
+                            aria-checked={localPublished}
+                            className={`inline-flex items-center justify-center h-8 px-4 rounded-md text-[12px] font-medium leading-none tracking-wide border transition-colors focus:outline-none focus:ring-2 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer ${
+                              localPublished
+                                ? "text-green-300/90 border-green-400/30 hover:bg-green-500/10 focus:ring-green-500/40"
+                                : "text-yellow-300/90 border-yellow-400/30 hover:bg-yellow-500/10 focus:ring-yellow-500/40"
+                            }`}
+                            title={
+                              localPublished ? "Unpublish Menu" : "Publish Menu"
+                            }
+                            aria-label={
+                              localPublished ? "Unpublish Menu" : "Publish Menu"
+                            }
+                          >
+                            {publishing
+                              ? "Updating…"
+                              : localPublished
+                              ? "Published"
+                              : "Not published"}
+                          </button>
+                          <button
+                            onClick={handleViewLiveMenu}
+                            disabled={!localPublished}
+                            className={`group relative inline-flex items-center justify-center h-8 px-4 rounded-md transition-colors border text-[12px] font-medium leading-none focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed ${
+                              localPublished
+                                ? "cursor-pointer border-sky-600/40 text-sky-300 bg-sky-900/20 hover:bg-sky-800/30 focus:ring-sky-600/40"
+                                : "border-gray-700 text-gray-500 bg-gray-800"
+                            }`}
+                            title={
+                              localPublished
+                                ? "View live menu"
+                                : "Publish to view"
+                            }
+                            aria-label="View live menu"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                              />
+                            </svg>
+                            {/* Tooltip */}
+                            <span
+                              className={`pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-[10px] font-medium text-gray-200 opacity-0 transition-opacity group-hover:opacity-100 ${
+                                localPublished ? "" : "hidden"
+                              }`}
+                            >
+                              View menu
+                            </span>
+                          </button>
+                        </div>
+                      )}
                       <div className="flex items-center justify-between">
                         <span className="text-gray-300">Created</span>
-                        <span className="text-gray-400 text-sm">
+                        <span className="text-gray-400">
                           {new Date(menu.created_at).toLocaleDateString()}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-gray-300">Updated</span>
-                        <span className="text-gray-400 text-sm">
+                        <span className="text-gray-300">Last Updated</span>
+                        <span className="text-gray-400">
                           {new Date(menu.updated_at).toLocaleDateString()}
                         </span>
                       </div>
