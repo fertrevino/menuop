@@ -13,6 +13,8 @@ interface ThemeSelectorProps {
   onThemeChange: (theme: MenuThemeConfig) => void;
 }
 
+type ImageSettings = NonNullable<MenuThemeConfig["images"]>;
+
 export default function ThemeSelector({
   currentTheme,
   onThemeChange,
@@ -50,10 +52,23 @@ export default function ThemeSelector({
       const sectionObj = updatedConfig[section] as Record<string, string>;
       sectionObj[key] = value;
     } else if (section === "images") {
-      updatedConfig.images = {
-        ...(updatedConfig.images || { size: "md", shape: "rounded" }),
-        [key]: value,
-      } as any;
+      const current: ImageSettings =
+        updatedConfig.images ||
+        ({ size: "md", shape: "rounded" } as ImageSettings);
+      if (key === "size" && ["sm", "md", "lg", "xl"].includes(value)) {
+        updatedConfig.images = {
+          ...current,
+          size: value as ImageSettings["size"],
+        };
+      } else if (
+        key === "shape" &&
+        ["rounded", "square", "circle"].includes(value)
+      ) {
+        updatedConfig.images = {
+          ...current,
+          shape: value as ImageSettings["shape"],
+        };
+      }
     }
 
     setCustomConfig(updatedConfig);
@@ -418,11 +433,7 @@ export default function ThemeSelector({
                   <select
                     value={customConfig.images?.size || "md"}
                     onChange={(e) =>
-                      handleCustomChange(
-                        "images" as any,
-                        "size",
-                        e.target.value
-                      )
+                      handleCustomChange("images", "size", e.target.value)
                     }
                     className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2"
                   >
@@ -439,11 +450,7 @@ export default function ThemeSelector({
                   <select
                     value={customConfig.images?.shape || "rounded"}
                     onChange={(e) =>
-                      handleCustomChange(
-                        "images" as any,
-                        "shape",
-                        e.target.value
-                      )
+                      handleCustomChange("images", "shape", e.target.value)
                     }
                     className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2"
                   >
