@@ -35,7 +35,7 @@ export default function ThemeSelector({
   };
 
   const handleCustomChange = (
-    section: keyof MenuThemeConfig,
+    section: keyof MenuThemeConfig | "images",
     key: string,
     value: string
   ) => {
@@ -49,6 +49,11 @@ export default function ThemeSelector({
     ) {
       const sectionObj = updatedConfig[section] as Record<string, string>;
       sectionObj[key] = value;
+    } else if (section === "images") {
+      updatedConfig.images = {
+        ...(updatedConfig.images || { size: "md", shape: "rounded" }),
+        [key]: value,
+      } as any;
     }
 
     setCustomConfig(updatedConfig);
@@ -398,6 +403,60 @@ export default function ThemeSelector({
                   </select>
                 </div>
               </div>
+            </div>
+
+            {/* Images */}
+            <div>
+              <h4 className="text-lg font-semibold text-white mb-4">
+                Item Images
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Image Size
+                  </label>
+                  <select
+                    value={customConfig.images?.size || "md"}
+                    onChange={(e) =>
+                      handleCustomChange(
+                        "images" as any,
+                        "size",
+                        e.target.value
+                      )
+                    }
+                    className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2"
+                  >
+                    <option value="sm">Small</option>
+                    <option value="md">Medium</option>
+                    <option value="lg">Large</option>
+                    <option value="xl">Extra Large</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Image Shape
+                  </label>
+                  <select
+                    value={customConfig.images?.shape || "rounded"}
+                    onChange={(e) =>
+                      handleCustomChange(
+                        "images" as any,
+                        "shape",
+                        e.target.value
+                      )
+                    }
+                    className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-3 py-2"
+                  >
+                    <option value="rounded">Rounded</option>
+                    <option value="square">Square</option>
+                    <option value="circle">Circle</option>
+                  </select>
+                </div>
+              </div>
+              <p className="text-xs text-gray-400 mt-2">
+                Controls the size and shape of images displayed next to each
+                menu item.
+              </p>
             </div>
 
             {/* Reset to Preset */}

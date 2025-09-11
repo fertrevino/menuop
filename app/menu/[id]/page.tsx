@@ -10,6 +10,7 @@ import {
   getResponsiveImageClasses,
   generateImageAlt,
   IMAGE_OPTIMIZATION,
+  getImageOptimizationDimensions,
 } from "@/lib/utils/images";
 import {
   MenuThemeConfig,
@@ -188,11 +189,13 @@ export default function PublicMenu({ params }: PublicMenuProps) {
                     {section.items
                       .filter((item) => item.is_available)
                       .map((item) => {
+                        const imgSize = theme.images?.size || "md";
+                        const dims = getImageOptimizationDimensions(imgSize);
                         const optimizedImageUrl = item.image_url
                           ? IMAGE_OPTIMIZATION.optimize(
                               item.image_url,
-                              400,
-                              400
+                              dims.width,
+                              dims.height
                             )
                           : null;
 
@@ -210,8 +213,12 @@ export default function PublicMenu({ params }: PublicMenuProps) {
                                 <img
                                   src={optimizedImageUrl}
                                   alt={generateImageAlt(item.name)}
-                                  className={`${getResponsiveImageClasses()} ${itemCorners} border`}
-                                  style={{ borderColor: theme.colors.border }}
+                                  className={`${getResponsiveImageClasses(
+                                    theme.images
+                                  )} border`}
+                                  style={{
+                                    borderColor: theme.colors.border,
+                                  }}
                                   onError={(e) => {
                                     e.currentTarget.style.display = "none";
                                   }}

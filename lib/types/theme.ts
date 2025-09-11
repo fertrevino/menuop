@@ -27,6 +27,13 @@ export interface MenuThemeConfig {
     sections: "none" | "sm" | "md" | "lg" | "xl" | "2xl";
     items: "none" | "sm" | "md" | "lg" | "xl" | "2xl";
   };
+  // Image appearance customization
+  images?: {
+    // Overall displayed size for menu item images
+    size: "sm" | "md" | "lg" | "xl";
+    // Shape / border radius style
+    shape: "rounded" | "square" | "circle";
+  };
 }
 
 export interface MenuThemePreset {
@@ -82,6 +89,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "xl",
         items: "lg",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -122,6 +130,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "lg",
         items: "md",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -162,6 +171,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "xl",
         items: "lg",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -202,6 +212,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "2xl",
         items: "xl",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -242,6 +253,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "none",
         items: "sm",
       },
+      images: { size: "md", shape: "square" },
     },
   },
   {
@@ -282,6 +294,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "lg",
         items: "md",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -322,6 +335,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "sm",
         items: "sm",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -362,6 +376,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "xl",
         items: "lg",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -402,6 +417,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "lg",
         items: "md",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -442,6 +458,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "lg",
         items: "md",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -482,6 +499,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "xl",
         items: "lg",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -522,6 +540,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "lg",
         items: "md",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -562,6 +581,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "lg",
         items: "md",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -602,6 +622,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "lg",
         items: "md",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -642,6 +663,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "md",
         items: "sm",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -682,6 +704,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "xl",
         items: "lg",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -722,6 +745,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "xl",
         items: "lg",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
   {
@@ -762,6 +786,7 @@ export const THEME_PRESETS: MenuThemePreset[] = [
         sections: "sm",
         items: "sm",
       },
+      images: { size: "md", shape: "rounded" },
     },
   },
 ];

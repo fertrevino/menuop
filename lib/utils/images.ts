@@ -35,8 +35,45 @@ export function getResponsiveImageSize(
 /**
  * Generate responsive image classes for different breakpoints
  */
-export function getResponsiveImageClasses(): string {
-  return "w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 object-cover rounded-lg";
+export function getResponsiveImageClasses(options?: {
+  size?: "sm" | "md" | "lg" | "xl";
+  shape?: "rounded" | "square" | "circle";
+}): string {
+  const size = options?.size || "md";
+  const shape = options?.shape || "rounded";
+
+  const sizeMap: Record<string, string> = {
+    sm: "w-16 h-16 sm:w-18 sm:h-18 lg:w-20 lg:h-20",
+    md: "w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28",
+    lg: "w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32",
+    xl: "w-32 h-32 sm:w-36 sm:h-36 lg:w-44 lg:h-44", // Significantly larger XL
+  };
+
+  const shapeMap: Record<string, string> = {
+    rounded: "rounded-lg",
+    square: "rounded-none",
+    circle: "rounded-full",
+  };
+
+  return `${sizeMap[size]} object-cover ${shapeMap[shape]}`;
+}
+
+// Map logical size to approximate target pixel dimensions for optimization
+export function getImageOptimizationDimensions(
+  size: "sm" | "md" | "lg" | "xl"
+) {
+  switch (size) {
+    case "sm":
+      return { width: 250, height: 250 };
+    case "md":
+      return { width: 350, height: 350 };
+    case "lg":
+      return { width: 500, height: 500 };
+    case "xl":
+      return { width: 700, height: 700 }; // Bigger for clearer XL images
+    default:
+      return { width: 350, height: 350 };
+  }
 }
 
 /**
