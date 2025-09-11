@@ -53,7 +53,6 @@ export default function EditMenu({ params }: EditMenuProps) {
     error,
     hasUnsavedChanges,
     saveMenu,
-    loadMenu,
     updateMenuField,
     addSection,
     updateSection,
@@ -115,7 +114,7 @@ export default function EditMenu({ params }: EditMenuProps) {
           description: "Your changes have been saved.",
         });
       }
-    } catch (e) {
+    } catch {
       toast.error("Failed to save menu", {
         description: "Please review changes and try again.",
       });
@@ -125,7 +124,7 @@ export default function EditMenu({ params }: EditMenuProps) {
   // Sync localPublished when menu loads/changes
   useEffect(() => {
     if (menu) setLocalPublished(menu.is_published);
-  }, [menu?.is_published]);
+  }, [menu]);
 
   const handleTogglePublish = async () => {
     if (!menu || localPublished === null) return;
@@ -173,7 +172,7 @@ export default function EditMenu({ params }: EditMenuProps) {
 
   const handleViewLiveMenu = () => {
     if (!menu?.id || !localPublished) return;
-    const slugPart = (menu as any).slug ? `?s=${(menu as any).slug}` : "";
+    const slugPart = menu.slug ? `?s=${menu.slug}` : "";
     window.open(`/menu/${menu.id}${slugPart}`, "_blank");
   };
   // (Removed view live usage; keeping function not needed anymore)
