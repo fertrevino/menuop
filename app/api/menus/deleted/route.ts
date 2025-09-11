@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       menus: menus || [],
       total: menus?.length || 0,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

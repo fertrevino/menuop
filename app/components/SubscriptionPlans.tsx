@@ -275,7 +275,7 @@ export default function SubscriptionPlans() {
                                       "Failed to create checkout session"
                                   );
                                 }
-                              } catch (error) {
+                              } catch {
                                 alert(
                                   "Failed to start checkout process. Please try again."
                                 );

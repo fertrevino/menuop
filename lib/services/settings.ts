@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
-import { TablesInsert, TablesUpdate } from "@/lib/database.types";
+import { TablesInsert } from "@/lib/database.types";
 
 export type UserProfile = {
   full_name?: string | null;

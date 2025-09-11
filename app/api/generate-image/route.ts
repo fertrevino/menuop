@@ -10,6 +10,19 @@ const genAI = new GoogleGenAI({
   apiKey: process.env.GOOGLE_GEMINI_API_KEY || "",
 });
 
+// Structured response type for the generated image payload
+interface ImageGenerationResponse {
+  imageUrl: string;
+  alt: string;
+  prompt: string;
+  source: "gemini-generated";
+  subscription: "paid" | "free";
+  limit?: number;
+  count?: number;
+  remaining?: number;
+  reset?: string; // ISO timestamp for when quota resets
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -147,7 +160,7 @@ export async function POST(request: NextRequest) {
           // Convert base64 to data URL
           const imageUrl = `data:image/png;base64,${part.inlineData.data}`;
 
-          const jsonBody: any = {
+          const jsonBody: ImageGenerationResponse = {
             imageUrl,
             alt: dishName,
             prompt,

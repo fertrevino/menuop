@@ -39,7 +39,7 @@ function CameraCapture({
       let mediaStream: MediaStream;
       try {
         mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-      } catch (err) {
+      } catch {
         // Retry with simpler constraint if first attempt fails (some Android browsers)
         mediaStream = await navigator.mediaDevices.getUserMedia({
           video: true,
@@ -123,7 +123,7 @@ function CameraCapture({
       // Ensure video plays
       try {
         await videoRef.current.play();
-      } catch (error) {}
+      } catch {}
     } else {
       // Try a few more times with delays
       for (let i = 0; i < 5; i++) {
@@ -460,7 +460,7 @@ export default function ImageInput({
           reset: lastImageGenerationRateInfo.reset,
         });
       }
-    } catch (error) {
+    } catch {
       alert("Failed to generate AI images. Please try again.");
       setShowAIImages(false);
     } finally {
@@ -486,7 +486,7 @@ export default function ImageInput({
       setShowAIImages(false);
       setAiImages([]);
       setPreviewImage(null);
-    } catch (err) {
+    } catch {
       alert(
         "Failed to store the generated image. Please try again or choose another image."
       );
@@ -511,7 +511,7 @@ export default function ImageInput({
         const blob = dataUrlToBlob(dataUrl);
         const publicUrl = await uploadToStorage(blob, "jpg");
         onChange(publicUrl);
-      } catch (err) {
+      } catch {
         alert(
           "Failed to upload photo. Please try again or choose a smaller image."
         );
