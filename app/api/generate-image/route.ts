@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
+import { createClient } from "@/lib/supabase/server";
+import { stripe } from "@/lib/services/stripe";
+import { incrementImageGenerationUsage } from "@/lib/services/usage";
+import { FREE_IMAGE_DAILY_LIMIT } from "@/lib/config/limits";
 
 // Initialize Gemini AI for image generation
 const genAI = new GoogleGenAI({
@@ -18,6 +22,100 @@ export async function POST(request: NextRequest) {
         { error: "Dish name is required" },
         { status: 400 }
       );
+    }
+
+    // Auth & usage limiting
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Determine subscription status (active => skip limit). Simple Stripe lookup by email.
+    let isPaid = false;
+    try {
+      const customers = await stripe.customers.list({
+        email: user.email || undefined,
+        limit: 1,
+      });
+      if (customers.data.length) {
+        const subs = await stripe.subscriptions.list({
+          customer: customers.data[0].id,
+          status: "active",
+          limit: 1,
+        });
+        isPaid = subs.data.length > 0;
+      }
+    } catch (subErr) {
+      console.error("Subscription check failed", subErr);
+      // Default to treating user as free if check fails
+    }
+
+    let usageInfo: { count: number; remaining: number; limit: number } | null =
+      null;
+
+    if (!isPaid) {
+      try {
+        console.log(
+          `[rate] Pre-increment user=${user.id} limit=${FREE_IMAGE_DAILY_LIMIT}`
+        );
+        const usage = await incrementImageGenerationUsage(
+          user.id,
+          FREE_IMAGE_DAILY_LIMIT
+        );
+        console.log(
+          `[rate] Post-increment user=${user.id} newCount=${usage.newCount} withinLimit=${usage.withinLimit} limit=${FREE_IMAGE_DAILY_LIMIT}`
+        );
+        if (!usage.withinLimit) {
+          const resetTs = new Date();
+          resetTs.setUTCHours(24, 0, 0, 0);
+          const headers: Record<string, string> = {
+            "X-RateLimit-Limit": String(FREE_IMAGE_DAILY_LIMIT),
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": String(Math.floor(resetTs.getTime() / 1000)),
+          };
+          console.warn(
+            `[rate] LIMIT REACHED user=${user.id} count=${usage.newCount} limit=${FREE_IMAGE_DAILY_LIMIT}`
+          );
+          return new NextResponse(
+            JSON.stringify({
+              error: "Daily free image generation limit reached",
+              code: "RATE_LIMIT_EXCEEDED",
+              limit: FREE_IMAGE_DAILY_LIMIT,
+              count: usage.newCount,
+              remaining: 0,
+              upgrade: true,
+              reset: resetTs.toISOString(),
+            }),
+            {
+              status: 429,
+              headers: { "Content-Type": "application/json", ...headers },
+            }
+          );
+        }
+        const remaining = Math.max(0, FREE_IMAGE_DAILY_LIMIT - usage.newCount);
+        usageInfo = {
+          count: usage.newCount,
+          remaining,
+          limit: FREE_IMAGE_DAILY_LIMIT,
+        };
+        console.log(
+          `Image generation usage for user ${user.id}: ${usageInfo.count}/${FREE_IMAGE_DAILY_LIMIT}`
+        );
+      } catch (usageErr) {
+        console.error(
+          `[rate] Usage tracking failed user=${user.id} limit=${FREE_IMAGE_DAILY_LIMIT}`,
+          usageErr
+        );
+        // Fail closed: block generation if we cannot enforce quota
+        return NextResponse.json(
+          { error: "Usage tracking error" },
+          { status: 500 }
+        );
+      }
     }
 
     // Check if Gemini API is configured
@@ -49,12 +147,33 @@ export async function POST(request: NextRequest) {
           // Convert base64 to data URL
           const imageUrl = `data:image/png;base64,${part.inlineData.data}`;
 
-          return NextResponse.json({
+          const jsonBody: any = {
             imageUrl,
             alt: dishName,
             prompt,
             source: "gemini-generated",
-          });
+            subscription: isPaid ? "paid" : "free",
+          };
+          if (usageInfo) {
+            jsonBody.limit = usageInfo.limit;
+            jsonBody.count = usageInfo.count;
+            jsonBody.remaining = usageInfo.remaining;
+            const resetTs = new Date();
+            resetTs.setUTCHours(24, 0, 0, 0);
+            jsonBody.reset = resetTs.toISOString();
+            const response = NextResponse.json(jsonBody);
+            response.headers.set("X-RateLimit-Limit", String(usageInfo.limit));
+            response.headers.set(
+              "X-RateLimit-Remaining",
+              String(usageInfo.remaining)
+            );
+            response.headers.set(
+              "X-RateLimit-Reset",
+              String(Math.floor(resetTs.getTime() / 1000))
+            );
+            return response;
+          }
+          return NextResponse.json(jsonBody);
         }
 
         if (part.text) {
@@ -64,13 +183,21 @@ export async function POST(request: NextRequest) {
 
       // If we get here, no image was generated
       console.log("❌ No image generated in response");
-      return NextResponse.json(
+      const errorResp = NextResponse.json(
         { error: "No image was generated by Gemini" },
         { status: 500 }
       );
+      if (usageInfo) {
+        errorResp.headers.set("X-RateLimit-Limit", String(usageInfo.limit));
+        errorResp.headers.set(
+          "X-RateLimit-Remaining",
+          String(usageInfo.remaining)
+        );
+      }
+      return errorResp;
     } catch (aiError: unknown) {
       console.error("🚫 Gemini AI error:", aiError);
-      return NextResponse.json(
+      const errorResp = NextResponse.json(
         {
           error: `AI generation failed: ${
             aiError instanceof Error ? aiError.message : "Unknown error"
@@ -78,6 +205,14 @@ export async function POST(request: NextRequest) {
         },
         { status: 500 }
       );
+      if (usageInfo) {
+        errorResp.headers.set("X-RateLimit-Limit", String(usageInfo.limit));
+        errorResp.headers.set(
+          "X-RateLimit-Remaining",
+          String(usageInfo.remaining)
+        );
+      }
+      return errorResp;
     }
   } catch (error) {
     console.error("💥 Image generation error:", error);

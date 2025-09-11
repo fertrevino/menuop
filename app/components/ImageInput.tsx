@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { isValidImageUrl, generateImageAlt } from "@/lib/utils/images";
 import {
   getImageRecommendations,
   ImageSuggestion,
+  lastImageGenerationRateInfo,
 } from "@/lib/services/imageRecommendation";
 import { createClient as createSupabaseClient } from "@/lib/supabase/client";
 
@@ -360,6 +362,34 @@ export default function ImageInput({
     null
   );
   const [isUploading, setIsUploading] = useState(false);
+  const [rateInfo, setRateInfo] = useState<{
+    limit: number;
+    remaining: number;
+    count: number;
+    reset?: string;
+  } | null>(null);
+
+  // Fetch current usage on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/usage/image-generation");
+        if (res.ok) {
+          const data = await res.json();
+          if (data && typeof data.limit === "number") {
+            setRateInfo({
+              limit: data.limit,
+              remaining: data.remaining,
+              count: data.count,
+              reset: data.reset,
+            });
+          }
+        }
+      } catch (e) {
+        // silent
+      }
+    })();
+  }, []);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -422,6 +452,14 @@ export default function ImageInput({
         }
       );
       setAiImages(suggestions);
+      if (lastImageGenerationRateInfo) {
+        setRateInfo({
+          limit: lastImageGenerationRateInfo.limit,
+          remaining: lastImageGenerationRateInfo.remaining,
+          count: lastImageGenerationRateInfo.count,
+          reset: lastImageGenerationRateInfo.reset,
+        });
+      }
     } catch (error) {
       alert("Failed to generate AI images. Please try again.");
       setShowAIImages(false);
@@ -588,7 +626,7 @@ export default function ImageInput({
         <button
           type="button"
           onClick={handleAIGeneration}
-          disabled={isGenerating}
+          disabled={isGenerating || (!!rateInfo && rateInfo.remaining === 0)}
           className={`${baseBtn} ${neutralBtn} ${sizeSm}`}
         >
           {isGenerating ? (
@@ -599,11 +637,37 @@ export default function ImageInput({
           ) : (
             <>
               <SparkleIcon />
-              <span>Auto Generate</span>
+              <span>
+                {rateInfo && rateInfo.remaining === 0
+                  ? "Limit Reached"
+                  : "Auto Generate"}
+              </span>
             </>
           )}
         </button>
       </div>
+
+      {rateInfo && (
+        <div className="text-xs text-gray-400 flex items-center gap-2 mt-1">
+          {rateInfo.remaining > 0 ? (
+            <span>
+              {rateInfo.remaining} / {rateInfo.limit} free AI images left today
+            </span>
+          ) : (
+            <span className="text-amber-300">
+              Daily free AI image limit reached ({rateInfo.count}/
+              {rateInfo.limit}).{" "}
+              <Link
+                href="/dashboard/settings"
+                className="underline text-amber-200 hover:text-amber-100"
+              >
+                Upgrade
+              </Link>{" "}
+              your subscription to continue.
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Image Preview */}
       {value && isValidImageUrl(value) && (
