@@ -114,7 +114,7 @@ export default function CreateMenu() {
         });
         router.push("/dashboard");
       }
-  } catch {
+    } catch {
       // Error is already handled by the hook
       toast.error("Failed to save menu", {
         description: "Please review the form and try again.",
