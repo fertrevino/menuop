@@ -271,7 +271,7 @@ export default function CreateMenu() {
       <nav className="sticky top-0 z-50 bg-gradient-to-r from-gray-900/95 to-gray-800/95 backdrop-blur-sm border-b border-gray-700/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex-1 flex items-center space-x-2">
+            <div className="flex-1 flex items-center space-x-2 min-w-0">
               <button
                 onClick={handleBackNavigation}
                 className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-gray-700/50 cursor-pointer"
@@ -289,7 +289,7 @@ export default function CreateMenu() {
                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                   />
                 </svg>
-                <span>Dashboard</span>
+                <span className="hidden sm:inline">Dashboard</span>
               </button>
               <svg
                 className="w-5 h-5 text-gray-500"
@@ -304,7 +304,7 @@ export default function CreateMenu() {
                   d="M9 5l7 7-7 7"
                 />
               </svg>
-              <h1 className="text-xl font-bold text-white flex items-center gap-2">
+              <h1 className="text-xl font-bold text-white flex items-center gap-2 truncate">
                 <svg
                   className="w-5 h-5 text-[#1F8349]"
                   fill="none"
@@ -318,17 +318,17 @@ export default function CreateMenu() {
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                   />
                 </svg>
-                Create New Menu
+                <span className="truncate">Create New Menu</span>
               </h1>
               {!isDeveloperMode && hasUnsavedChanges && (
-                <span className="ml-3 text-yellow-400 text-sm">
+                <span className="ml-3 text-yellow-400 text-sm hidden sm:inline">
                   • Unsaved changes
                 </span>
               )}
             </div>
 
-            {/* Right side elements */}
-            <div className="flex items-center space-x-4">
+            {/* Right side elements (desktop) */}
+            <div className="hidden md:flex items-center space-x-4">
               {!isDeveloperMode && (
                 <button
                   onClick={handleSaveMenu}
@@ -363,6 +363,65 @@ export default function CreateMenu() {
                   Dev Mode
                 </span>
               </div>
+            </div>
+
+            {/* Mobile actions */}
+            <div className="md:hidden">
+              <details className="relative">
+                <summary className="list-none cursor-pointer p-2 rounded-md hover:bg-gray-800/60 active:bg-gray-800/80 text-gray-300 hover:text-white select-none">
+                  <span className="sr-only">Open menu</span>
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
+                </summary>
+                <div className="absolute right-0 mt-2 w-56 rounded-lg border border-gray-700/50 bg-gray-900/95 backdrop-blur-md shadow-xl py-2 z-50">
+                  <div className="px-4 py-2 text-xs text-gray-400">Actions</div>
+                  {!isDeveloperMode && (
+                    <button
+                      onClick={handleSaveMenu}
+                      disabled={saving}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 disabled:opacity-50 cursor-pointer"
+                    >
+                      {saving ? "Saving..." : "Save Menu"}
+                    </button>
+                  )}
+                  <div className="my-2 h-px bg-gray-700/60" />
+                  <div className="px-4 py-2 flex items-center justify-between">
+                    <span
+                      className={`text-sm ${
+                        isDeveloperMode ? "text-[#1F8349]" : "text-gray-300"
+                      }`}
+                    >
+                      Dev Mode
+                    </span>
+                    <button
+                      onClick={() => {
+                        setIsDeveloperMode(!isDeveloperMode);
+                        setImportMessage(null);
+                      }}
+                      className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer ${
+                        isDeveloperMode ? "bg-[#1F8349]" : "bg-gray-600"
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                          isDeveloperMode ? "translate-x-5" : "translate-x-0.5"
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+              </details>
             </div>
           </div>
         </div>
