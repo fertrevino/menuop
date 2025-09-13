@@ -156,7 +156,7 @@ export default function ViewMenus() {
       <nav className="sticky top-0 z-50 bg-gradient-to-r from-gray-900/95 to-gray-800/95 backdrop-blur-sm border-b border-gray-700/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
+            <div className="flex-1 flex items-center space-x-2 min-w-0">
               <button
                 onClick={() => router.push("/dashboard")}
                 className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 py-1 px-2 rounded-lg hover:bg-gray-700/50 cursor-pointer"
@@ -174,7 +174,7 @@ export default function ViewMenus() {
                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                   />
                 </svg>
-                <span>Dashboard</span>
+                <span className="hidden sm:inline">Dashboard</span>
               </button>
               <svg
                 className="w-5 h-5 text-gray-500"
@@ -189,7 +189,7 @@ export default function ViewMenus() {
                   d="M9 5l7 7-7 7"
                 />
               </svg>
-              <h1 className="text-xl font-bold text-white flex items-center gap-2">
+              <h1 className="text-xl font-bold text-white flex items-center gap-2 truncate">
                 <svg
                   className="w-5 h-5 text-[#1F8349]"
                   fill="none"
@@ -203,16 +203,48 @@ export default function ViewMenus() {
                     d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                   />
                 </svg>
-                My Menus
+                <span className="truncate">My Menus</span>
               </h1>
             </div>
-            <div className="flex items-center space-x-4">
+            {/* Right side actions (desktop) */}
+            <div className="hidden md:flex items-center space-x-4">
               <button
                 onClick={() => router.push("/dashboard/create-menu")}
                 className="bg-gradient-to-r from-[#1F8349] to-[#2ea358] hover:from-[#176e3e] hover:to-[#248a47] text-white px-6 py-2 rounded-lg font-semibold transition-all duration-300 cursor-pointer"
               >
                 Create New Menu
               </button>
+            </div>
+
+            {/* Mobile actions */}
+            <div className="md:hidden">
+              <details className="relative">
+                <summary className="list-none cursor-pointer p-2 rounded-md hover:bg-gray-800/60 active:bg-gray-800/80 text-gray-300 hover:text-white select-none">
+                  <span className="sr-only">Open menu</span>
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
+                </summary>
+                <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-700/50 bg-gray-900/95 backdrop-blur-md shadow-xl py-2 z-50">
+                  <div className="px-4 py-2 text-xs text-gray-400">Actions</div>
+                  <button
+                    onClick={() => router.push("/dashboard/create-menu")}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 cursor-pointer"
+                  >
+                    Create New Menu
+                  </button>
+                </div>
+              </details>
             </div>
           </div>
         </div>
