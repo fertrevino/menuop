@@ -287,15 +287,27 @@ export default function Home() {
               <details className="relative">
                 <summary className="list-none cursor-pointer p-2 rounded-md hover:bg-gray-800/60 active:bg-gray-800/80 text-gray-300 hover:text-white select-none">
                   <span className="sr-only">Open menu</span>
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
                   </svg>
                 </summary>
                 <div className="absolute right-0 mt-2 w-64 rounded-lg border border-gray-700/50 bg-gray-900/95 backdrop-blur-md shadow-xl py-2 z-50">
                   {/* Account section */}
                   {!loading && user ? (
                     <>
-                      <div className="px-4 py-2 text-xs text-gray-400">Signed in</div>
+                      <div className="px-4 py-2 text-xs text-gray-400">
+                        Signed in
+                      </div>
                       <div className="px-4 -mt-1 pb-2 text-sm text-gray-300 truncate">
                         {user.user_metadata?.full_name || user.email}
                       </div>
@@ -304,54 +316,63 @@ export default function Home() {
                   ) : null}
 
                   {/* Navigation links (center links on mobile) */}
-                  <div className="px-4 py-2 text-xs text-gray-400">Navigate</div>
-                  <button onClick={() => scrollToSection("features")}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 cursor-pointer">
+                  <div className="px-4 py-2 text-xs text-gray-400">
+                    Navigate
+                  </div>
+                  <button
+                    onClick={() => scrollToSection("features")}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 cursor-pointer"
+                  >
                     Features
                   </button>
-                  <button onClick={() => scrollToSection("about")}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 cursor-pointer">
+                  <button
+                    onClick={() => scrollToSection("about")}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 cursor-pointer"
+                  >
                     About
                   </button>
-                  <button onClick={() => scrollToSection("pricing")}
-                          className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 cursor-pointer">
+                  <button
+                    onClick={() => scrollToSection("pricing")}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 cursor-pointer"
+                  >
                     Pricing
                   </button>
 
                   <div className="my-2 h-px bg-gray-700/60" />
 
                   {/* Auth/CTA */}
-                  {!loading && (user ? (
-                    <>
-                      <button
-                        onClick={() => router.push("/dashboard")}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 cursor-pointer"
-                      >
-                        Dashboard
-                      </button>
-                      <button
-                        onClick={handleSignOut}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 cursor-pointer"
-                      >
-                        Sign Out
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        onClick={openSignInModal}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 cursor-pointer"
-                      >
-                        Sign In
-                      </button>
-                      <button
-                        onClick={handleGetStarted}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 cursor-pointer"
-                      >
-                        Get Started
-                      </button>
-                    </>
-                  ))}
+                  {!loading &&
+                    (user ? (
+                      <>
+                        <button
+                          onClick={() => router.push("/dashboard")}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 cursor-pointer"
+                        >
+                          Dashboard
+                        </button>
+                        <button
+                          onClick={handleSignOut}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 cursor-pointer"
+                        >
+                          Sign Out
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          onClick={openSignInModal}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 cursor-pointer"
+                        >
+                          Sign In
+                        </button>
+                        <button
+                          onClick={handleGetStarted}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/70 cursor-pointer"
+                        >
+                          Get Started
+                        </button>
+                      </>
+                    ))}
                 </div>
               </details>
             </div>
